@@ -1,0 +1,5 @@
+NAME spawner
+FILE spawner
+WOBBLES 0.05 10
+ROTATES -30
+WARP_TARGET 50 0
