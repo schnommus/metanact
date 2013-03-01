@@ -1,0 +1,61 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Engine">
+      <UniqueIdentifier>{e04f364c-46ba-4994-ab87-74ee85860dc0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Logic">
+      <UniqueIdentifier>{0560f3f3-7f21-4399-9d7d-a60c6551573a}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\App2D.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="src\EventHandler.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="src\DefinedEntity.cpp">
+      <Filter>Logic</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Tags.cpp">
+      <Filter>Logic</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Metanact.cpp" />
+    <ClCompile Include="src\MenuSystem.cpp">
+      <Filter>Logic</Filter>
+    </ClCompile>
+    <ClCompile Include="src\DefaultEntities.cpp">
+      <Filter>Logic</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\App2D.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CppEvent.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="src\EventHandler.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="src\DefinedEntity.h">
+      <Filter>Logic</Filter>
+    </ClInclude>
+    <ClInclude Include="src\DefaultEntities.h">
+      <Filter>Logic</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Entity.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Tags.h">
+      <Filter>Logic</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Tag.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="src\MenuSystem.h">
+      <Filter>Logic</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
