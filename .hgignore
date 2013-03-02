@@ -1,0 +1,26 @@
+syntax: glob
+Metanact.opensdf
+Metanact.sdf
+obj/Release/vc100.pdb
+obj/Release/mt.write.1.tlog
+obj/Release/mt.read.1.tlog
+obj/Release/mt.command.1.tlog
+obj/Release/link.write.1.tlog
+obj/Release/link.read.1.tlog
+obj/Release/link.command.1.tlog
+obj/Release/cl.command.1.tlog
+obj/Release/Tags.obj
+obj/Release/Metanact_release.exe.intermediate.manifest
+obj/Release/Metanact_release.Build.CppClean.log
+obj/Release/Metanact.obj
+obj/Release/Metanact.log
+obj/Release/Metanact.lastbuildstate
+obj/Release/MenuSystem.obj
+obj/Release/EventHandler.obj
+obj/Release/DefinedEntity.obj
+obj/Release/DefaultEntities.obj
+obj/Release/CL.write.1.tlog
+obj/Release/CL.read.1.tlog
+obj/Release/App2D.obj
+ipch/metanact-9f46409f/metanact_release-2e6cd1ca.ipch
+bin/Metanact_release.pdb

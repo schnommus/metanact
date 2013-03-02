@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <sstream>
 #include <iostream>
+#include <fstream>
 #include <algorithm>
 #include <string>
 #include <boost\shared_ptr.hpp>
@@ -47,12 +48,6 @@ App2D::App2D( bool useVSync,
 		messageList.push_back("");
 	}
 
-
-	DisplayMessage("Metanact v0.1a - Engine Initialized.");
-
-	SetMusic("metmain.ogg");
-
-	SetOption("PlayerName", "Anonymous");
 }
 
 App2D::~App2D() {
@@ -64,6 +59,14 @@ App2D::~App2D() {
 
 void App2D::Run() {
 	try {
+		DisplayMessage("Metanact v0.1a - Engine Initialized."); // Moved some stuff here from the constructor so exceptions can be caught
+
+		SetMusic("metmain.ogg");
+
+		LoadOptions();
+
+		currentPath = GetOption("InitialDirectory");
+
 		GetEventHandler().RegisterGenericEventType("gravity");
 
 		AddEntity( new SplashScreen(*this), 1001, true );
@@ -173,7 +176,7 @@ void App2D::Run() {
 	} catch ( ... ) {
 		std::cout << "Non-standard unhandled exception!" << std::endl;
 	}
-
+	renderWindow.Close();
 	system("pause");
 }
 
@@ -383,8 +386,43 @@ std::string App2D::GetOption( std::string type ) {
 		return "";
 	}
 }
+
 void App2D::SetOption( std::string type, std::string data ) {
 	gameOptions[type] = data;
+	SaveOptions();
+}
+
+void App2D::SaveOptions() {
+	std::ofstream ofs;
+	ofs.open("options.cfg", std::ios::out | std::ios::trunc);
+
+	if( !ofs.is_open() ) {
+		throw std::exception("Couldn't open options file for writing!");
+	}
+
+	std::map< std::string, std::string >::iterator it;
+	for( it = gameOptions.begin(); it != gameOptions.end(); ++it ) {
+		ofs << it->first << "=" << it->second << std::endl;
+	}
+
+	ofs.close();
+}
+
+void App2D::LoadOptions() {
+	std::ifstream ifs;
+	ifs.open("options.cfg", std::ios::in);
+
+	if( !ifs.is_open() ) {
+		throw std::exception("Couldn't open options file for reading!");
+	}
+
+	while( !ifs.eof() ) {
+		std::string all; getline(ifs, all);
+		if ( all.find('=') != std::string::npos) // If there's an '='
+			SetOption( all.substr(0, all.find('=')), all.substr(all.find('=')+1, all.size()-1 ) );
+	}
+
+	ifs.close();
 }
 
 using namespace boost::filesystem;
