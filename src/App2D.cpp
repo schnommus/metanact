@@ -50,7 +50,7 @@ App2D::App2D( bool useVSync,
 
 	DisplayMessage("Metanact v0.1a - Engine Initialized.");
 
-	SetMusic("metmain.wav");
+	SetMusic("metmain.ogg");
 
 	SetOption("PlayerName", "Anonymous");
 }
