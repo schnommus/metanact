@@ -82,6 +82,7 @@ public:
 
 	std::string GetOption( std::string type );
 	void SetOption( std::string type, std::string data );
+	float EvaluateOption( std::string type);
 	void LoadOptions();
 	void SaveOptions();
 

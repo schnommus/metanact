@@ -390,7 +390,7 @@ void IsLocalPlayerTag::Step(float delta) {
 		bClock2.Reset();
 	}
 
-	if( sClock.GetElapsedTime() > 0.1 ) {
+	if( sClock.GetElapsedTime() > 0.1 * e.app.EvaluateOption("ParticleDensity") ) {
 		float spd = sqrt( pow(e.vel.x, 2) + pow(e.vel.y, 2) );
 		e.app.AddEntity( new SmokeParticle(e.app, e.x, e.y, spd*1.5), 10, false );
 		sClock.Reset();

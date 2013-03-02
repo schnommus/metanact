@@ -80,7 +80,7 @@ void App2D::Run() {
 				LoadLevel(); // Might need to do level re-load
 
 				// Make binary particles for effect
-				if(binaryReplaceTimer.GetElapsedTime() > 0.05f)	 {
+				if(binaryReplaceTimer.GetElapsedTime() > 0.05f  * EvaluateOption("ParticleDensity"))	 {
 					AddEntity( new BinaryParticle(*this), 1 );
 					binaryReplaceTimer.Reset();
 				}
@@ -143,13 +143,11 @@ void App2D::Run() {
 			renderWindow.SetView(renderWindow.GetDefaultView()); // make sure we are using a static view
 
 			// Draw messages, scrolling them up when new ones arrive
-			{//if(inGame) {
-				for( int i = messageList.size()-maxMessages, j = 0; i != messageList.size(); ++i, ++j ) {
-					sf::String n( sf::Unicode::Text(messageList[i]), FindFont("BlackWolf.ttf"), 15 );
-					n.SetPosition( 0, renderWindow.GetHeight()-maxMessages*18+j*18-5 );
-					n.SetColor( sf::Color(255, 255, 255, 200) );
-					Draw(n);
-				}
+			for( int i = messageList.size()-maxMessages, j = 0; i != messageList.size(); ++i, ++j ) {
+				sf::String n( sf::Unicode::Text(messageList[i]), FindFont("BlackWolf.ttf"), 15 );
+				n.SetPosition( 0, renderWindow.GetHeight()-maxMessages*18+j*18-5 );
+				n.SetColor( sf::Color(255, 255, 255, 200) );
+				Draw(n);
 			}
 
 			// Draw minimap
@@ -385,6 +383,15 @@ std::string App2D::GetOption( std::string type ) {
 		std::cout << "Invalid option accessed! - " << type << std::endl;
 		return "";
 	}
+}
+
+float App2D::EvaluateOption( std::string type) {
+	if(type == "ParticleDensity") {
+		if( GetOption(type) == "Heavy" ) return 1.0;
+		if( GetOption(type) == "Sparse" ) return 3.0;
+	}
+
+	throw std::exception("Attempted to evaluate option without numerical type!");
 }
 
 void App2D::SetOption( std::string type, std::string data ) {
