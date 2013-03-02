@@ -51,6 +51,13 @@ public:
 
 // DEFINITIONS FOR "OPTIONS"
 
+
+void AllowNewDefinitions(std::vector<std::string> &attributes, std::string optionName, App2D &app ) {
+	if( std::find( attributes.begin(), attributes.end(), app.GetOption(optionName) ) == attributes.end() ) {
+		attributes.push_back(app.GetOption(optionName));
+	}
+}
+
 void InitializeToCurrent(std::vector<std::string> &attributes, int &currentAttribute, std::string optionName, App2D &app ) {
 	currentAttribute = std::distance( attributes.begin(), std::find(attributes.begin(), attributes.end(), app.GetOption(optionName) ) );
 	currentAttribute = (currentAttribute > attributes.size()-1 ? 0 : currentAttribute);
@@ -87,6 +94,8 @@ public:
 		attributes.push_back("Dangle");
 		attributes.push_back("Schnommus");
 
+		AllowNewDefinitions(attributes, "PlayerName", app);
+
 		InitializeToCurrent(attributes, currentAttribute, "PlayerName", app);
 	}
 	virtual void Clicked() {
@@ -100,13 +109,14 @@ public:
 		name = "Initial Directory";
 		attributes.push_back("C:\\");
 		attributes.push_back("C:\\Windows\\");
-		attributes.push_back("C:\\Program Files (x86)\\");
+
+		AllowNewDefinitions(attributes, "InitialDirectory", app);
 
 		InitializeToCurrent(attributes, currentAttribute, "InitialDirectory", app);
 	}
 	virtual void Clicked() {
 		CycleOptions(attributes, currentAttribute, "InitialDirectory", app);
-		app.DisplayMessage("Doesn't actually do anything yet; need to get string input figured!");
+		app.DisplayMessage("Changes here won't take effect until the game is restarted!");
 	}
 };
 

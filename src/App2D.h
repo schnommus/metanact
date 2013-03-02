@@ -82,6 +82,8 @@ public:
 
 	std::string GetOption( std::string type );
 	void SetOption( std::string type, std::string data );
+	void LoadOptions();
+	void SaveOptions();
 
 	// Display a message in the message scroller
 	void DisplayMessage(std::string message);
