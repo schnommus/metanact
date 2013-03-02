@@ -52,7 +52,7 @@ public:
 
 	void EnterGame() {
 		app.inGame = true;
-		app.SetMusic("ambience.wav");
+		app.SetMusic("ambience.ogg");
 		app.RemoveEntity(this->id);
 	}
 
