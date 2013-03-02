@@ -68,20 +68,6 @@ void CycleOptions(std::vector<std::string> &attributes, int &currentAttribute, s
 	app.SetOption(optionName, attributes[currentAttribute]);
 }
 
-class ControlScheme : public MenuItem {
-public:
-	ControlScheme( App2D &a, MenuSystem &m ) : MenuItem(a, m) {
-		name = "Control Scheme";
-		attributes.push_back("Global Movement");
-		attributes.push_back("Mouse Relative");
-
-		InitializeToCurrent(attributes, currentAttribute, "ControlScheme", app);
-	}
-	virtual void Clicked() {
-		CycleOptions(attributes, currentAttribute, "ControlScheme", app);
-	}
-};
-
 class PlayerName : public MenuItem {
 public:
 	PlayerName( App2D &a, MenuSystem &m ) : MenuItem(a, m) {
@@ -100,6 +86,34 @@ public:
 	}
 	virtual void Clicked() {
 		CycleOptions(attributes, currentAttribute, "PlayerName", app);
+	}
+};
+
+class ControlScheme : public MenuItem {
+public:
+	ControlScheme( App2D &a, MenuSystem &m ) : MenuItem(a, m) {
+		name = "Control Scheme";
+		attributes.push_back("Global Movement");
+		attributes.push_back("Mouse Relative");
+
+		InitializeToCurrent(attributes, currentAttribute, "ControlScheme", app);
+	}
+	virtual void Clicked() {
+		CycleOptions(attributes, currentAttribute, "ControlScheme", app);
+	}
+};
+
+class ParticleDensity : public MenuItem {
+public:
+	ParticleDensity( App2D &a, MenuSystem &m ) : MenuItem(a, m) {
+		name = "Particle Density";
+		attributes.push_back("Heavy");
+		attributes.push_back("Sparse");
+
+		InitializeToCurrent(attributes, currentAttribute, "ParticleDensity", app);
+	}
+	virtual void Clicked() {
+		CycleOptions(attributes, currentAttribute, "ParticleDensity", app);
 	}
 };
 
@@ -134,8 +148,9 @@ class OptionsMenu : public MenuScreen {
 public:
 	OptionsMenu( App2D &a, MenuSystem &m ) : MenuScreen(a, m) {
 		title = "Options";
-		items.push_back( boost::shared_ptr<MenuItem>( new ControlScheme(app, ms) ) );
 		items.push_back( boost::shared_ptr<MenuItem>( new PlayerName(app, ms) ) );
+		items.push_back( boost::shared_ptr<MenuItem>( new ControlScheme(app, ms) ) );
+		items.push_back( boost::shared_ptr<MenuItem>( new ParticleDensity(app, ms) ) );
 		items.push_back( boost::shared_ptr<MenuItem>( new Directory(app, ms) ) );
 		items.push_back( boost::shared_ptr<MenuItem>( new GoBack(app, ms) ) );
 	}
@@ -152,9 +167,6 @@ MenuSystem::MenuSystem( App2D &a ) : Entity(a) {
 
 	DisplayMenu(Menu::MainMenu);
 
-	arrow.SetImage(app.FindImage("arrowSolid.png"));
-	arrow.SetPosition(100, 100);
-
 	mText.SetColor( sf::Color(255, 255, 255, 255) );
 	mText.SetFont(app.FindFont("Action_Force.ttf", 40));
 }
@@ -162,7 +174,7 @@ MenuSystem::MenuSystem( App2D &a ) : Entity(a) {
 bool MenuSystem::onStep(float delta) {
 
 	// Particle effect and camera shifting
-	if(binaryReplaceTimer.GetElapsedTime() > 0.05f)	 {
+	if(binaryReplaceTimer.GetElapsedTime() > 0.05f * app.EvaluateOption("ParticleDensity") )	 {
 		app.AddEntity( new BinaryParticle(app), 1 );
 		binaryReplaceTimer.Reset();
 	}
@@ -173,8 +185,6 @@ bool MenuSystem::onStep(float delta) {
 
 void MenuSystem::Draw() {
 	currentMenu = newCurrentMenu;
-
-	//app.Draw(arrow);
 
 	mTextOSS.str(""); //Clear OSS
 	mTextOSS << currentMenu->title;
