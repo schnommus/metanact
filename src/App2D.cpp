@@ -142,12 +142,14 @@ void App2D::Run() {
 
 			renderWindow.SetView(renderWindow.GetDefaultView()); // make sure we are using a static view
 
-			// Draw messages, scrolling them up when new ones arrive
-			for( int i = messageList.size()-maxMessages, j = 0; i != messageList.size(); ++i, ++j ) {
-				sf::String n( sf::Unicode::Text(messageList[i]), FindFont("BlackWolf.ttf"), 15 );
-				n.SetPosition( 0, renderWindow.GetHeight()-maxMessages*18+j*18-5 );
-				n.SetColor( sf::Color(255, 255, 255, 200) );
-				Draw(n);
+			if(GetOption("MinimalUI") == "Disabled") {
+				// Draw messages, scrolling them up when new ones arrive (if minimal UI is disabled)
+				for( int i = messageList.size()-maxMessages, j = 0; i != messageList.size(); ++i, ++j ) {
+					sf::String n( sf::Unicode::Text(messageList[i]), FindFont("BlackWolf.ttf"), 15 );
+					n.SetPosition( 0, renderWindow.GetHeight()-maxMessages*18+j*18-5 );
+					n.SetColor( sf::Color(255, 255, 255, 200) );
+					Draw(n);
+				}
 			}
 
 			// Draw minimap
