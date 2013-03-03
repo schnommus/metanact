@@ -496,6 +496,7 @@ void IncreaseScoreItemTag::Step(float delta) {
 				oss << e.app.playerName
 					<< scoreSayings[rand()%4];
 				e.app.DisplayMessage( oss.str() );
+				e.app.DisplayBigMessage( oss.str() );
 				e.app.PlaySound("junksound.wav");
 				e.app.RemoveEntity(e.id);
 			}

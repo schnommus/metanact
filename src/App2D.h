@@ -89,6 +89,9 @@ public:
 	// Display a message in the message scroller
 	void DisplayMessage(std::string message);
 
+	// Display a fading message at the top of the screen
+	void DisplayBigMessage(std::string message);
+
 	void LoadLevel();
 
 	///Entity following (by camera)

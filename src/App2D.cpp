@@ -262,6 +262,10 @@ void App2D::DisplayMessage(std::string message) {
 	}
 }
 
+void App2D::DisplayBigMessage(std::string message) {
+	AddEntity( new BigMessage(*this, message), 1001, true );
+}
+
 // Some manager functions to avoid resource duplicates
 
 sf::Font &App2D::FindFont( std::string dir, int size ) {
