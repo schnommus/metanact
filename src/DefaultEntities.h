@@ -36,9 +36,11 @@ public:
 	}
 
 	virtual void Draw() {
-		// Draw the text
-		app.Draw(strFPS);
-		app.Draw(strObjects);
+		if( app.GetOption("MinimalUI") == "Disabled" ) {
+			// Draw the text (Only if minimal UI disabled)
+			app.Draw(strFPS);
+			app.Draw(strObjects);
+		}
 	};
 
 private:
@@ -148,7 +150,7 @@ public:
 		y = 80;
 
 		s.SetFont(app.FindFont("Action_Force.ttf"));
-		s.SetSize(20);
+		s.SetSize(30);
 		s.SetText(message.c_str());
 		x = app.GetSize().x/2 - s.GetCharacterPos(message.size()-1).x/2;
 	}
@@ -159,7 +161,7 @@ public:
 	}
 
 	bool onStep(float delta) {
-		y -= 10*delta;
+		y -= 30*delta;
 		alpha -= 100*delta;
 		if(alpha < 1) app.RemoveEntity(this->id);
 		s.SetColor( sf::Color(255, 255, 255, alpha ) );

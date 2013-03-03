@@ -131,7 +131,21 @@ public:
 	virtual void Clicked() {
 		CycleOptions(attributes, currentAttribute, "InitialDirectory", app);
 		app.DisplayMessage("Changes here won't take effect until the game is restarted!");
-		app.DisplayBigMessage("Don't be silly, bro!");
+		app.DisplayBigMessage("Won't take effect until the game is restarted!");
+	}
+};
+
+class MinimalUI : public MenuItem {
+public:
+	MinimalUI( App2D &a, MenuSystem &m ) : MenuItem(a, m) {
+		name = "Minimal UI";
+		attributes.push_back("Enabled");
+		attributes.push_back("Disabled");
+
+		InitializeToCurrent(attributes, currentAttribute, "MinimalUI", app);
+	}
+	virtual void Clicked() {
+		CycleOptions(attributes, currentAttribute, "MinimalUI", app);
 	}
 };
 
@@ -152,6 +166,7 @@ public:
 		items.push_back( boost::shared_ptr<MenuItem>( new PlayerName(app, ms) ) );
 		items.push_back( boost::shared_ptr<MenuItem>( new ControlScheme(app, ms) ) );
 		items.push_back( boost::shared_ptr<MenuItem>( new ParticleDensity(app, ms) ) );
+		items.push_back( boost::shared_ptr<MenuItem>( new MinimalUI(app, ms) ) );
 		items.push_back( boost::shared_ptr<MenuItem>( new Directory(app, ms) ) );
 		items.push_back( boost::shared_ptr<MenuItem>( new GoBack(app, ms) ) );
 	}
@@ -193,7 +208,7 @@ void MenuSystem::Draw() {
 	mText.SetSize(40);
 
 	mText.SetPosition(0, 0);
-	mText.SetPosition(app.GetSize().x/2 - mText.GetCharacterPos(mTextOSS.str().size()-1).x/2, app.GetSize().y/2-currentMenu->items.size()*60 );
+	mText.SetPosition(app.GetSize().x/2 - mText.GetCharacterPos(mTextOSS.str().size()-1).x/2, app.GetSize().y/2-currentMenu->items.size()*25-40 );
 
 	mText.SetColor( sf::Color(255, 255, 255, 255) );
 	app.Draw(mText);
@@ -211,7 +226,7 @@ void MenuSystem::Draw() {
 		mText.SetSize(25);
 
 		mText.SetPosition(0, 0);
-		mText.SetPosition(app.GetSize().x/2 - mText.GetCharacterPos(mTextOSS.str().size()-1).x/2, i*50 + 50 + app.GetSize().y/2 - currentMenu->items.size()*50 );
+		mText.SetPosition(app.GetSize().x/2 - mText.GetCharacterPos(mTextOSS.str().size()-1).x/2, i*50 + 50 + app.GetSize().y/2 - currentMenu->items.size()*25 );
 
 		//Check whether item is hovered over, pressed, or clicked
 		if( mText.GetPosition().x < app.GetInput().GetMouseX() &&
