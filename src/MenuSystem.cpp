@@ -131,6 +131,7 @@ public:
 	virtual void Clicked() {
 		CycleOptions(attributes, currentAttribute, "InitialDirectory", app);
 		app.DisplayMessage("Changes here won't take effect until the game is restarted!");
+		app.DisplayBigMessage("Don't be silly, bro!");
 	}
 };
 

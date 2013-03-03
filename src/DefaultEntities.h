@@ -139,6 +139,44 @@ private:
 	sf::String s; float alpha, fScale; bool gd;
 };
 
+class BigMessage : public Entity {
+public:
+	BigMessage( App2D &a, std::string message ) : Entity(a) {
+		// Register events
+		hStepEvent = app.GetEventHandler().stepEvent.attach(this, &BigMessage::onStep);
+		alpha = 255;
+		y = 80;
+
+		s.SetFont(app.FindFont("Action_Force.ttf"));
+		s.SetSize(20);
+		s.SetText(message.c_str());
+		x = app.GetSize().x/2 - s.GetCharacterPos(message.size()-1).x/2;
+	}
+
+	~BigMessage() {
+		// Detach events
+		app.GetEventHandler().stepEvent.detach( hStepEvent );
+	}
+
+	bool onStep(float delta) {
+		y -= 10*delta;
+		alpha -= 100*delta;
+		if(alpha < 1) app.RemoveEntity(this->id);
+		s.SetColor( sf::Color(255, 255, 255, alpha ) );
+		s.SetPosition(x, y);
+		return true;
+	}
+
+	virtual void Draw() {
+		// Draw the text
+		app.Draw(s);
+	};
+
+private:
+	CppEventHandler hStepEvent;
+	sf::String s; float alpha;
+};
+
 class SmokeParticle : public Entity {
 public:
 	SmokeParticle( App2D &a, int px, int py, float strength_v ) : Entity(a) {
