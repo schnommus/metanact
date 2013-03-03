@@ -343,7 +343,7 @@ void App2D::DrawMinimap() {
 	sf::Shape s = sf::Shape::Line(0, 0, 1, 1, 3, sf::Color(255, 255, 255) );
 
 	for ( EntityMap::iterator it = entities.begin(); it != entities.end(); ++it ) {
-		if( !it->second->type.empty() && it->second->type == "remoteplayer" ) {
+		if( !it->second->type.empty() && it->second->type == "grunt" ) {
 			s.SetColor( sf::Color( 255, 0, 0 ) );
 			s.SetPosition( renderWindow.GetWidth() - sx + (abs(field.bleft.x)+it->second->x)*fx,
 						   renderWindow.GetHeight() - sy + (abs(field.bleft.y)+it->second->y)*fy );
@@ -353,11 +353,11 @@ void App2D::DrawMinimap() {
 			s.SetPosition( renderWindow.GetWidth() - sx + (abs(field.bleft.x)+it->second->x)*fx,
 						   renderWindow.GetHeight() - sy + (abs(field.bleft.y)+it->second->y)*fy );
 			Draw(s);
-		} else if ( !it->second->type.empty() && it->second->type == "warper" ) {
+		} else if ( !it->second->type.empty() && it->second->type == "warper") {
 			s.SetColor( sf::Color( 0, 0, 255 ) );
 			s.SetPosition( renderWindow.GetWidth() - sx + (abs(field.bleft.x)+it->second->x)*fx,
 						   renderWindow.GetHeight() - sy + (abs(field.bleft.y)+it->second->y)*fy );
-			Draw(s);
+			if(currentLevelUnlocked) Draw(s);
 		} else if( !it->second->type.empty() && InField(it->second.get()) ) {
 			s.SetColor( sf::Color( 128, 128, 128 ) );
 			s.SetPosition( renderWindow.GetWidth() - sx + (abs(field.bleft.x)+it->second->x)*fx,
@@ -505,7 +505,30 @@ void App2D::LoadLevel() {
 
 	for( int i = 0; i != dirs.size(); ++i ) {
 		//std::cout << "Directory: " << dirs[i].filename() << std::endl;
-		AddEntity( new DefinedEntity( *this, "warper", rand()%gameSize-gameSize/2, rand()%gameSize-gameSize/2, sf::Vector2f(), 0, false, dirs[i].filename().string() ), 10 );
+		bool crashed = false;
+		path p = dirs[i];
+		directory_iterator end;
+		int countFiles=0, countDirs = 0;
+		try {
+			for( directory_iterator di(p); di != end; ++di ) {
+				if( is_regular_file(di->path()) ) {
+					++countFiles; if(countFiles > 60) countFiles = 60;
+				} else if ( is_directory(di->path()) ) {
+					++countDirs; if(countDirs > 60) countDirs = 60;
+				} else {
+					std::cout << di->path() << " is an invalid path (while doing subsearch)" << std::endl;
+				}
+			}
+		} catch (...) {
+			std::cout << "Crash while doing subsearch in " << dirs[i].string() << std::endl;
+			crashed = true;
+		}
+		if( !crashed ) {
+			float scale = (0.7+float(countFiles+countDirs)/90);
+			AddEntity( new DefinedEntity( *this, "warper", rand()%gameSize-gameSize/2, rand()%gameSize-gameSize/2, sf::Vector2f(), 0, false, dirs[i].filename().string(), scale ), 10 );
+		} else {
+			DisplayMessage("\'" + dirs[i].filename().string() + "\' is an innaccessible subdirectory - not spawning wormhole.");
+		}
 	}
 	// Add a warper that allows the player to go up a directory
 	AddEntity( new DefinedEntity( *this, "warper", rand()%gameSize-gameSize/2, rand()%gameSize-gameSize/2, sf::Vector2f(), 0, false, ".." ), 10 );

@@ -49,7 +49,7 @@ public:
 
 class DefinedEntity : public Entity {
 public:
-	DefinedEntity( App2D &app, std::string type, int xpos=0, int ypos=0, sf::Vector2f sVel = sf::Vector2f(), float sRotation = 0, bool iw = false, std::string dispName = "" );
+	DefinedEntity( App2D &app, std::string type, int xpos=0, int ypos=0, sf::Vector2f sVel = sf::Vector2f(), float sRotation = 0, bool iw = false, std::string dispName = "", float mscale = 1.0 );
 
 	bool onStep( float delta );
 

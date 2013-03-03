@@ -1,6 +1,6 @@
 #include "DefinedEntity.h"
 
-DefinedEntity::DefinedEntity( App2D &app, std::string type, int xpos, int ypos, sf::Vector2f sVel, float sRotation, bool iw, std::string dispName ) : Entity(app) {
+DefinedEntity::DefinedEntity( App2D &app, std::string type, int xpos, int ypos, sf::Vector2f sVel, float sRotation, bool iw, std::string dispName, float mscale ) : Entity(app) {
 		
 	Entity::type = type;
 	hStepEvent = app.GetEventHandler().stepEvent.attach( this, &DefinedEntity::onStep );
@@ -8,12 +8,12 @@ DefinedEntity::DefinedEntity( App2D &app, std::string type, int xpos, int ypos, 
 	y = ypos;
 	vel = sVel;
 	rotation = sRotation;
-	scale = 1;
 	health = 0;
 	inWarp = iw;
 	warpId = 0;
 	onUnlockOnly = false;
 	displayName = dispName;
+	scale = mscale;
 
 	std::ifstream ifs;
 	type = "../media/entity/" + type + ".edef";
@@ -136,7 +136,7 @@ DefinedEntity::DefinedEntity( App2D &app, std::string type, int xpos, int ypos, 
 			tagList.push_back( boost::shared_ptr<Tag>( new IsEnemyTag( *this ) ) );
 		}  else if (tag == "ON_UNLOCK") {
 			onUnlockOnly = true;
-		} 
+		}
 	}
 
 	ifs.close();
