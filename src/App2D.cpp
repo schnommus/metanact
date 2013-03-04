@@ -361,9 +361,10 @@ void App2D::DrawMinimap() {
 			Draw(s);
 		} else if ( !it->second->type.empty() && it->second->type == "warper") {
 			s.SetColor( sf::Color( 0, 0, 255 ) );
+			if( it->second->displayName == ".." ) s.SetColor( sf::Color( 255, 255, 0 ) );
 			s.SetPosition( renderWindow.GetWidth() - sx + (abs(field.bleft.x)+it->second->x)*fx,
 						   renderWindow.GetHeight() - sy + (abs(field.bleft.y)+it->second->y)*fy );
-			if(currentLevelUnlocked) Draw(s);
+			Draw(s);
 		} else if( !it->second->type.empty() && InField(it->second.get()) ) {
 			s.SetColor( sf::Color( 128, 128, 128 ) );
 			s.SetPosition( renderWindow.GetWidth() - sx + (abs(field.bleft.x)+it->second->x)*fx,
@@ -395,6 +396,7 @@ float App2D::EvaluateOption( std::string type) {
 	if(type == "ParticleDensity") {
 		if( GetOption(type) == "Heavy" ) return 1.0;
 		if( GetOption(type) == "Sparse" ) return 3.0;
+		if( GetOption(type) == "MELT!" ) return 0.1;
 	}
 
 	throw std::exception("Attempted to evaluate option without numerical type!");
@@ -436,6 +438,50 @@ void App2D::LoadOptions() {
 	}
 
 	ifs.close();
+}
+
+void App2D::ReleaseFile( std::string subname, std::string message ) {
+	std::string writepath;
+	for( int i = 0; i != currentPath.size(); ++i ) {
+		if( currentPath[i] == '/' || currentPath[i] == '\\' || currentPath[i] == ':' )
+			writepath.append(1, '_');
+		else
+			writepath.append(1, currentPath[i]);
+	}
+	std::ofstream ofs;
+	ofs.open(std::string("saves/"+writepath+".sav"), std::ios::out | std::ios::app);
+	ofs << subname << "=" << message << std::endl;
+	ofs.close();
+}
+
+std::string App2D::CheckFile( std::string subname ) {
+	std::string writepath;
+	for( int i = 0; i != currentPath.size(); ++i ) {
+		if( currentPath[i] == '/' || currentPath[i] == '\\' || currentPath[i] == ':' )
+			writepath.append(1, '_');
+		else
+			writepath.append(1, currentPath[i]);
+	}
+	std::ifstream ifs;
+	ifs.open(std::string("saves/"+writepath+".sav"), std::ios::in);
+	if( !ifs.is_open() ) {
+		return ""; // Nothing has been logged in this directory yet
+	}
+	
+	while( !ifs.eof() ) {
+		std::string all; getline(ifs, all);
+		std::string n, msg;
+		if ( all.find('=') != std::string::npos) // If there's an '='
+			n = all.substr(0, all.find('=')), msg = all.substr(all.find('=')+1, all.size()-1 );
+
+		if( n == subname ) {
+			ifs.close();
+			return msg;
+		}
+	}
+
+	ifs.close();
+	return "";
 }
 
 using namespace boost::filesystem;
@@ -543,10 +589,12 @@ void App2D::LoadLevel() {
 
 	for( int i = 0; i != files.size(); ++i ) {
 		//std::cout << "File: " << files[i].filename() << " size: " << file_size(files[i]) << std::endl;
-		if( file_size(files[i]) > 1e4 ) // Greater than a 1k
-			AddEntity( new DefinedEntity( *this, "grunt", rand()%gameSize-gameSize/2, rand()%gameSize-gameSize/2, sf::Vector2f(), 0, false, files[i].filename().string() ), 10 );
-		else
-			AddEntity( new DefinedEntity( *this, "scrap", rand()%gameSize-gameSize/2, rand()%gameSize-gameSize/2, sf::Vector2f(), 0, false, files[i].filename().string() ), 10 );
+		if( CheckFile(files[i].filename().string()) != "destroyed" ) {
+			if( file_size(files[i]) > 1e4 ) // Greater than a 1k
+				AddEntity( new DefinedEntity( *this, "grunt", rand()%gameSize-gameSize/2, rand()%gameSize-gameSize/2, sf::Vector2f(), 0, false, files[i].filename().string() ), 10 );
+			else
+				AddEntity( new DefinedEntity( *this, "scrap", rand()%gameSize-gameSize/2, rand()%gameSize-gameSize/2, sf::Vector2f(), 0, false, files[i].filename().string() ), 10 );
+		}
 	}
 
 

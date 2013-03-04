@@ -109,6 +109,7 @@ public:
 		name = "Particle Density";
 		attributes.push_back("Heavy");
 		attributes.push_back("Sparse");
+		attributes.push_back("MELT!");
 
 		InitializeToCurrent(attributes, currentAttribute, "ParticleDensity", app);
 	}
