@@ -272,7 +272,7 @@ void WarpTargetTag::Destroy() {}
 
 WarpTypeOnRadiusTag::WarpTypeOnRadiusTag( Entity &entityReference, std::string typeToWarp, float warpRadius, short warpId )
 	: Tag( entityReference), type(typeToWarp),  wRadius(warpRadius), wid(warpId) { }
-void WarpTypeOnRadiusTag::Init() { }
+void WarpTypeOnRadiusTag::Init() { if(e.displayName == "..") e.imageSprite.SetColor(sf::Color(255, 255, 0)); }
 
 void WarpTypeOnRadiusTag::Step(float delta) {
 	for( App2D::EntityMap::iterator it = e.app.entities.begin();
@@ -546,11 +546,13 @@ void IsEnemyTag::Step(float delta) {
 					bClock.Reset();
 				}
 			}
+			if( dist < 1000 ) {
+				e.rotation = 180+atan2f(px-e.x, py-e.y) / 3.14 * 180;
+				e.vel.y += agility*delta*cos((e.rotation-180)/180*3.14);
+				e.vel.x += agility*delta*sin((e.rotation-180)/180*3.14);
+			}
 		}
 	}
-	e.rotation = 180+atan2f(px-e.x, py-e.y) / 3.14 * 180;
-	e.vel.y += agility*delta*cos((e.rotation-180)/180*3.14);
-	e.vel.x += agility*delta*sin((e.rotation-180)/180*3.14);
 
 	if( sClock.GetElapsedTime() > 0.3 ) {
 		float spd = sqrt( pow(e.vel.x, 2) + pow(e.vel.y, 2) );
@@ -560,4 +562,6 @@ void IsEnemyTag::Step(float delta) {
 }
 
 void IsEnemyTag::Draw() {}
-void IsEnemyTag::Destroy() { }
+void IsEnemyTag::Destroy() {
+	e.app.ReleaseFile(e.displayName, "destroyed");
+}

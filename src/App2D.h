@@ -86,6 +86,9 @@ public:
 	void LoadOptions();
 	void SaveOptions();
 
+	void ReleaseFile( std::string subnamw, std::string message );
+	std::string CheckFile( std::string subname );
+
 	// Display a message in the message scroller
 	void DisplayMessage(std::string message);
 
