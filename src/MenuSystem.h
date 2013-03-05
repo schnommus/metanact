@@ -10,13 +10,14 @@ class MenuSystem;
 
 class MenuItem {
 public:
-	MenuItem( App2D &a, MenuSystem &m ) : app(a), ms(m), currentAttribute(0), hovering(false) { }
+	MenuItem( App2D &a, MenuSystem &m ) : app(a), ms(m), currentAttribute(0), hovering(false), disabled(false), downed(false) { }
 	virtual void Clicked() { }
 	App2D &app;
 	MenuSystem &ms;
 	std::string name;
 	bool hovering;
 	bool downed;
+	bool disabled;
 	int currentAttribute;
 	std::vector<std::string> attributes;
 };
@@ -30,10 +31,13 @@ public:
 	std::vector<boost::shared_ptr<MenuItem>> items;
 };
 
+// TO ADD A NEW MENU SCREEN, add here AND in constructor of MenuSystem
 namespace Menu {
 	enum Type {
 		MainMenu = 0,
-		OptionsMenu = 1
+		OptionsMenu = 1,
+		PauseMenu = 2,
+		NewGameMenu = 3
 	};
 }
 

@@ -1,0 +1,4 @@
+-pause menu can get back to main menu
+-Get !header saving working properly; save it in the confirmation, retrieve in continuation.
+-Put current directory in there too
+-On new game; delete the save cache files.

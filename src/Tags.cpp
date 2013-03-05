@@ -469,7 +469,8 @@ void ProjectileOnDestroyTag::Step(float delta) {}
 void ProjectileOnDestroyTag::Draw() {}
 void ProjectileOnDestroyTag::Destroy() {
 	if( s==0 ) s = 1; // Avoid division by zero
-	e.app.AddEntity( new DefinedEntity( e.app, tp, e.x+((rand()%s)*2)-s, e.y+((rand()%s)*2)-s, e.vel, e.rotation ), 10 );
+	// Avoid creation on level change
+	if( e.app.currentPath == e.app.oldpath ) e.app.AddEntity( new DefinedEntity( e.app, tp, e.x+((rand()%s)*2)-s, e.y+((rand()%s)*2)-s, e.vel, e.rotation ), 10 );
 }
 
 
@@ -519,48 +520,7 @@ void SoundOnCreateTag::Step(float delta){}
 void SoundOnCreateTag::Draw(){}
 void SoundOnCreateTag::Destroy(){}
 
-/*IsEnemyTag::IsEnemyTag( Entity &entityReference ) : Tag( entityReference) { }
 
-void IsEnemyTag::Init() { 
-	agility = 90;
-	fireRate = 2; projectileType = "b";
-	fireRate2 = 0.25; projectileType2 = "mb";
-	lHealth = e.health;
-}
-
-void IsEnemyTag::Step(float delta) {
-	float px=0, py=0;
-	for( App2D::EntityMap::iterator it = e.app.entities.begin();
-			it != e.app.entities.end();
-			++it) {
-		if( it->second->type == "localplayer" ) {
-			px = it->second->x;
-			py = it->second->y;
-			float dist = sqrt(powf(e.x-it->second->x, 2) + powf(e.y-it->second->y, 2));
-			if( dist < 600 ) {
-				if( bClock.GetElapsedTime() > 1.0/fireRate ) {
-					e.app.AddEntity( new DefinedEntity( e.app, projectileType,
-						e.x + 40*sin((e.rotation+180)/180*3.14),
-						e.y + 40*cos((e.rotation+180)/180*3.14),
-						e.vel, e.rotation ), 10 );
-					bClock.Reset();
-				}
-			}
-			if( dist < 1000 ) {
-				e.rotation = 180+atan2f(px-e.x, py-e.y) / 3.14 * 180;
-				e.vel.y += agility*delta*cos((e.rotation-180)/180*3.14);
-				e.vel.x += agility*delta*sin((e.rotation-180)/180*3.14);
-			}
-		}
-	}
-
-	
-}
-
-void IsEnemyTag::Draw() {}
-void IsEnemyTag::Destroy() {
-	e.app.ReleaseFile(e.displayName, "destroyed");
-}*/
 
 IsEnemyTag::IsEnemyTag( Entity &entityReference ) : Tag( entityReference) { }
 
@@ -580,7 +540,8 @@ void RememberDestructionTag::Step(float delta) { }
 void RememberDestructionTag::Draw() {}
 
 void RememberDestructionTag::Destroy() {
-	e.app.ReleaseFile(e.displayName, "destroyed");
+	// Only if level isn't changing
+	if( e.app.currentPath == e.app.oldpath ) e.app.ReleaseFile(e.displayName, "destroyed");
 }
 
 

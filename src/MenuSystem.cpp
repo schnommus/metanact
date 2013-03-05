@@ -1,21 +1,38 @@
 #include "MenuSystem.h"
 #include "DefinedEntity.h"
+#include <fstream>
 
 // BEGIN MENU DEFINITIONS (Add new screens to enum in 'MenuSystem.h')
 
 // DEFINITIONS FOR "MAIN MENU"
 
+class ContinueGame : public MenuItem {
+public:
+	ContinueGame( App2D &a, MenuSystem &m ) : MenuItem(a, m) {
+		name = "Continue Exploration";
+
+		std::ifstream ifs;
+		ifs.open("saves/!header.sav", std::ios::in);
+
+		if( !ifs.is_open() ) {
+			disabled = true;
+		} else {
+			disabled = false;
+			ifs.close();
+		}
+	}
+	virtual void Clicked() {
+		if(!disabled) ms.EnterGame();
+	}
+};
+
 class StartGame : public MenuItem {
 public:
 	StartGame( App2D &a, MenuSystem &m ) : MenuItem(a, m) {
 		name = "New Exploration";
-		// Any warpers? Must be in the 'Escape' menu.
-		if( app.CountEntityOfType("warper") > 0 ) {
-			name = "Resume";
-		}
 	}
 	virtual void Clicked() {
-		ms.EnterGame();
+		ms.DisplayMenu(Menu::NewGameMenu);
 	}
 };
 
@@ -43,7 +60,30 @@ class MainMenu : public MenuScreen {
 public:
 	MainMenu( App2D &a, MenuSystem &m ) : MenuScreen(a, m) {
 		title = "Main Menu";
+		items.push_back( boost::shared_ptr<MenuItem>( new ContinueGame(app, ms) ) );
 		items.push_back( boost::shared_ptr<MenuItem>( new StartGame(app, ms) ) );
+		items.push_back( boost::shared_ptr<MenuItem>( new Options(app, ms) ) );
+		items.push_back( boost::shared_ptr<MenuItem>( new Exit(app, ms) ) );
+	}
+};
+
+// DEFINITIONS FOR "PAUSE MENU"
+
+class ResumeGame : public MenuItem {
+public:
+	ResumeGame( App2D &a, MenuSystem &m ) : MenuItem(a, m) {
+		name = "Resume Game";
+	}
+	virtual void Clicked() {
+		ms.EnterGame();
+	}
+};
+
+class PauseMenu : public MenuScreen {
+public:
+	PauseMenu( App2D &a, MenuSystem &m ) : MenuScreen(a, m) {
+		title = "Paused";
+		items.push_back( boost::shared_ptr<MenuItem>( new ResumeGame(app, ms) ) );
 		items.push_back( boost::shared_ptr<MenuItem>( new Options(app, ms) ) );
 		items.push_back( boost::shared_ptr<MenuItem>( new Exit(app, ms) ) );
 	}
@@ -156,7 +196,12 @@ public:
 		name = "Back";
 	}
 	virtual void Clicked() {
-		ms.DisplayMenu(Menu::MainMenu);
+		// Be careful when going back from the options screen!
+		// Could be either the main menu or the pause menu.
+		if( app.CountEntityOfType("warper") > 0 )
+			ms.DisplayMenu(Menu::PauseMenu);
+		else
+			ms.DisplayMenu(Menu::MainMenu);
 	}
 };
 
@@ -173,6 +218,27 @@ public:
 	}
 };
 
+// DEFINITIONS FOR "NEW GAME MENU"
+
+class YesNewGame : public MenuItem {
+public:
+	YesNewGame( App2D &a, MenuSystem &m ) : MenuItem(a, m) {
+		name = "Yep, erase previous save";
+	}
+	virtual void Clicked() {
+		ms.EnterGame();
+	}
+};
+
+class NewGameMenu : public MenuScreen {
+public:
+	NewGameMenu( App2D &a, MenuSystem &m ) : MenuScreen(a, m) {
+		title = "Are you sure?";
+		items.push_back( boost::shared_ptr<MenuItem>( new YesNewGame(app, ms) ) );
+		items.push_back( boost::shared_ptr<MenuItem>( new GoBack(app, ms) ) );
+	}
+};
+
 // END MENU DEFINITIONS
 
 MenuSystem::MenuSystem( App2D &a ) : Entity(a) {
@@ -181,6 +247,8 @@ MenuSystem::MenuSystem( App2D &a ) : Entity(a) {
 
 	menus.push_back( boost::shared_ptr<MenuScreen>( new MainMenu(app, *this) ) );
 	menus.push_back( boost::shared_ptr<MenuScreen>( new OptionsMenu(app, *this) ) );
+	menus.push_back( boost::shared_ptr<MenuScreen>( new PauseMenu(app, *this) ) );
+	menus.push_back( boost::shared_ptr<MenuScreen>( new NewGameMenu(app, *this) ) );
 
 	DisplayMenu(Menu::MainMenu);
 
@@ -195,7 +263,9 @@ bool MenuSystem::onStep(float delta) {
 		app.AddEntity( new BinaryParticle(app), 1 );
 		binaryReplaceTimer.Reset();
 	}
-	app.cdelta.x = 10;
+
+	// Only move camera if not in pause screen
+	if( app.CountEntityOfType("warper")  == 0 ) app.cdelta.x = 10;
 
 	return true;
 }
@@ -246,10 +316,12 @@ void MenuSystem::Draw() {
 			currentMenu->items[i]->downed = false;
 		}
 
-		if( currentMenu->items[i]->hovering )
+		if( currentMenu->items[i]->hovering && !currentMenu->items[i]->disabled )
 			mText.SetColor( sf::Color(255, 255, 255, 255) );
-		else
+		else if ( !currentMenu->items[i]->disabled )
 			mText.SetColor( sf::Color(255, 255, 255, 190) );
+		else
+			mText.SetColor( sf::Color(255, 255, 255, 100) );
 
 		app.Draw(mText);
 	}

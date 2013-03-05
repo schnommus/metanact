@@ -215,7 +215,7 @@ void DefinedEntity::Draw() {
 }
 
 DefinedEntity::~DefinedEntity() {
-	if( !app.isClosing ) { // Some of these create entities - which we don't want when the program is closing!
+	if( !app.isClosing ) { // Some of these create entities - which we don't want when the program is closing/changing level!
 		for( int i = 0; i != tagList.size(); ++i ) {
 			tagList[i]->Destroy();
 		}

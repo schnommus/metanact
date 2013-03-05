@@ -326,8 +326,12 @@ sf::Sound *App2D::PlaySound( std::string sound, bool loop, bool useDist, int x, 
 }
 
 void App2D::SetMusic(std::string music) {
-	if( currentMusic ) currentMusic->Stop();
-	currentMusic = PlaySound(music, true);
+	static std::string lastMusic;
+	if( lastMusic != music ) {
+		if( currentMusic ) currentMusic->Stop();
+		currentMusic = PlaySound(music, true);
+	}
+	lastMusic = music;
 }
 
 bool App2D::InField( Entity *e ) {
