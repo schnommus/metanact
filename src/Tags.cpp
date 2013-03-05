@@ -519,7 +519,7 @@ void SoundOnCreateTag::Step(float delta){}
 void SoundOnCreateTag::Draw(){}
 void SoundOnCreateTag::Destroy(){}
 
-IsEnemyTag::IsEnemyTag( Entity &entityReference ) : Tag( entityReference) { }
+/*IsEnemyTag::IsEnemyTag( Entity &entityReference ) : Tag( entityReference) { }
 
 void IsEnemyTag::Init() { 
 	agility = 90;
@@ -554,14 +554,102 @@ void IsEnemyTag::Step(float delta) {
 		}
 	}
 
-	if( sClock.GetElapsedTime() > 0.3 ) {
-		float spd = sqrt( pow(e.vel.x, 2) + pow(e.vel.y, 2) );
-		e.app.AddEntity( new SmokeParticle(e.app, e.x, e.y, spd*1.5), 10, false );
-		sClock.Reset();
-	}
+	
 }
 
 void IsEnemyTag::Draw() {}
 void IsEnemyTag::Destroy() {
 	e.app.ReleaseFile(e.displayName, "destroyed");
+}*/
+
+IsEnemyTag::IsEnemyTag( Entity &entityReference ) : Tag( entityReference) { }
+
+void IsEnemyTag::Init() { 
+	e.isEnemy = true;
 }
+
+void IsEnemyTag::Step(float delta) { }
+void IsEnemyTag::Draw() {}
+void IsEnemyTag::Destroy() {}
+
+
+
+RememberDestructionTag::RememberDestructionTag( Entity &entityReference ) : Tag( entityReference) { }
+void RememberDestructionTag::Init() {}
+void RememberDestructionTag::Step(float delta) { }
+void RememberDestructionTag::Draw() {}
+
+void RememberDestructionTag::Destroy() {
+	e.app.ReleaseFile(e.displayName, "destroyed");
+}
+
+
+
+EmitSmokeTag::EmitSmokeTag( Entity &entityReference ) : Tag( entityReference) { }
+void EmitSmokeTag::Init() {}
+void EmitSmokeTag::Step(float delta) { 
+	if( sClock.GetElapsedTime() > 0.3 * e.app.EvaluateOption("ParticleDensity") ) {
+		float spd = sqrt( pow(e.vel.x, 2) + pow(e.vel.y, 2) );
+		if(spd > 0.1) e.app.AddEntity( new SmokeParticle(e.app, e.x, e.y, spd*1.5), 10, false );
+		sClock.Reset();
+	} 
+}
+
+void EmitSmokeTag::Draw() { }
+
+void EmitSmokeTag::Destroy() { }
+
+
+
+ApproachPlayerTag::ApproachPlayerTag( Entity &entityReference, int nearval, int farval, float speedval ) : Tag( entityReference), nearv(nearval), farv(farval), speed(speedval) { }
+void ApproachPlayerTag::Init() {}
+
+void ApproachPlayerTag::Step(float delta) {
+	float px=0, py=0;
+	for( App2D::EntityMap::iterator it = e.app.entities.begin();
+		it != e.app.entities.end();
+		++it) {
+			if( it->second->type == "localplayer" ) {
+				px = it->second->x;
+				py = it->second->y;
+				float dist = sqrt(powf(e.x-it->second->x, 2) + powf(e.y-it->second->y, 2));
+				if( dist < nearv ) {
+					e.rotation = 180+atan2f(px-e.x, py-e.y) / 3.14 * 180;
+					e.vel.y -= speed*delta*cos((e.rotation-180)/180*3.14);
+					e.vel.x -= speed*delta*sin((e.rotation-180)/180*3.14);
+				} else if( dist < farv ) {
+					e.rotation = 180+atan2f(px-e.x, py-e.y) / 3.14 * 180;
+					e.vel.y += speed*delta*cos((e.rotation-180)/180*3.14);
+					e.vel.x += speed*delta*sin((e.rotation-180)/180*3.14);
+				}
+			}
+	}
+}
+
+void ApproachPlayerTag::Draw() { }
+void ApproachPlayerTag::Destroy() { }
+
+
+
+ShootAtPlayerTag::ShootAtPlayerTag( Entity &entityReference, int cutoffv, float fireRatev, std::string projectileTypev ) : Tag( entityReference), cutoff(cutoffv), fireRate(fireRatev), projectileType(projectileTypev) { }
+void ShootAtPlayerTag::Init() {}
+void ShootAtPlayerTag::Step(float delta) {
+	for( App2D::EntityMap::iterator it = e.app.entities.begin();
+		it != e.app.entities.end();
+		++it) {
+			if( it->second->type == "localplayer" ) {
+				float dist = sqrt(powf(e.x-it->second->x, 2) + powf(e.y-it->second->y, 2));
+				if( dist < 600 ) {
+					if( bClock.GetElapsedTime() > 1.0/fireRate ) {
+						e.app.AddEntity( new DefinedEntity( e.app, projectileType,
+							e.x + 40*sin((e.rotation+180)/180*3.14),
+							e.y + 40*cos((e.rotation+180)/180*3.14),
+							e.vel, e.rotation ), 10 );
+						bClock.Reset();
+					}
+				}
+			}
+	}
+}
+void ShootAtPlayerTag::Draw() {}
+void ShootAtPlayerTag::Destroy() {}

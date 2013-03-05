@@ -134,7 +134,19 @@ DefinedEntity::DefinedEntity( App2D &app, std::string type, int xpos, int ypos, 
 			tagList.push_back( boost::shared_ptr<Tag>( new SoundOnCreateTag( *this, fn ) ) );
 		} else if (tag == "IS_ENEMY") {
 			tagList.push_back( boost::shared_ptr<Tag>( new IsEnemyTag( *this ) ) );
-		}  else if (tag == "ON_UNLOCK") {
+		} else if (tag == "APPROACH_PLAYER") {
+			int nv, fv; float spd;
+			ifs >> nv >> fv >> spd;
+			tagList.push_back( boost::shared_ptr<Tag>( new ApproachPlayerTag( *this, nv, fv, spd ) ) );
+		} else if (tag == "SHOOT_AT_PLAYER") {
+			int ct; float fr; std::string pt;
+			ifs >> ct >> fr >> pt;
+			tagList.push_back( boost::shared_ptr<Tag>( new ShootAtPlayerTag( *this, ct, fr, pt ) ) );
+		} else if (tag == "REMEMBER_DESTRUCTION") {
+			tagList.push_back( boost::shared_ptr<Tag>( new RememberDestructionTag( *this ) ) );
+		} else if (tag == "EMIT_SMOKE") {
+			tagList.push_back( boost::shared_ptr<Tag>( new EmitSmokeTag( *this ) ) );
+		} else if (tag == "ON_UNLOCK") {
 			onUnlockOnly = true;
 		}
 	}

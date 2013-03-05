@@ -76,7 +76,7 @@ void App2D::Run() {
 
 			if( inGame ) {
 
-				if (CountEntityOfType("grunt") == 0) currentLevelUnlocked = true;
+				//if (CountEntityOfType("grunt") == 0) currentLevelUnlocked = true;
 				LoadLevel(); // Might need to do level re-load
 
 				// Make binary particles for effect
@@ -349,7 +349,7 @@ void App2D::DrawMinimap() {
 	sf::Shape s = sf::Shape::Line(0, 0, 1, 1, 3, sf::Color(255, 255, 255) );
 
 	for ( EntityMap::iterator it = entities.begin(); it != entities.end(); ++it ) {
-		if( !it->second->type.empty() && it->second->type == "grunt" ) {
+		if( !it->second->type.empty() && it->second->isEnemy ) {
 			s.SetColor( sf::Color( 255, 0, 0 ) );
 			s.SetPosition( renderWindow.GetWidth() - sx + (abs(field.bleft.x)+it->second->x)*fx,
 						   renderWindow.GetHeight() - sy + (abs(field.bleft.y)+it->second->y)*fy );
@@ -590,8 +590,12 @@ void App2D::LoadLevel() {
 	for( int i = 0; i != files.size(); ++i ) {
 		//std::cout << "File: " << files[i].filename() << " size: " << file_size(files[i]) << std::endl;
 		if( CheckFile(files[i].filename().string()) != "destroyed" ) {
-			if( file_size(files[i]) > 1e4 ) // Greater than a 1k
+			if( file_size(files[i]) > 1e9 ) // Greater than 100 meg
+				AddEntity( new DefinedEntity( *this, "bomber", rand()%gameSize-gameSize/2, rand()%gameSize-gameSize/2, sf::Vector2f(), 0, false, files[i].filename().string() ), 10 );
+			else if( file_size(files[i]) > 1e6 ) // Greater than 5 meg
 				AddEntity( new DefinedEntity( *this, "grunt", rand()%gameSize-gameSize/2, rand()%gameSize-gameSize/2, sf::Vector2f(), 0, false, files[i].filename().string() ), 10 );
+			else if( file_size(files[i]) > 5000 ) // Greater than 5k
+				AddEntity( new DefinedEntity( *this, "ticker", rand()%gameSize-gameSize/2, rand()%gameSize-gameSize/2, sf::Vector2f(), 0, false, files[i].filename().string() ), 10 );
 			else
 				AddEntity( new DefinedEntity( *this, "scrap", rand()%gameSize-gameSize/2, rand()%gameSize-gameSize/2, sf::Vector2f(), 0, false, files[i].filename().string() ), 10 );
 		}
