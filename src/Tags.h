@@ -198,20 +198,6 @@ public:
 	int lHealth, lScore;
 };
 
-class IsEnemyTag : public Tag {
-public:
-	IsEnemyTag( Entity &entityReference );
-	virtual void Init();
-	virtual void Step(float delta);
-	virtual void Draw();
-	virtual void Destroy();
-	sf::Vector2f cdelta;
-	sf::Clock bClock, bClock2, sClock;
-	float agility, fireRate, fireRate2;
-	std::string projectileType, projectileType2;
-	int lHealth, lScore;
-};
-
 class HasHealthTag : public Tag {
 public:
 	HasHealthTag( Entity &entityReference, int amount );
@@ -261,6 +247,58 @@ public:
 	virtual void Draw();
 	virtual void Destroy();
 	std::string fName;
+};
+
+class IsEnemyTag : public Tag {
+public:
+	IsEnemyTag( Entity &entityReference );
+	virtual void Init();
+	virtual void Step(float delta);
+	virtual void Draw();
+	virtual void Destroy();
+};
+
+class RememberDestructionTag : public Tag {
+public:
+	RememberDestructionTag( Entity &entityReference );
+	virtual void Init();
+	virtual void Step(float delta);
+	virtual void Draw();
+	virtual void Destroy();
+};
+
+class EmitSmokeTag : public Tag {
+public:
+	EmitSmokeTag( Entity &entityReference );
+	virtual void Init();
+	virtual void Step(float delta);
+	virtual void Draw();
+	virtual void Destroy();
+	sf::Clock sClock;
+};
+
+class ApproachPlayerTag : public Tag {
+public:
+	ApproachPlayerTag( Entity &entityReference, int nearval, int farval, float speedval );
+	virtual void Init();
+	virtual void Step(float delta);
+	virtual void Draw();
+	virtual void Destroy();
+	int nearv;
+	int farv;
+	float speed;
+};
+
+class ShootAtPlayerTag : public Tag {
+public:
+	ShootAtPlayerTag( Entity &entityReference, int cutoffv, float fireRatev, std::string projectileTypev  );
+	virtual void Init();
+	virtual void Step(float delta);
+	virtual void Draw();
+	virtual void Destroy();
+	int cutoff; float fireRate;
+	std::string projectileType;
+	sf::Clock bClock;
 };
 
 #endif
