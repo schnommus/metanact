@@ -16,7 +16,9 @@ void EventHandler::Event( const sf::Event &evt ) {
 		case sf::Event::KeyPressed:
 			if( evt.Key.Code == sf::Key::Escape && app.inGame ) {
 				app.inGame = false;
-				app.AddEntity(new MenuSystem(app), 1001, true);
+				MenuSystem *ms = new MenuSystem(app);
+				app.AddEntity(ms, 1001, true);
+				ms->DisplayMenu(Menu::PauseMenu);
 			}
 
 			keyPressEvent.notify(evt.Key.Code);
