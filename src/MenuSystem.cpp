@@ -18,6 +18,13 @@ public:
 			disabled = true;
 		} else {
 			disabled = false;
+			while( !ifs.eof() ) {
+				std::string all; getline(ifs, all);
+				std::string n, msg;
+				if ( all.find('=') != std::string::npos) // If there's an '='
+					n = all.substr(0, all.find('=')), msg = all.substr(all.find('=')+1, all.size()-1 );
+				if( n == "currentPath") a.currentPath = msg;
+			}
 			ifs.close();
 		}
 	}
