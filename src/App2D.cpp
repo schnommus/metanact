@@ -607,4 +607,13 @@ void App2D::LoadLevel() {
 
 
 	AddEntity( new DefinedEntity( *this, "spawner" ), 10 );
+
+	std::ofstream ofs;
+	ofs.open("saves/!header.sav", std::ios::out | std::ios::trunc);
+
+	if( !ofs.is_open() ) {
+		throw std::exception("Couldn't open !header file for writing");
+	} else {
+		ofs << "currentPath=" << currentPath;
+	}
 }
