@@ -1,6 +1,7 @@
 #include "MenuSystem.h"
 #include "DefinedEntity.h"
 #include <fstream>
+#include <boost/filesystem.hpp>
 
 // BEGIN MENU DEFINITIONS (Add new screens to enum in 'MenuSystem.h')
 
@@ -18,18 +19,24 @@ public:
 			disabled = true;
 		} else {
 			disabled = false;
+			ifs.close();
+		}
+	}
+	virtual void Clicked() {
+		if(!disabled) {
+			std::ifstream ifs;
+			ifs.open("saves/!header.sav", std::ios::in);
 			while( !ifs.eof() ) {
 				std::string all; getline(ifs, all);
 				std::string n, msg;
 				if ( all.find('=') != std::string::npos) // If there's an '='
 					n = all.substr(0, all.find('=')), msg = all.substr(all.find('=')+1, all.size()-1 );
-				if( n == "currentPath") a.currentPath = msg;
+				if( n == "currentPath") app.currentPath = msg;
+				std::cout << "Got current path from file: " << app.currentPath << std::endl;
 			}
 			ifs.close();
+			ms.EnterGame();
 		}
-	}
-	virtual void Clicked() {
-		if(!disabled) ms.EnterGame();
 	}
 };
 
@@ -39,7 +46,17 @@ public:
 		name = "New Exploration";
 	}
 	virtual void Clicked() {
-		ms.DisplayMenu(Menu::NewGameMenu);
+		std::ifstream ifs;
+		ifs.open("saves/!header.sav", std::ios::in);
+		if( !ifs.is_open() ) { // If there's no existing savefile
+			// Get initial directory
+			app.currentPath = app.GetOption("InitialDirectory");
+
+			ms.EnterGame(); // run game
+		} else {
+			ifs.close(); // Otherwise, make the player confirm
+			ms.DisplayMenu(Menu::NewGameMenu);
+		}
 	}
 };
 
@@ -86,12 +103,33 @@ public:
 	}
 };
 
+class ToMainMenu : public MenuItem {
+public:
+	ToMainMenu( App2D &a, MenuSystem &m ) : MenuItem(a, m) {
+		name = "Back to Main Menu";
+	}
+	virtual void Clicked() {
+		// Goodbye to the player's current game..
+		app.inGame = false;
+		for ( App2D::EntityMap::iterator it = app.entities.begin(); it != app.entities.end(); ++it ) {
+			if( it->second->type != "" )
+				app.RemoveEntity(it->second->id);
+		}
+		app.currentPath = ""; // Wipe so deletion thinks we're changing levels
+		app.oldpath = " ";
+		app.ExecuteDeletionQueue();
+		app.currentPath = app.GetOption("InitialDirectory");
+		ms.DisplayMenu(Menu::MainMenu);
+	}
+};
+
 class PauseMenu : public MenuScreen {
 public:
 	PauseMenu( App2D &a, MenuSystem &m ) : MenuScreen(a, m) {
 		title = "Paused";
 		items.push_back( boost::shared_ptr<MenuItem>( new ResumeGame(app, ms) ) );
 		items.push_back( boost::shared_ptr<MenuItem>( new Options(app, ms) ) );
+		items.push_back( boost::shared_ptr<MenuItem>( new ToMainMenu(app, ms) ) );
 		items.push_back( boost::shared_ptr<MenuItem>( new Exit(app, ms) ) );
 	}
 };
@@ -233,6 +271,22 @@ public:
 		name = "Yep, erase previous save";
 	}
 	virtual void Clicked() {
+		// Erase all previous .sav files here
+		using namespace boost::filesystem;
+		path cwd( current_path() / "saves" );
+		std::cout << cwd << " GDDF" << std::endl;
+		directory_iterator end;
+		for( directory_iterator di(cwd); di != end; ++di ) {
+			if( di->path().extension() == ".sav") {
+				std::cout << di->path() << " deleted" << std::endl;
+				remove(di->path());
+			}
+		}
+
+		// Get initial directory
+		app.currentPath = app.GetOption("InitialDirectory");
+
+		// Then start a new game
 		ms.EnterGame();
 	}
 };

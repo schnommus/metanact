@@ -65,8 +65,6 @@ void App2D::Run() {
 
 		LoadOptions();
 
-		currentPath = GetOption("InitialDirectory");
-
 		GetEventHandler().RegisterGenericEventType("gravity");
 
 		AddEntity( new SplashScreen(*this), 1001, true );
@@ -125,10 +123,12 @@ void App2D::Run() {
 
 
 			// Draw the game field
-			Draw( sf::Shape::Line(field.bleft.x, field.bleft.y, field.tright.x, field.bleft.y, 3, sf::Color( 0, 0, 0 ), 1, sf::Color(50, 50, 255) ) );
-			Draw( sf::Shape::Line(field.bleft.x, field.bleft.y, field.bleft.x, field.tright.y, 3, sf::Color( 0, 0, 0 ), 1, sf::Color(50, 50, 255) ) );
-			Draw( sf::Shape::Line(field.bleft.x, field.tright.y, field.tright.x, field.tright.y, 3, sf::Color( 0, 0, 0 ), 1, sf::Color(50, 50, 255) ) );
-			Draw( sf::Shape::Line(field.tright.x, field.tright.y, field.tright.x, field.bleft.y, 3, sf::Color( 0, 0, 0 ), 1, sf::Color(50, 50, 255) ) );
+			if( inGame ) {
+				Draw( sf::Shape::Line(field.bleft.x, field.bleft.y, field.tright.x, field.bleft.y, 3, sf::Color( 0, 0, 0 ), 1, sf::Color(50, 50, 255) ) );
+				Draw( sf::Shape::Line(field.bleft.x, field.bleft.y, field.bleft.x, field.tright.y, 3, sf::Color( 0, 0, 0 ), 1, sf::Color(50, 50, 255) ) );
+				Draw( sf::Shape::Line(field.bleft.x, field.tright.y, field.tright.x, field.tright.y, 3, sf::Color( 0, 0, 0 ), 1, sf::Color(50, 50, 255) ) );
+				Draw( sf::Shape::Line(field.tright.x, field.tright.y, field.tright.x, field.bleft.y, 3, sf::Color( 0, 0, 0 ), 1, sf::Color(50, 50, 255) ) );
+			}
 
 			// Call all normal draw functions, internally ordered by layer
 			for( EntityMap::iterator it = entities.begin();
@@ -176,6 +176,7 @@ void App2D::Run() {
 	} catch ( ... ) {
 		std::cout << "Non-standard unhandled exception!" << std::endl;
 	}
+
 	renderWindow.Close();
 	system("pause");
 }
