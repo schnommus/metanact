@@ -529,6 +529,39 @@ std::string App2D::CheckFile( std::string subname ) {
 	return "";
 }
 
+void App2D::WipeCurrentGame() {
+	// Goodbye to the player's current game..
+	inGame = false;
+	for ( App2D::EntityMap::iterator it = entities.begin(); it != entities.end(); ++it ) {
+		if( it->second->type != "" )
+			RemoveEntity(it->second->id);
+	}
+	currentPath = ""; // Wipe so deletion thinks we're changing levels
+	oldpath = " ";
+	ExecuteDeletionQueue();
+	currentPath = GetOption("InitialDirectory");
+}
+
+void App2D::ReEnterGame() {
+	std::ifstream ifs;
+	ifs.open("saves/!header.sav", std::ios::in);
+	if( ifs.is_open() ) {
+		while( !ifs.eof() ) {
+			std::string all; getline(ifs, all);
+			std::string n, msg;
+			if ( all.find('=') != std::string::npos) // If there's an '='
+				n = all.substr(0, all.find('=')), msg = all.substr(all.find('=')+1, all.size()-1 );
+			if( n == "currentPath") currentPath = msg;
+			std::cout << "Got current path from file: " << currentPath << std::endl;
+		}
+		ifs.close();
+	} else {
+		// Get initial directory
+		currentPath = GetOption("InitialDirectory");
+	}
+	inGame = true;
+	SetMusic("ambience.ogg");
+}
 using namespace boost::filesystem;
 
 struct SizeCmp {
