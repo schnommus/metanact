@@ -56,3 +56,5 @@ obj/Debug/App2D.obj
 obj/Debug/App2D.asm
 ipch/metanact-9f46409f/metanact_debug-47760756.ipch
 bin/Metanact_debug.pdb
+Metanact.suo
+Metanact.vcxproj.user
