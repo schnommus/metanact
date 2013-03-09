@@ -91,6 +91,9 @@ public:
 	void ReleaseFile( std::string subnamw, std::string message );
 	std::string CheckFile( std::string subname );
 
+	void WipeCurrentGame();
+	void ReEnterGame();
+
 	// Display a message in the message scroller
 	void DisplayMessage(std::string message);
 

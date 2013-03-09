@@ -24,17 +24,7 @@ public:
 	}
 	virtual void Clicked() {
 		if(!disabled) {
-			std::ifstream ifs;
-			ifs.open("saves/!header.sav", std::ios::in);
-			while( !ifs.eof() ) {
-				std::string all; getline(ifs, all);
-				std::string n, msg;
-				if ( all.find('=') != std::string::npos) // If there's an '='
-					n = all.substr(0, all.find('=')), msg = all.substr(all.find('=')+1, all.size()-1 );
-				if( n == "currentPath") app.currentPath = msg;
-				std::cout << "Got current path from file: " << app.currentPath << std::endl;
-			}
-			ifs.close();
+			
 			ms.EnterGame();
 		}
 	}
@@ -49,9 +39,6 @@ public:
 		std::ifstream ifs;
 		ifs.open("saves/!header.sav", std::ios::in);
 		if( !ifs.is_open() ) { // If there's no existing savefile
-			// Get initial directory
-			app.currentPath = app.GetOption("InitialDirectory");
-
 			ms.EnterGame(); // run game
 		} else {
 			ifs.close(); // Otherwise, make the player confirm
@@ -109,16 +96,8 @@ public:
 		name = "Back to Main Menu";
 	}
 	virtual void Clicked() {
-		// Goodbye to the player's current game..
-		app.inGame = false;
-		for ( App2D::EntityMap::iterator it = app.entities.begin(); it != app.entities.end(); ++it ) {
-			if( it->second->type != "" )
-				app.RemoveEntity(it->second->id);
-		}
-		app.currentPath = ""; // Wipe so deletion thinks we're changing levels
-		app.oldpath = " ";
-		app.ExecuteDeletionQueue();
-		app.currentPath = app.GetOption("InitialDirectory");
+		app.WipeCurrentGame();
+		app.SetMusic("metmain.ogg");
 		ms.DisplayMenu(Menu::MainMenu);
 	}
 };
@@ -282,9 +261,6 @@ public:
 				remove(di->path());
 			}
 		}
-
-		// Get initial directory
-		app.currentPath = app.GetOption("InitialDirectory");
 
 		// Then start a new game
 		ms.EnterGame();

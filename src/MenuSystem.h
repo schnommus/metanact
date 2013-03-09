@@ -55,8 +55,7 @@ public:
 	virtual void Draw();
 
 	void EnterGame() {
-		app.inGame = true;
-		app.SetMusic("ambience.ogg");
+		app.ReEnterGame();
 		app.RemoveEntity(this->id);
 	}
 
