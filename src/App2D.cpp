@@ -145,10 +145,31 @@ void App2D::Run() {
 			if(GetOption("MinimalUI") == "Disabled") {
 				// Draw messages, scrolling them up when new ones arrive (if minimal UI is disabled)
 				for( int i = messageList.size()-maxMessages, j = 0; i != messageList.size(); ++i, ++j ) {
-					sf::String n( sf::Unicode::Text(messageList[i]), FindFont("BlackWolf.ttf"), 15 );
-					n.SetPosition( 0, renderWindow.GetHeight()-maxMessages*18+j*18-5 );
+					sf::String n( sf::Unicode::Text(messageList[i]), FindFont("BlackWolf.ttf", 12), 12 );
+					n.SetPosition( 0, renderWindow.GetHeight()-maxMessages*15+j*15-5 );
 					n.SetColor( sf::Color(255, 255, 255, 200) );
 					Draw(n);
+				}
+			}
+
+			if(currentDialogue != "") { // Draw subtitles
+				sf::String n( sf::Unicode::Text(currentSubtitles), FindFont("Temp7c.ttf", 15), 15 );
+				n.SetPosition( GetSize().x/2 - n.GetCharacterPos(currentSubtitles.size()-1).x/2, GetSize().y-100 );
+				n.SetColor( sf::Color(255, 255, 255, 255) );
+				sf::FloatRect backgroundRect = n.GetRect();
+				sf::Shape r = sf::Shape::Rectangle(backgroundRect.Left, backgroundRect.Bottom, backgroundRect.Right, backgroundRect.Top, sf::Color::Black);
+				Draw(r);
+				Draw(n);
+			}
+
+			// Dialogue has to be checked for 'stoppage' every frame
+			for( std::vector<sf::Sound*>::iterator it = playingSounds.begin(); it != playingSounds.end(); ++it ) {
+				if( *it == currentDialoguePtr && (*it)->GetStatus() == sf::Sound::Stopped) {
+					currentDialogue = "";
+					currentDialoguePtr = nullptr;
+					delete (*it);
+					playingSounds.erase(it);
+					break;
 				}
 			}
 
@@ -293,7 +314,9 @@ sf::Image &App2D::FindImage( std::string dir ) {
 	return imageMap.find(dir)->second;
 }
 
-sf::Sound *App2D::PlaySound( std::string sound, bool loop, bool useDist, int x, int y ) {
+
+
+sf::Sound *App2D::PlaySound( std::string sound, bool loop, bool useDist, int x, int y, int vol ) {
 	sound = "../media/sound/" + sound;
 	if( soundMap.find(sound) == soundMap.end() ) {
 		if(!soundMap[sound].LoadFromFile(sound)) {
@@ -301,7 +324,7 @@ sf::Sound *App2D::PlaySound( std::string sound, bool loop, bool useDist, int x, 
 		}
 	}
 	if( !useDist ) { // Use distance from camera as volume
-		playingSounds.push_back( new sf::Sound(soundMap[sound], loop) );
+		playingSounds.push_back( new sf::Sound(soundMap[sound], loop, 1, vol) );
 	} else {
 		float dist = sqrt(powf(x-gameView.GetCenter().x, 2) + powf(y-gameView.GetCenter().y, 2));
 		float v = 100-(dist/20.0);
@@ -315,6 +338,8 @@ sf::Sound *App2D::PlaySound( std::string sound, bool loop, bool useDist, int x, 
 		isErasing = false;
 		for( std::vector<sf::Sound*>::iterator it = playingSounds.begin(); it != playingSounds.end(); ++it ) {
 			if( (*it)->GetStatus() == sf::Sound::Stopped) {
+				if( *it == currentDialoguePtr ) // Keep track of when dialogue is finished for subtitles
+					currentDialogue = "";
 				delete (*it);
 				playingSounds.erase(it);
 				isErasing = true;
@@ -333,6 +358,21 @@ void App2D::SetMusic(std::string music) {
 		currentMusic = PlaySound(music, true);
 	}
 	lastMusic = music;
+}
+
+void App2D::PlayDialogue(std::string filename, std::string subtitles) {
+	// First, rid of any previous dialogue
+	for( std::vector<sf::Sound*>::iterator it = playingSounds.begin(); it != playingSounds.end(); ++it ) {
+		if( *it == currentDialoguePtr ) {
+			delete (*it);
+			playingSounds.erase(it);
+			break;
+		}
+	}
+
+	currentDialoguePtr = PlaySound(filename, false, false, 0, 0, 30);
+	currentDialogue = filename;
+	currentSubtitles = subtitles;
 }
 
 bool App2D::InField( Entity *e ) {
@@ -617,4 +657,14 @@ void App2D::LoadLevel() {
 	} else {
 		ofs << "currentPath=" << currentPath;
 	}
+
+	int r = rand()%8;
+	if( r == 0 )
+		PlayDialogue("lchange1.ogg", "Gah it's just more random characters on the nav-panel...");
+	if( r == 1 )
+		PlayDialogue("lchange2.ogg", "Man, this place sure does look different.");
+	if( r == 2 )
+		PlayDialogue("lchange3.ogg", "What the hell have we gotten ourselves into...");
+	if( r == 3 )
+		PlayDialogue("lchange4.ogg", "Ugh It's like a never-ending maze...");
 }

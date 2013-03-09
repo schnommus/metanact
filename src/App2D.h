@@ -71,9 +71,11 @@ public:
 
 	bool InField( Entity *e );
 
-	sf::Sound *PlaySound( std::string sound, bool loop = false, bool useDist = false, int x=0, int y=0 );
+	sf::Sound *PlaySound( std::string sound, bool loop = false, bool useDist = false, int x=0, int y=0, int vol=100 );
 
 	void SetMusic(std::string music);
+
+	void PlayDialogue(std::string filename, std::string subtitles);
 	
 	sf::Image &FindImage( std::string dir );
 	sf::Font &FindFont( std::string dir, int size=30 );
@@ -172,6 +174,10 @@ public:
 
 	std::string oldpath;
 	std::string currentPath;
+
+	std::string currentDialogue;
+	std::string currentSubtitles;
+	sf::Sound *currentDialoguePtr;
 
 	bool inGame;
 

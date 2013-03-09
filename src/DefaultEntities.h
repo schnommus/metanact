@@ -11,6 +11,9 @@ public:
 		// Register events
 		hStepEvent = app.GetEventHandler().stepEvent.attach(this, &FPSMeter::onStep);
 
+		strFPS.SetFont(app.FindFont("BlackWolf.ttf", 12)); strFPS.SetSize(12);
+		strObjects.SetFont(app.FindFont("BlackWolf.ttf", 12)); strObjects.SetSize(12);
+
 		// Set text colours
 		strFPS.SetColor( sf::Color(200, 200, 255, 200 ) );
 		strObjects.SetColor( sf::Color(200, 200, 255, 200 ) );
