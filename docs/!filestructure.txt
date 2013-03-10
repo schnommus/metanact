@@ -1,0 +1,14 @@
+Project file structure:
+	-'bin': The project binaries are kept here, as well as required DLLs
+	-'docs': Project documentation such as diagrams, logs etc is kept here
+	-'media': Under subfolders, the media that Metanact requires i.e
+		-'entity': Contains text-file definitions of entities (player, scrap etc)
+		-'font': Contains each of the truetype fonts used in the game
+		-'image': Contains the images used in the game, most png.
+		-'sound': The various sound files that metanact requires.
+	-'obj': A stub directory for where the IDE puts compilation object files
+	-'src': The project source code
+	-'.hgignore': A list of files that version control should ignore
+	-'Metanact.sln': The project's VS2010 solution file
+	-'Metanact.vcxproj': The projects VS2010 project file
+	-'Metanact.vcxproj.filters': Sorts project source files into submodules
