@@ -1,5 +1,4 @@
 #include "MenuSystem.h"
-#include "DefinedEntity.h"
 #include <fstream>
 #include <boost/filesystem.hpp>
 
@@ -13,9 +12,9 @@ public:
 		name = "Continue Exploration";
 
 		if( app.IsLastSave() ) {
-			disabled = true;
-		} else {
 			disabled = false;
+		} else {
+			disabled = true;
 		}
 	}
 
@@ -258,6 +257,7 @@ public:
 
 		// Then start a new game
 		ms.EnterGame();
+
 	}
 };
 

@@ -325,7 +325,7 @@ void VelocityClampTag::Destroy() {}
 IsLocalPlayerTag::IsLocalPlayerTag( Entity &entityReference ) : Tag( entityReference) { }
 
 void IsLocalPlayerTag::Init() { 
-	e.app.PlayDialogue("okay.ogg", "Uh.. Ok?");
+	e.app.PlayDialogue("okay.ogg");
 	e.app.FollowEntity(e);
 	agility = 50;
 	fireRate = 5; projectileType = "b";
@@ -418,7 +418,7 @@ void IsLocalPlayerTag::Destroy() {
 		" finds it hard to stay alive"
 	};
 	e.app.DisplayMessage( e.app.playerName + deathSayings[rand()%6] );
-	e.app.PlayDialogue("deathvocals.ogg", "Aaaargh *cough*");
+	e.app.PlayDialogue("deathvocals.ogg");
 }
 
 

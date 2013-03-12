@@ -22,11 +22,14 @@
       <Filter>Logic</Filter>
     </ClCompile>
     <ClCompile Include="src\Metanact.cpp" />
-    <ClCompile Include="src\MenuSystem.cpp">
-      <Filter>Logic</Filter>
-    </ClCompile>
     <ClCompile Include="src\DefaultEntities.cpp">
       <Filter>Logic</Filter>
+    </ClCompile>
+    <ClCompile Include="src\CinematicEngine.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="src\MenuSystem.cpp">
+      <Filter>Engine</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -54,8 +57,11 @@
     <ClInclude Include="src\Tag.h">
       <Filter>Engine</Filter>
     </ClInclude>
+    <ClInclude Include="src\CinematicEngine.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
     <ClInclude Include="src\MenuSystem.h">
-      <Filter>Logic</Filter>
+      <Filter>Engine</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -338,7 +338,7 @@ void App2D::SetMusic(std::string music) {
 	lastMusic = music;
 }
 
-void App2D::PlayDialogue(std::string filename, std::string subtitles) {
+void App2D::PlayDialogue(std::string filename) {
 	// First, rid of any previous dialogue
 	for( std::vector<sf::Sound*>::iterator it = playingSounds.begin(); it != playingSounds.end(); ++it ) {
 		if( *it == currentDialoguePtr ) {
@@ -350,7 +350,23 @@ void App2D::PlayDialogue(std::string filename, std::string subtitles) {
 
 	currentDialoguePtr = PlaySound(filename, false, false, 0, 0, 30);
 	currentDialogue = filename;
-	currentSubtitles = subtitles;
+
+	// Fetch subtitles
+	std::ifstream ifs;
+	ifs.open("../media/sound/!subtitles.stt", std::ios::in);
+	if( ifs.is_open() ) {
+		while( !ifs.eof() ) {
+			std::string all; getline(ifs, all);
+			std::string n, msg;
+			if ( all.find('=') != std::string::npos) // If there's an '='
+				n = all.substr(0, all.find('=')), msg = all.substr(all.find('=')+1, all.size()-1 );
+			if( n == filename) { currentSubtitles = msg; break; }
+		}
+		ifs.close();
+	} else {
+		std::cout << "Dialogue loaded without subtitles: " << filename << std::endl;
+		currentSubtitles = "DIALOGUE";
+	}
 }
 
 bool App2D::InField( Entity *e ) {
@@ -649,14 +665,24 @@ void App2D::LoadLevel() {
 	for( int i = 0; i != files.size(); ++i ) {
 		//std::cout << "File: " << files[i].filename() << " size: " << file_size(files[i]) << std::endl;
 		if( CheckFile(files[i].filename().string()) != "destroyed" ) {
-			if( file_size(files[i]) > 1e9 ) // Greater than 100 meg
-				AddEntity( new DefinedEntity( *this, "bomber", rand()%gameSize-gameSize/2, rand()%gameSize-gameSize/2, sf::Vector2f(), 0, false, files[i].filename().string() ), 10 );
-			else if( file_size(files[i]) > 1e6 ) // Greater than 5 meg
-				AddEntity( new DefinedEntity( *this, "grunt", rand()%gameSize-gameSize/2, rand()%gameSize-gameSize/2, sf::Vector2f(), 0, false, files[i].filename().string() ), 10 );
-			else if( file_size(files[i]) > 5000 ) // Greater than 5k
-				AddEntity( new DefinedEntity( *this, "ticker", rand()%gameSize-gameSize/2, rand()%gameSize-gameSize/2, sf::Vector2f(), 0, false, files[i].filename().string() ), 10 );
-			else
-				AddEntity( new DefinedEntity( *this, "scrap", rand()%gameSize-gameSize/2, rand()%gameSize-gameSize/2, sf::Vector2f(), 0, false, files[i].filename().string() ), 10 );
+			std::ifstream ifs;
+			ifs.open("../media/entity/!enemytypes.edb", std::ios::in);
+
+			if( !ifs.is_open() ) {
+				throw std::exception("Couldn't open enemy types database for reading");
+			}
+
+			// Read type to spawn from file. Note that the entities MUST be in descending order
+			while( !ifs.eof() ) {
+				long long size; std::string etype;
+				ifs >> size >> etype;
+				if( file_size(files[i]) > size ) {
+					AddEntity( new DefinedEntity( *this, etype, rand()%gameSize-gameSize/2, rand()%gameSize-gameSize/2, sf::Vector2f(), 0, false, files[i].filename().string() ), 10 );
+					break;
+				}
+			}
+
+			ifs.close();
 		}
 	}
 
@@ -673,14 +699,10 @@ void App2D::LoadLevel() {
 	}
 
 	int r = rand()%8;
-	if( r == 0 )
-		PlayDialogue("lchange1.ogg", "Gah it's just more random characters on the nav-panel...");
-	if( r == 1 )
-		PlayDialogue("lchange2.ogg", "Man, this place sure does look different.");
-	if( r == 2 )
-		PlayDialogue("lchange3.ogg", "What the hell have we gotten ourselves into...");
-	if( r == 3 )
-		PlayDialogue("lchange4.ogg", "Ugh It's like a never-ending maze...");
+	if( r == 0 ) PlayDialogue("lchange1.ogg");
+	if( r == 1 ) PlayDialogue("lchange2.ogg");
+	if( r == 2 ) PlayDialogue("lchange3.ogg");
+	if( r == 3 ) PlayDialogue("lchange4.ogg");
 }
 
 void App2D::RespawnPlayerIfDead() {

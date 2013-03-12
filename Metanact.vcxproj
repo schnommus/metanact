@@ -12,6 +12,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\App2D.cpp" />
+    <ClCompile Include="src\CinematicEngine.cpp" />
     <ClCompile Include="src\DefaultEntities.cpp" />
     <ClCompile Include="src\DefinedEntity.cpp" />
     <ClCompile Include="src\EventHandler.cpp" />
@@ -21,6 +22,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\App2D.h" />
+    <ClInclude Include="src\CinematicEngine.h" />
     <ClInclude Include="src\CppEvent.h" />
     <ClInclude Include="src\DefaultEntities.h" />
     <ClInclude Include="src\DefinedEntity.h" />
