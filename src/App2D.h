@@ -49,6 +49,20 @@ public:
 	/// When called, the application will open a window, call the specified creationFunction and begin the event loop.
 	void Run();
 
+	void DrawLogMessages();
+
+	void DrawGameField();
+
+	void PerformCameraMovement();
+
+	void RespawnPlayerIfDead();
+
+	void CreateParticles();
+
+	void DrawSubtitles();
+
+	bool IsLastSave();
+
 	/// Use this to draw your entities' drawables when it needs to (When your entities' virtual Draw() method is called)
 	/// \param object : The drawable object to draw. The draw order will depend on the entities' draw order specified on creation.
 	void Draw( const sf::Drawable &object );
@@ -101,6 +115,8 @@ public:
 	void DisplayBigMessage(std::string message);
 
 	void LoadLevel();
+
+	bool LevelChanged();
 
 	///Entity following (by camera)
 	void FollowEntity( Entity &e );

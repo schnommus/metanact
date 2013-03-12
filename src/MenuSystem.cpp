@@ -12,19 +12,15 @@ public:
 	ContinueGame( App2D &a, MenuSystem &m ) : MenuItem(a, m) {
 		name = "Continue Exploration";
 
-		std::ifstream ifs;
-		ifs.open("saves/!header.sav", std::ios::in);
-
-		if( !ifs.is_open() ) {
+		if( app.IsLastSave() ) {
 			disabled = true;
 		} else {
 			disabled = false;
-			ifs.close();
 		}
 	}
+
 	virtual void Clicked() {
 		if(!disabled) {
-			
 			ms.EnterGame();
 		}
 	}
@@ -36,12 +32,10 @@ public:
 		name = "New Exploration";
 	}
 	virtual void Clicked() {
-		std::ifstream ifs;
-		ifs.open("saves/!header.sav", std::ios::in);
-		if( !ifs.is_open() ) { // If there's no existing savefile
+		if( !app.IsLastSave() ) { // If there's no existing savefile
 			ms.EnterGame(); // run game
 		} else {
-			ifs.close(); // Otherwise, make the player confirm
+			// Otherwise make the player confirm
 			ms.DisplayMenu(Menu::NewGameMenu);
 		}
 	}
@@ -294,12 +288,9 @@ MenuSystem::MenuSystem( App2D &a ) : Entity(a) {
 }
 
 bool MenuSystem::onStep(float delta) {
-
 	// Particle effect and camera shifting
-	if(binaryReplaceTimer.GetElapsedTime() > 0.05f * app.EvaluateOption("ParticleDensity") )	 {
-		app.AddEntity( new BinaryParticle(app), 1 );
-		binaryReplaceTimer.Reset();
-	}
+
+	app.CreateParticles();
 
 	// Only move camera if not in pause screen
 	if( app.CountEntityOfType("warper")  == 0 ) app.cdelta.x = 10;
