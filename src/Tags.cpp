@@ -472,7 +472,7 @@ void ProjectileOnDestroyTag::Draw() {}
 void ProjectileOnDestroyTag::Destroy() {
 	if( s==0 ) s = 1; // Avoid division by zero
 	// Avoid creation on level change
-	if( e.app.currentPath == e.app.oldpath ) e.app.AddEntity( new DefinedEntity( e.app, tp, e.x+((rand()%s)*2)-s, e.y+((rand()%s)*2)-s, e.vel, e.rotation ), 10 );
+	if( !e.app.LevelChanged() ) e.app.AddEntity( new DefinedEntity( e.app, tp, e.x+((rand()%s)*2)-s, e.y+((rand()%s)*2)-s, e.vel, e.rotation ), 10 );
 }
 
 
@@ -543,7 +543,7 @@ void RememberDestructionTag::Draw() {}
 
 void RememberDestructionTag::Destroy() {
 	// Only if level isn't changing
-	if( e.app.currentPath == e.app.oldpath ) e.app.ReleaseFile(e.displayName, "destroyed");
+	if( !e.app.LevelChanged() ) e.app.ReleaseFile(e.displayName, "destroyed");
 }
 
 

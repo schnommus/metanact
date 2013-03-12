@@ -73,21 +73,9 @@ void App2D::Run() {
 		while( !isClosing ) {
 
 			if( inGame ) {
-
-				//if (CountEntityOfType("grunt") == 0) currentLevelUnlocked = true;
-				LoadLevel(); // Might need to do level re-load
-
-				// Make binary particles for effect
-				if(binaryReplaceTimer.GetElapsedTime() > 0.05f  * EvaluateOption("ParticleDensity"))	 {
-					AddEntity( new BinaryParticle(*this), 1 );
-					binaryReplaceTimer.Reset();
-				}
-			}
-
-			// Make sure there is a player
-			if( inGame && playerDeathTimer.GetElapsedTime() > 3.0f && CountEntityOfType("localplayer") == 0) {
-				playerName = GetOption("PlayerName");
-				AddEntity( new DefinedEntity( *this, "localplayer", 150, 150, sf::Vector2f(), 0, true, playerName ), 10 );
+				if( LevelChanged() ) LoadLevel(); // Might need to do level re-load
+				CreateParticles();
+				RespawnPlayerIfDead();
 			}
 
 			while( renderWindow.GetEvent(evt) ) {
@@ -109,26 +97,10 @@ void App2D::Run() {
 			
 			renderWindow.SetView(gameView);
 
-
-			//Camera controls
-			if( following ) {
-				cdelta.x = toFollow->x-gameView.GetCenter().x;
-				cdelta.y = toFollow->y-gameView.GetCenter().y;
-			}
-			// Camera slowdown
-			cdelta.x += (-cdelta.x*GetFrameTime());
-			cdelta.y += (-cdelta.y*GetFrameTime());
-			float cSpd = 5; // Speed of camera following
-			gameView.Move(cdelta.x*GetFrameTime()*cSpd, cdelta.y*GetFrameTime()*cSpd);
-
+			PerformCameraMovement();
 
 			// Draw the game field
-			if( inGame ) {
-				Draw( sf::Shape::Line(field.bleft.x, field.bleft.y, field.tright.x, field.bleft.y, 3, sf::Color( 0, 0, 0 ), 1, sf::Color(50, 50, 255) ) );
-				Draw( sf::Shape::Line(field.bleft.x, field.bleft.y, field.bleft.x, field.tright.y, 3, sf::Color( 0, 0, 0 ), 1, sf::Color(50, 50, 255) ) );
-				Draw( sf::Shape::Line(field.bleft.x, field.tright.y, field.tright.x, field.tright.y, 3, sf::Color( 0, 0, 0 ), 1, sf::Color(50, 50, 255) ) );
-				Draw( sf::Shape::Line(field.tright.x, field.tright.y, field.tright.x, field.bleft.y, 3, sf::Color( 0, 0, 0 ), 1, sf::Color(50, 50, 255) ) );
-			}
+			if( inGame ) DrawGameField();
 
 			// Call all normal draw functions, internally ordered by layer
 			for( EntityMap::iterator it = entities.begin();
@@ -142,42 +114,15 @@ void App2D::Run() {
 
 			renderWindow.SetView(renderWindow.GetDefaultView()); // make sure we are using a static view
 
-			if(GetOption("MinimalUI") == "Disabled") {
-				// Draw messages, scrolling them up when new ones arrive (if minimal UI is disabled)
-				for( int i = messageList.size()-maxMessages, j = 0; i != messageList.size(); ++i, ++j ) {
-					sf::String n( sf::Unicode::Text(messageList[i]), FindFont("BlackWolf.ttf", 12), 12 );
-					n.SetPosition( 0, renderWindow.GetHeight()-maxMessages*15+j*15-5 );
-					n.SetColor( sf::Color(255, 255, 255, 200) );
-					Draw(n);
-				}
-			}
+			if(GetOption("MinimalUI") == "Disabled") DrawLogMessages();
 
-			if(currentDialogue != "") { // Draw subtitles
-				sf::String n( sf::Unicode::Text(currentSubtitles), FindFont("Temp7c.ttf", 15), 15 );
-				n.SetPosition( GetSize().x/2 - n.GetCharacterPos(currentSubtitles.size()-1).x/2, GetSize().y-100 );
-				n.SetColor( sf::Color(255, 255, 255, 255) );
-				sf::FloatRect backgroundRect = n.GetRect();
-				sf::Shape r = sf::Shape::Rectangle(backgroundRect.Left, backgroundRect.Bottom, backgroundRect.Right, backgroundRect.Top, sf::Color::Black);
-				Draw(r);
-				Draw(n);
-			}
-
-			// Dialogue has to be checked for 'stoppage' every frame
-			for( std::vector<sf::Sound*>::iterator it = playingSounds.begin(); it != playingSounds.end(); ++it ) {
-				if( *it == currentDialoguePtr && (*it)->GetStatus() == sf::Sound::Stopped) {
-					currentDialogue = "";
-					currentDialoguePtr = nullptr;
-					delete (*it);
-					playingSounds.erase(it);
-					break;
-				}
-			}
+			DrawSubtitles();
 
 			// Draw minimap
 			if(inGame) DrawMinimap();
 
 			// If we're about to change levels, show loading text before the game freezes
-			if( oldpath != currentPath && inGame ) {
+			if( LevelChanged() && inGame ) {
 				sf::String n( sf::Unicode::Text("Loading..."), FindFont("Action_Force.ttf", 60), 60 );
 				n.SetPosition( 0, 0 );
 				n.SetColor( sf::Color(255, 255, 255, 200) );
@@ -286,8 +231,41 @@ void App2D::DisplayMessage(std::string message) {
 	}
 }
 
+void App2D::DrawSubtitles() 
+{
+	if(currentDialogue != "") { // Draw subtitles
+		sf::String n( sf::Unicode::Text(currentSubtitles), FindFont("Temp7c.ttf", 15), 15 );
+		n.SetPosition( GetSize().x/2 - n.GetCharacterPos(currentSubtitles.size()-1).x/2, GetSize().y-100 );
+		n.SetColor( sf::Color(255, 255, 255, 255) );
+		sf::FloatRect backgroundRect = n.GetRect();
+		sf::Shape r = sf::Shape::Rectangle(backgroundRect.Left, backgroundRect.Bottom, backgroundRect.Right, backgroundRect.Top, sf::Color::Black);
+		Draw(r);
+		Draw(n);
+	}
+
+	// Dialogue has to be checked for 'stoppage' every frame
+	for( std::vector<sf::Sound*>::iterator it = playingSounds.begin(); it != playingSounds.end(); ++it ) {
+		if( *it == currentDialoguePtr && (*it)->GetStatus() == sf::Sound::Stopped) {
+			currentDialogue = "";
+			currentDialoguePtr = nullptr;
+			delete (*it);
+			playingSounds.erase(it);
+			break;
+		}
+	}
+}
+
 void App2D::DisplayBigMessage(std::string message) {
 	AddEntity( new BigMessage(*this, message), 1001, true );
+}
+
+void App2D::CreateParticles() 
+{
+	// Make binary particles for effect
+	if(binaryReplaceTimer.GetElapsedTime() > 0.05f  * EvaluateOption("ParticleDensity"))	 {
+		AddEntity( new BinaryParticle(*this), 1 );
+		binaryReplaceTimer.Reset();
+	}
 }
 
 // Some manager functions to avoid resource duplicates
@@ -562,6 +540,11 @@ void App2D::ReEnterGame() {
 	inGame = true;
 	SetMusic("ambience.ogg");
 }
+
+bool App2D::LevelChanged() {
+	return oldpath != currentPath;
+}
+
 using namespace boost::filesystem;
 
 struct SizeCmp {
@@ -571,8 +554,6 @@ struct SizeCmp {
 };
 
 void App2D::LoadLevel() {
-	if( oldpath == currentPath ) return;
-
 	currentLevelUnlocked = false;
 
 	// Delete all existing entities (except player)
@@ -700,4 +681,53 @@ void App2D::LoadLevel() {
 		PlayDialogue("lchange3.ogg", "What the hell have we gotten ourselves into...");
 	if( r == 3 )
 		PlayDialogue("lchange4.ogg", "Ugh It's like a never-ending maze...");
+}
+
+void App2D::RespawnPlayerIfDead() {
+	// Make sure there is a player
+	if( playerDeathTimer.GetElapsedTime() > 3.0f && CountEntityOfType("localplayer") == 0) {
+		playerName = GetOption("PlayerName");
+		AddEntity( new DefinedEntity( *this, "localplayer", 150, 150, sf::Vector2f(), 0, true, playerName ), 10 );
+	}
+}
+
+void App2D::PerformCameraMovement() {
+	//Camera controls
+	if( following ) {
+		cdelta.x = toFollow->x-gameView.GetCenter().x;
+		cdelta.y = toFollow->y-gameView.GetCenter().y;
+	}
+	// Camera slowdown
+	cdelta.x += (-cdelta.x*GetFrameTime());
+	cdelta.y += (-cdelta.y*GetFrameTime());
+	float cSpd = 5; // Speed of camera following
+	gameView.Move(cdelta.x*GetFrameTime()*cSpd, cdelta.y*GetFrameTime()*cSpd);
+}
+
+void App2D::DrawGameField() {
+	Draw( sf::Shape::Line(field.bleft.x, field.bleft.y, field.tright.x, field.bleft.y, 3, sf::Color( 0, 0, 0 ), 1, sf::Color(50, 50, 255) ) );
+	Draw( sf::Shape::Line(field.bleft.x, field.bleft.y, field.bleft.x, field.tright.y, 3, sf::Color( 0, 0, 0 ), 1, sf::Color(50, 50, 255) ) );
+	Draw( sf::Shape::Line(field.bleft.x, field.tright.y, field.tright.x, field.tright.y, 3, sf::Color( 0, 0, 0 ), 1, sf::Color(50, 50, 255) ) );
+	Draw( sf::Shape::Line(field.tright.x, field.tright.y, field.tright.x, field.bleft.y, 3, sf::Color( 0, 0, 0 ), 1, sf::Color(50, 50, 255) ) );
+}
+
+void App2D::DrawLogMessages() {
+	// Draw messages, scrolling them up when new ones arrive (if minimal UI is disabled)
+	for( int i = messageList.size()-maxMessages, j = 0; i != messageList.size(); ++i, ++j ) {
+		sf::String n( sf::Unicode::Text(messageList[i]), FindFont("BlackWolf.ttf", 12), 12 );
+		n.SetPosition( 0, renderWindow.GetHeight()-maxMessages*15+j*15-5 );
+		n.SetColor( sf::Color(255, 255, 255, 200) );
+		Draw(n);
+	}
+}
+
+// Does a previous savefile exist?
+bool App2D::IsLastSave() {
+	std::ifstream ifs;
+	ifs.open("saves/!header.sav", std::ios::in);
+	if( ifs.is_open() ) {
+		ifs.close();
+		return true;
+	}
+	return false;
 }
