@@ -89,7 +89,7 @@ public:
 
 	void SetMusic(std::string music);
 
-	void PlayDialogue(std::string filename, std::string subtitles);
+	void PlayDialogue(std::string filename);
 	
 	sf::Image &FindImage( std::string dir );
 	sf::Font &FindFont( std::string dir, int size=30 );
