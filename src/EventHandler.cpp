@@ -14,7 +14,7 @@ void EventHandler::Event( const sf::Event &evt ) {
 		break;
 
 		case sf::Event::KeyPressed:
-			if( evt.Key.Code == sf::Key::Escape && app.inGame ) {
+			if( evt.Key.Code == sf::Key::Escape && app.inGame && !app.cinematicEngine.IsCinematicRunning() ) {
 				app.inGame = false;
 				MenuSystem *ms = new MenuSystem(app);
 				app.AddEntity(ms, 1001, true);

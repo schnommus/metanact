@@ -16,6 +16,7 @@
 
 #include "Entity.h"
 #include "EventHandler.h"
+#include "CinematicEngine.h"
 
 using std::tr1::shared_ptr;
 
@@ -77,7 +78,7 @@ public:
 	/// Adds an entity to the manager. On clients, this does nothing
 	/// \param e : A freshly new'ed Entity off the stack. Destruction is internally taken care of.
 	/// \param layer : The draw layer, changes the order in which calls to Entity::Draw() overrides are called. Higher is on top, >1000 is UI
-	void AddEntity( Entity *e , int layer, bool isViewEntity = false);
+	long long AddEntity( Entity *e , int layer, bool isViewEntity = false);
 
 	Entity *GetEntityWithId( long long idToGet );
 
@@ -165,6 +166,8 @@ private:
 
 	EventHandler eventHandler;
 public:
+	CinematicEngine cinematicEngine;
+
 	bool isClosing;
 	sf::RenderWindow renderWindow;
 	sf::View gameView;

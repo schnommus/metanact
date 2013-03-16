@@ -12,6 +12,7 @@ DefinedEntity::DefinedEntity( App2D &app, std::string type, int xpos, int ypos, 
 	inWarp = iw;
 	warpId = 0;
 	onUnlockOnly = false;
+	cinematicEntity = false;
 	displayName = dispName;
 	scale = mscale;
 
@@ -148,6 +149,8 @@ DefinedEntity::DefinedEntity( App2D &app, std::string type, int xpos, int ypos, 
 			tagList.push_back( boost::shared_ptr<Tag>( new EmitSmokeTag( *this ) ) );
 		} else if (tag == "ON_UNLOCK") {
 			onUnlockOnly = true;
+		} else if (tag == "IS_CINEMATIC_ENTITY") {
+			cinematicEntity = true;
 		}
 	}
 
@@ -159,7 +162,7 @@ DefinedEntity::DefinedEntity( App2D &app, std::string type, int xpos, int ypos, 
 }
 
 bool DefinedEntity::onStep( float delta ) {
-	if( !onUnlockOnly || app.currentLevelUnlocked ) {
+	if( (!onUnlockOnly || app.currentLevelUnlocked) ) {
 		for( int i = 0; i != tagList.size(); ++i ) {
 			if(app.inGame) tagList[i]->Step(delta);
 		}
@@ -174,7 +177,7 @@ void DefinedEntity::Draw() {
 		 app.renderWindow.ConvertCoords( 0, 0 ).y-esize < y &&
 		 app.renderWindow.ConvertCoords( app.GetSize().x, app.GetSize().y ).x+esize > x &&
 		 app.renderWindow.ConvertCoords( app.GetSize().x, app.GetSize().y ).y+esize > y &&
-		 (!onUnlockOnly || app.currentLevelUnlocked) ) {
+		 (!onUnlockOnly || app.currentLevelUnlocked) && (!app.cinematicEngine.IsCinematicRunning() || cinematicEntity) ) {
 
 		if( !drawOverride ) {
 			for( int i = 0; i != sv.size(); ++i ) {

@@ -255,9 +255,10 @@ public:
 			}
 		}
 
+		
+
 		// Then start a new game
 		ms.EnterGame();
-
 	}
 };
 
@@ -275,6 +276,8 @@ public:
 MenuSystem::MenuSystem( App2D &a ) : Entity(a) {
 	// Register events
 	hStepEvent = app.GetEventHandler().stepEvent.attach(this, &MenuSystem::onStep);
+
+	cinematicEntity = true;
 
 	menus.push_back( boost::shared_ptr<MenuScreen>( new MainMenu(app, *this) ) );
 	menus.push_back( boost::shared_ptr<MenuScreen>( new OptionsMenu(app, *this) ) );

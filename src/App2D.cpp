@@ -31,7 +31,8 @@ App2D::App2D( bool useVSync,
 		  inGame(false),
 		  currentId(1),
 		  currentViewId(1),
-		  currentMusic(0)
+		  currentMusic(0),
+		  cinematicEngine(*this)
 	{
 
 	// Maybe make this alterable
@@ -72,17 +73,18 @@ void App2D::Run() {
 		sf::Event evt;
 		while( !isClosing ) {
 
-			if( inGame ) {
+			if( inGame && !cinematicEngine.IsCinematicRunning() ) {
 				if( LevelChanged() ) LoadLevel(); // Might need to do level re-load
 				CreateParticles();
 				RespawnPlayerIfDead();
 			}
 
+			cinematicEngine.UpdateCinematic();
+
 			while( renderWindow.GetEvent(evt) ) {
 				eventHandler.Event(evt);
 			}
 			eventHandler.Tick();
-
 			
 			// If the framerate is too high and we are using VSync, limit it.
 			// This can happen if VSync doesn't work properly.
@@ -100,7 +102,7 @@ void App2D::Run() {
 			PerformCameraMovement();
 
 			// Draw the game field
-			if( inGame ) DrawGameField();
+			if( CountEntityOfType("warper") > 0 && !cinematicEngine.IsCinematicRunning() ) DrawGameField();
 
 			// Call all normal draw functions, internally ordered by layer
 			for( EntityMap::iterator it = entities.begin();
@@ -109,7 +111,9 @@ void App2D::Run() {
 				if(it->first > 1000) { // Are we up to the UI?
 					renderWindow.SetView(renderWindow.GetDefaultView());
 				}
-				it->second->Draw();
+				// Only draw if it's relevent to a cinematic (assuming one's up)
+				if (!cinematicEngine.IsCinematicRunning() || it->second->cinematicEntity)
+					it->second->Draw();
 			}
 
 			renderWindow.SetView(renderWindow.GetDefaultView()); // make sure we are using a static view
@@ -119,10 +123,10 @@ void App2D::Run() {
 			DrawSubtitles();
 
 			// Draw minimap
-			if(inGame) DrawMinimap();
+			if(inGame && !cinematicEngine.IsCinematicRunning() ) DrawMinimap();
 
 			// If we're about to change levels, show loading text before the game freezes
-			if( LevelChanged() && inGame ) {
+			if( LevelChanged() && inGame && !cinematicEngine.IsCinematicRunning() ) {
 				sf::String n( sf::Unicode::Text("Loading..."), FindFont("Action_Force.ttf", 60), 60 );
 				n.SetPosition( 0, 0 );
 				n.SetColor( sf::Color(255, 255, 255, 200) );
@@ -183,9 +187,10 @@ int App2D::GetObjectCount() {
 	return entities.size();
 }
 
-void App2D::AddEntity( Entity *e , int layer, bool isViewEntity) {
+long long App2D::AddEntity( Entity *e , int layer, bool isViewEntity) {
 	e->id = isViewEntity?nextViewId():nextId();
 	entities.insert( std::make_pair(layer, e ) );
+	return e->id;
 }
 
 Entity *App2D::GetEntityWithId( long long idToGet ) {
