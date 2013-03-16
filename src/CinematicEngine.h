@@ -1,10 +1,23 @@
 #ifndef CINEMATICENGINE_H
 #define CINEMATICENGINE_H
 
-#include "App2D.h"
+#include <SFML/System.hpp>
+#include <SFML/Graphics.hpp>
 #include <vector>
 #include <map>
 #include <boost/smart_ptr.hpp>
+
+class App2D;
+
+struct Movement {
+	Movement(App2D &a) : app(a) { }
+	App2D &app;
+	long long eid;
+	float beginTime, endTime;
+	sf::Vector2f beginPos, endPos;
+	virtual void ApplyForGlobalTime( float time ) = 0;
+	virtual void EndMovement() = 0;
+};
 
 class CinematicEngine {
 public:
@@ -14,23 +27,27 @@ public:
 
 	void UpdateCinematic();
 
+	void DrawCinematicGlobal(); // For global transform and
+
+	void DrawCinematicView(); // For view transform coordinate systems
+
 	bool IsCinematicRunning() { return cinematicRunning; }
 
 	App2D &app;
 	bool cinematicRunning;
 	sf::Clock masterClock;
+	std::string longName;
+
+	typedef std::multimap< float, std::string > EventMapType;
 
 	// Maps event strings to their times
-	std::map< std::string, float > eventMap;
+	EventMapType eventMap;
 
 	// Maps named entities to their respective ids
 	std::map< std::string, long long > namedEntityMap;
 
-	//I.E
-	// 6.2 NAMED_ENTITY derp1 0 100
-	// 6.2 MOVE_TO derp1 -100 0 9.5
-	// 9.6 DELETE derp1
-	// 10.0 END_CINEMATIC
+	std::vector< Movement* > activeMovements;
+
 };
 
 #endif

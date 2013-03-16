@@ -12,7 +12,7 @@ class Entity {
 public:
 	/// Must construct this class with an application instance. Do it in your classes' constructor.
 	/// \param a : The application instance.
-	Entity( App2D &a ) : app(a), isEnemy(0) { }
+	Entity( App2D &a ) : app(a), isEnemy(0), cinematicEntity(false) { }
 
 	virtual ~Entity() {}
 	
@@ -44,6 +44,9 @@ public:
 
 	/// Only active when level unlocked?
 	bool onUnlockOnly;
+
+	/// Is the entity shown during cinematics?
+	bool cinematicEntity;
 
 	/// True if entity is of enemy type
 	bool isEnemy;

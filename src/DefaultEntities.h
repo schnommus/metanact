@@ -17,6 +17,8 @@ public:
 		// Set text colours
 		strFPS.SetColor( sf::Color(200, 200, 255, 200 ) );
 		strObjects.SetColor( sf::Color(200, 200, 255, 200 ) );
+
+		cinematicEntity = true;
 	}
 
 	~FPSMeter() {
@@ -114,6 +116,7 @@ public:
 		s.SetFont(app.FindFont("Temp7c.ttf"));
 		s.SetSize((10/fScale+7 > 20 ? 20 : 10/fScale+7));
 		s.SetText((rand()%2)?"0":"1");
+		cinematicEntity = true;
 	}
 
 	~BinaryParticle() {
@@ -195,6 +198,8 @@ public:
 		s.SetImage( app.FindImage("ring.png") );
 		s.SetCenter( s.GetSize().x/2, s.GetSize().y/2 );
 		s.SetScale(0.6, 0.6);
+
+		cinematicEntity = true;
 		
 	}
 

@@ -171,11 +171,13 @@ void HasVelocityTag::Step(float delta) {
 	e.x += 10*e.vel.x*delta;
 	e.y += 10*e.vel.y*delta;
 	std::string snd("ticksound.wav");
-	//Anything with a velocity must be kept on the field, play tick sound with hits
-	if( e.x < e.app.field.bleft.x ) { e.vel.x = -e.vel.x*0.5; e.x = e.app.field.bleft.x+2; e.app.PlaySound(snd, false, true, e.x, e.y);}
-	if( e.y < e.app.field.bleft.y ) { e.vel.y = -e.vel.y*0.5; e.y = e.app.field.bleft.y+2; e.app.PlaySound(snd, false, true, e.x, e.y);}
-	if( e.x > e.app.field.tright.x ) { e.vel.x = -e.vel.x*0.5; e.x = e.app.field.tright.x-2; e.app.PlaySound(snd, false, true, e.x, e.y);}
-	if( e.y > e.app.field.tright.y ) { e.vel.y = -e.vel.y*0.5; e.y = e.app.field.tright.y-2; e.app.PlaySound(snd, false, true, e.x, e.y);}
+	//Anything with a velocity must be kept on the field, play tick sound with hits (doesn't apply to cinematic ent's
+	if( !e.cinematicEntity ) {
+		if( e.x < e.app.field.bleft.x ) { e.vel.x = -e.vel.x*0.5; e.x = e.app.field.bleft.x+2; e.app.PlaySound(snd, false, true, e.x, e.y);}
+		if( e.y < e.app.field.bleft.y ) { e.vel.y = -e.vel.y*0.5; e.y = e.app.field.bleft.y+2; e.app.PlaySound(snd, false, true, e.x, e.y);}
+		if( e.x > e.app.field.tright.x ) { e.vel.x = -e.vel.x*0.5; e.x = e.app.field.tright.x-2; e.app.PlaySound(snd, false, true, e.x, e.y);}
+		if( e.y > e.app.field.tright.y ) { e.vel.y = -e.vel.y*0.5; e.y = e.app.field.tright.y-2; e.app.PlaySound(snd, false, true, e.x, e.y);}
+	}
 }
 
 void HasVelocityTag::Draw() {}
@@ -419,6 +421,8 @@ void IsLocalPlayerTag::Destroy() {
 	};
 	e.app.DisplayMessage( e.app.playerName + deathSayings[rand()%6] );
 	e.app.PlayDialogue("deathvocals.ogg");
+	// Aaand launch an opening cinematic
+	e.app.cinematicEngine.RunCinematic("cin1.cnm");
 }
 
 
