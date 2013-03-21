@@ -1,0 +1,17 @@
+texture framebuffer
+vec2 mouse
+
+effect
+{
+	float len = 1/((100*distance(_in, mouse)*distance(_in, mouse)-0.025) * 10);
+
+	if (len > 0.05) {
+		_out = framebuffer(_in + (_in - mouse) * len);
+		_out.a = 0.5;
+	} else
+		_out = framebuffer(_in);	
+		
+	if( _out.r == 0 &&  _out.g == 0 && _out.b == 0.0 ) {
+		_out.a = 0.0;
+	}
+}
