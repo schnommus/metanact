@@ -70,6 +70,10 @@ void App2D::Run() {
 
 		AddEntity( new SplashScreen(*this), 1001, true );
 
+		sf::PostFX fx;
+		fx.LoadFromFile("fisheye.sfx");
+		fx.SetTexture("framebuffer", NULL);
+
 		sf::Event evt;
 		while( !isClosing ) {
 
@@ -134,6 +138,21 @@ void App2D::Run() {
 			}
 
 			renderWindow.SetView(gameView); // Back to the normal view
+			
+			int esize=50;
+			for( EntityMap::iterator it = entities.begin();
+				it != entities.end();
+				++it) {
+					if( it->second->type == "warper" && renderWindow.ConvertCoords( 0, 0 ).x-esize < it->second->x &&
+						renderWindow.ConvertCoords( 0, 0 ).y-esize < it->second->y &&
+						renderWindow.ConvertCoords( GetSize().x, GetSize().y ).x+esize > it->second->x &&
+						renderWindow.ConvertCoords( GetSize().x, GetSize().y ).y+esize > it->second->y) {
+						sf::Vector2f bLeft = renderWindow.ConvertCoords(0, 0);
+						sf::Vector2f tRight = renderWindow.ConvertCoords(GetSize().x, GetSize().y);
+						fx.SetParameter("mouse", (it->second->x - bLeft.x)/GetSize().x, 1.0-(it->second->y - bLeft.y)/GetSize().y);
+						Draw(fx);
+					}
+			}
 
 			renderWindow.Display();
 

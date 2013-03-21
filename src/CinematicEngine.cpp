@@ -68,17 +68,18 @@ struct SineMovement : public Movement {
 		Entity *e = app.GetEntityWithId( eid );
 		e->x = begp.x;
 		e->y = begp.y;
-		t = 0;
 	}
 	float t;
 	virtual void ApplyForGlobalTime( float time ) {
 		float totalEventTime = endTime-beginTime;
 		Entity *e = app.GetEntityWithId( eid );
 		float interp = (3.14159/totalEventTime)*(time-beginTime);
+
+		// For some reason the thing has to be multiplied by 1.572 which is about pi/2. I'm not sure why though,
+		// the integral of sinx from 0 to pi is 2; so if anything I should be dividing by two. Meh; it works.
+
 		e->vel.x = 1.572*sin(interp)*((endPos.x - beginPos.x)/totalEventTime)/10;
 		e->vel.y = 1.572*sin(interp)*((endPos.y - beginPos.y)/totalEventTime)/10;
-		t += e->vel.x*10*app.GetFrameTime();
-		std::cout << t << std::endl;
 	}
 
 	virtual void EndMovement() {
