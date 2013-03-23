@@ -70,10 +70,6 @@ void App2D::Run() {
 
 		AddEntity( new SplashScreen(*this), 1001, true );
 
-		sf::PostFX fx;
-		fx.LoadFromFile("fisheye.sfx");
-		fx.SetTexture("framebuffer", NULL);
-
 		sf::Event evt;
 		while( !isClosing ) {
 
@@ -138,21 +134,6 @@ void App2D::Run() {
 			}
 
 			renderWindow.SetView(gameView); // Back to the normal view
-			
-			int esize=50;
-			for( EntityMap::iterator it = entities.begin();
-				it != entities.end();
-				++it) {
-					if( it->second->type == "warper" && renderWindow.ConvertCoords( 0, 0 ).x-esize < it->second->x &&
-						renderWindow.ConvertCoords( 0, 0 ).y-esize < it->second->y &&
-						renderWindow.ConvertCoords( GetSize().x, GetSize().y ).x+esize > it->second->x &&
-						renderWindow.ConvertCoords( GetSize().x, GetSize().y ).y+esize > it->second->y) {
-						sf::Vector2f bLeft = renderWindow.ConvertCoords(0, 0);
-						sf::Vector2f tRight = renderWindow.ConvertCoords(GetSize().x, GetSize().y);
-						fx.SetParameter("mouse", (it->second->x - bLeft.x)/GetSize().x, 1.0-(it->second->y - bLeft.y)/GetSize().y);
-						Draw(fx);
-					}
-			}
 
 			renderWindow.Display();
 
@@ -314,6 +295,18 @@ sf::Image &App2D::FindImage( std::string dir ) {
 		}
 	}
 	return imageMap.find(dir)->second;
+}
+
+sf::PostFX &App2D::FindShader( std::string dir ) {
+	dir = "../media/shader/" + dir;
+	if( shaderMap.find(dir) == shaderMap.end() ) {
+		std::cout << "New shader: " << dir << std::endl;
+		if(!shaderMap[dir].LoadFromFile(dir)) {
+			throw std::exception(std::string(dir + " could not be loaded").c_str());
+		}
+		shaderMap[dir].SetTexture("framebuffer", NULL);
+	}
+	return shaderMap.find(dir)->second;
 }
 
 
@@ -676,7 +669,7 @@ void App2D::LoadLevel() {
 		}
 		if( !crashed ) {
 			float scale = (0.7+float(countFiles+countDirs)/90);
-			AddEntity( new DefinedEntity( *this, "warper", rand()%gameSize-gameSize/2, rand()%gameSize-gameSize/2, sf::Vector2f(), 0, false, dirs[i].filename().string(), scale ), 10 );
+			AddEntity( new DefinedEntity( *this, "warper", rand()%gameSize-gameSize/2, rand()%gameSize-gameSize/2, sf::Vector2f(), 0, false, dirs[i].filename().string(), scale ), 11 );
 		} else {
 			DisplayMessage("\'" + dirs[i].filename().string() + "\' is an innaccessible subdirectory - not spawning wormhole.");
 		}

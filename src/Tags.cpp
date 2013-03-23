@@ -620,3 +620,22 @@ void ShootAtPlayerTag::Step(float delta) {
 }
 void ShootAtPlayerTag::Draw() {}
 void ShootAtPlayerTag::Destroy() {}
+
+
+HasShaderTag::HasShaderTag( Entity &entityReference, std::string shaderNamev ) : Tag(entityReference), shaderName(shaderNamev) { }
+void HasShaderTag::Init() {}
+void HasShaderTag::Step(float delta) {}
+void HasShaderTag::Draw() {
+	int esize = 50;
+	if( e.app.renderWindow.ConvertCoords( 0, 0 ).x-esize < e.x &&
+		e.app.renderWindow.ConvertCoords( 0, 0 ).y-esize < e.y &&
+		e.app.renderWindow.ConvertCoords( e.app.GetSize().x, e.app.GetSize().y ).x+esize > e.x &&
+		e.app.renderWindow.ConvertCoords( e.app.GetSize().x, e.app.GetSize().y ).y+esize > e.y) {
+			sf::Vector2f bLeft = e.app.renderWindow.ConvertCoords(0, 0);
+			sf::Vector2f tRight = e.app.renderWindow.ConvertCoords(e.app.GetSize().x, e.app.GetSize().y);
+			sf::PostFX &fx = e.app.FindShader(shaderName);
+			fx.SetParameter("position", (e.x - bLeft.x)/e.app.GetSize().x, 1.0-(e.y - bLeft.y)/e.app.GetSize().y);
+			e.app.Draw(fx);
+	}
+}
+void HasShaderTag::Destroy() {}

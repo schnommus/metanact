@@ -301,4 +301,14 @@ public:
 	sf::Clock bClock;
 };
 
+class HasShaderTag : public Tag {
+public:
+	HasShaderTag( Entity &entityReference, std::string shaderNamev );
+	virtual void Init();
+	virtual void Step(float delta);
+	virtual void Draw();
+	virtual void Destroy();
+	std::string shaderName;
+};
+
 #endif
