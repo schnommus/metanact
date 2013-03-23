@@ -151,6 +151,10 @@ DefinedEntity::DefinedEntity( App2D &app, std::string type, int xpos, int ypos, 
 			onUnlockOnly = true;
 		} else if (tag == "IS_CINEMATIC_ENTITY") {
 			cinematicEntity = true;
+		} else if (tag == "HAS_SHADER") {
+			std::string sn;
+			ifs >> sn;
+			tagList.push_back( boost::shared_ptr<Tag>( new HasShaderTag( *this, sn ) ) );
 		}
 	}
 

@@ -1,0 +1,9 @@
+texture framebuffer
+vec2 position
+
+effect
+{
+		if(int(_in.x*1000)%10==0)
+		_out = vec4(0.5, 0.5, 0.5, 0.5); //framebuffer(_in)*0.01+ oldfb(_in)*0.99;
+		//oldfb(_in) = framebuffer(_in);
+}

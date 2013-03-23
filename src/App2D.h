@@ -94,6 +94,7 @@ public:
 	
 	sf::Image &FindImage( std::string dir );
 	sf::Font &FindFont( std::string dir, int size=30 );
+	sf::PostFX &FindShader( std::string dir );
 
 	int CountEntityOfType( std::string type );
 
@@ -170,6 +171,7 @@ public:
 
 	bool isClosing;
 	sf::RenderWindow renderWindow;
+
 	sf::View gameView;
 
 	PlayingField field;
@@ -191,6 +193,8 @@ public:
 	std::map< std::string, std::string > gameOptions;
 
 	std::map< std::string, sf::Image > imageMap;
+
+	std::map< std::string, sf::PostFX > shaderMap;
 
 	std::map< std::string, sf::Font > fontMap;
 
