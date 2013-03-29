@@ -8,32 +8,32 @@ EventHandler::EventHandler( App2D &a ) : app(a) {
 
 // Handle events, also the chat functionality
 void EventHandler::Event( const sf::Event &evt ) {
-	switch(evt.Type) {
+	switch(evt.type) {
 		case sf::Event::Closed:
 			app.Close();
 		break;
 
 		case sf::Event::KeyPressed:
-			if( evt.Key.Code == sf::Key::Escape && app.inGame && !app.cinematicEngine.IsCinematicRunning() ) {
+			if( evt.key.code == sf::Keyboard::Escape && app.inGame && !app.cinematicEngine.IsCinematicRunning() ) {
 				app.inGame = false;
 				MenuSystem *ms = new MenuSystem(app);
 				app.AddEntity(ms, 1001, true);
 				ms->DisplayMenu(Menu::PauseMenu);
 			}
 
-			keyPressEvent.notify(evt.Key.Code);
+			keyPressEvent.notify(evt.key.code);
 		break;
 
 		case sf::Event::KeyReleased:
-			keyReleaseEvent.notify(evt.Key.Code);
+			keyReleaseEvent.notify(evt.key.code);
 		break;
 
 		case sf::Event::MouseButtonPressed:
-			mousePressEvent.notify(evt.MouseButton.Button);
+			mousePressEvent.notify(evt.mouseButton.button);
 		break;
 
 		case sf::Event::MouseButtonReleased:
-			mouseReleaseEvent.notify(evt.MouseButton.Button);
+			mouseReleaseEvent.notify(evt.mouseButton.button);
 		break;
 	}
 }

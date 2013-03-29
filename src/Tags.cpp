@@ -36,8 +36,8 @@ CreatesGravityTag::CreatesGravityTag( Entity &entityReference, float gravityRadi
 void CreatesGravityTag::Init() { alt = e.id%3; }
 
 void CreatesGravityTag::Step(float delta) {
-	if(sRadius)
-		rCircle = sf::Shape::Circle(e.x, e.y, gRadius, sf::Color(0, 0, 0, 0), 2, sf::Color( 20, 0, 0 ) );
+	//if(sRadius)
+//		rCircle = sf::Shape::Circle(e.x, e.y, gRadius, sf::Color(0, 0, 0, 0), 2, sf::Color( 20, 0, 0 ) );
 	
 	// This makes gravity calculation stagger between frames, reducing CPU load
 	++alt;
@@ -46,8 +46,8 @@ void CreatesGravityTag::Step(float delta) {
 }
 
 void CreatesGravityTag::Draw() {
-	if(sRadius)
-		e.app.Draw( rCircle );
+	//if(sRadius)
+		//e.app.Draw( rCircle );
 }
 
 void CreatesGravityTag::Destroy() {}
@@ -87,14 +87,14 @@ void DestroyTypeOnRadiusTag::Destroy() {}
 
 ProjectileOnTypeRadiusTag::ProjectileOnTypeRadiusTag( Entity &entityReference, std::string projectileType, std::string targetType, float detectionRadius, float rate )
 	: Tag( entityReference), tType(targetType), pType(projectileType), dRadius(detectionRadius), r(rate) { }
-void ProjectileOnTypeRadiusTag::Init() { timer.Reset(); }
+void ProjectileOnTypeRadiusTag::Init() { timer.restart(); }
 
 void ProjectileOnTypeRadiusTag::Step(float delta) {
 	for( App2D::EntityMap::iterator it = e.app.entities.begin();
 			it != e.app.entities.end();
 			++it) {
-		if( it->second->type == tType && timer.GetElapsedTime() > 1.0/r ) {
-			timer.Reset();
+		if( it->second->type == tType && timer.getElapsedTime().asSeconds() > 1.0/r ) {
+			timer.restart();
 			float dist = sqrt(powf(e.x-it->second->x, 2) + powf(e.y-it->second->y, 2));
 			if( dist < dRadius )
 				e.app.AddEntity( new DefinedEntity(e.app, pType, e.x, e.y, e.vel, e.rotation ), 10 );
@@ -144,7 +144,7 @@ void DecaysTag::Step(float delta) {
 }
 
 void DecaysTag::Draw() {
-	for( int i = 0; i != e.sv.size(); ++i ) {
+/*	for( int i = 0; i != e.sv.size(); ++i ) {
 		sf::Color c = e.sv[i].GetColor();
 		c.a = sAlpha;
 		e.sv[i].SetPosition(e.x, e.y);
@@ -152,11 +152,11 @@ void DecaysTag::Draw() {
 		e.sv[i].SetScale(sScale, sScale);
 		e.sv[i].SetColor( c );
 		e.app.Draw(e.sv[i]);
-	}
-	e.imageSprite.SetPosition(e.x, e.y);
-	e.imageSprite.SetColor(sf::Color(255, 255, 255, sAlpha));
-	e.imageSprite.SetRotation(e.rotation);
-	e.imageSprite.SetScale(e.scale, e.scale);
+	}*/
+	e.imageSprite.setPosition(e.x, e.y);
+	e.imageSprite.setColor(sf::Color(255, 255, 255, sAlpha));
+	e.imageSprite.setRotation(e.rotation);
+	e.imageSprite.setScale(e.scale, e.scale);
 	e.app.Draw(e.imageSprite);
 }
 
@@ -199,8 +199,8 @@ InheritedHeadingVelocityTag::InheritedHeadingVelocityTag( Entity &entityReferenc
 	: Tag( entityReference ), f(inheritanceFactor) { }
 
 void InheritedHeadingVelocityTag::Init() { 
-	e.vel.x -= f*sinf( e.rotation/180*3.14 );
-	e.vel.y -= f*cosf( e.rotation/180*3.14 );
+	e.vel.x -= f*sinf( -e.rotation/180*3.14 );
+	e.vel.y -= f*cosf( -e.rotation/180*3.14 );
 }
 
 void InheritedHeadingVelocityTag::Step(float delta) {}
@@ -242,7 +242,7 @@ VelocityDeterminesHeadingTag::VelocityDeterminesHeadingTag( Entity &entityRefere
  void VelocityDeterminesHeadingTag::Init() {}
 
  void VelocityDeterminesHeadingTag::Step(float delta) {
-	e.rotation = 180+atan2f(e.vel.x, e.vel.y) / 3.14 * 180;
+	e.rotation = -(180+atan2f(e.vel.x, e.vel.y) / 3.14 * 180);
 }
 
  void VelocityDeterminesHeadingTag::Draw() {}
@@ -274,7 +274,7 @@ void WarpTargetTag::Destroy() {}
 
 WarpTypeOnRadiusTag::WarpTypeOnRadiusTag( Entity &entityReference, std::string typeToWarp, float warpRadius, short warpId )
 	: Tag( entityReference), type(typeToWarp),  wRadius(warpRadius), wid(warpId) { }
-void WarpTypeOnRadiusTag::Init() { if(e.displayName == "..") e.imageSprite.SetColor(sf::Color(255, 255, 0)); }
+void WarpTypeOnRadiusTag::Init() { if(e.displayName == "..") e.imageSprite.setColor(sf::Color(255, 255, 0)); }
 
 void WarpTypeOnRadiusTag::Step(float delta) {
 	for( App2D::EntityMap::iterator it = e.app.entities.begin();
@@ -285,9 +285,9 @@ void WarpTypeOnRadiusTag::Step(float delta) {
 			if( dist < wRadius ) {
 				if( it->second->type == "localplayer" ) {
 
-					sf::String n( sf::Unicode::Text("Loading..."), e.app.FindFont("Temp7c.ttf"), 40 );
-					n.SetPosition( e.x-60, e.y );
-					n.SetColor( sf::Color(255, 255, 255, 200) );
+					sf::Text n( sf::String("Loading..."), e.app.FindFont("Temp7c.ttf"), 40 );
+					n.setPosition( e.x-60, e.y );
+					n.setColor( sf::Color(255, 255, 255, 200) );
 					e.app.Draw(n);
 
 
@@ -336,24 +336,24 @@ void IsLocalPlayerTag::Init() {
 }
 
 void IsLocalPlayerTag::Step(float delta) {
-	sf::Vector2f MousePos = e.app.renderWindow.ConvertCoords(e.app.GetInput().GetMouseX(), e.app.GetInput().GetMouseY());
-	e.rotation = 180+atan2f(MousePos.x-e.x, MousePos.y-e.y) / 3.14 * 180;
+	sf::Vector2f MousePos = e.app.renderWindow.convertCoords( sf::Vector2i(sf::Mouse::getPosition().x, sf::Mouse::getPosition().y) );
+	e.rotation = -(180+atan2f(MousePos.x-e.x, MousePos.y-e.y) / 3.14 * 180);
 
 	if( e.app.GetOption("ControlScheme") == "Mouse Relative" ) {
 
-		if( e.app.GetInput().IsKeyDown(sf::Key::W) ) {
+		if( sf::Keyboard::isKeyPressed(sf::Keyboard::W) ) {
 			e.vel.x += agility*delta*sin((e.rotation+180)/180*3.14);
 			e.vel.y += agility*delta*cos((e.rotation+180)/180*3.14);
 		}
-		if( e.app.GetInput().IsKeyDown(sf::Key::S) ) {
+		if( sf::Keyboard::isKeyPressed(sf::Keyboard::S) ) {
 			e.vel.x += agility*delta*sin((e.rotation)/180*3.14);
 			e.vel.y += agility*delta*cos((e.rotation)/180*3.14);
 		}
-		if( e.app.GetInput().IsKeyDown(sf::Key::A) ) {
+		if( sf::Keyboard::isKeyPressed(sf::Keyboard::A) ) {
 			e.vel.x += agility*delta*sin((e.rotation-90)/180*3.14);
 			e.vel.y += agility*delta*cos((e.rotation-90)/180*3.14);
 		}
-		if( e.app.GetInput().IsKeyDown(sf::Key::D) ) {
+		if( sf::Keyboard::isKeyPressed(sf::Keyboard::D) ) {
 			e.vel.x += agility*delta*sin((e.rotation+90)/180*3.14);
 			e.vel.y += agility*delta*cos((e.rotation+90)/180*3.14);
 		}
@@ -362,44 +362,44 @@ void IsLocalPlayerTag::Step(float delta) {
 
 	//Original control scheme
 
-		if( e.app.GetInput().IsKeyDown(sf::Key::W) ) {
+		if( sf::Keyboard::isKeyPressed(sf::Keyboard::W) ) {
 			e.vel.y -= agility*delta;
 		}
-		if( e.app.GetInput().IsKeyDown(sf::Key::S) ) {
+		if( sf::Keyboard::isKeyPressed(sf::Keyboard::S) ) {
 			e.vel.y += agility*delta;
 		}
-		if( e.app.GetInput().IsKeyDown(sf::Key::A) ) {
+		if( sf::Keyboard::isKeyPressed(sf::Keyboard::A) ) {
 			e.vel.x -= agility*delta;
 		}
-		if( e.app.GetInput().IsKeyDown(sf::Key::D) ) {
+		if( sf::Keyboard::isKeyPressed(sf::Keyboard::D) ) {
 			e.vel.x += agility*delta;
 		}
 
 	}
 
-	if( e.app.GetInput().IsMouseButtonDown( sf::Mouse::Left ) && bClock.GetElapsedTime() > 1.0/fireRate ) {
+	if( sf::Mouse::isButtonPressed( sf::Mouse::Left ) && bClock.getElapsedTime().asSeconds() > 1.0/fireRate ) {
 		e.app.AddEntity( new DefinedEntity( e.app, projectileType,
-					e.x + 40*sin((e.rotation+180)/180*3.14),
-					e.y + 40*cos((e.rotation+180)/180*3.14),
+					e.x + 40*sin((-e.rotation+180)/180*3.14),
+					e.y + 40*cos((-e.rotation+180)/180*3.14),
 					e.vel, e.rotation ), 10 );
-		bClock.Reset();
+		bClock.restart();
 	}
 
-	if( e.app.GetInput().IsMouseButtonDown( sf::Mouse::Right ) && bClock2.GetElapsedTime() > 1.0/fireRate2 ) {
+	/*if( e.app.GetInput().IsMouseButtonDown( sf::Mouse::Right ) && bClock2.GetElapsedTime() > 1.0/fireRate2 ) {
 		e.app.AddEntity( new DefinedEntity( e.app, projectileType2,
 					e.x + 40*sin((e.rotation+180)/180*3.14),
 					e.y + 40*cos((e.rotation+180)/180*3.14),
 					e.vel, e.rotation ), 10 );
 		bClock2.Reset();
-	}
+	}*/
 
-	if( sClock.GetElapsedTime() > 0.1 * e.app.EvaluateOption("ParticleDensity") ) {
+	if( sClock.getElapsedTime().asSeconds() > 0.1 * e.app.EvaluateOption("ParticleDensity") ) {
 		float spd = sqrt( pow(e.vel.x, 2) + pow(e.vel.y, 2) );
 		e.app.AddEntity( new SmokeParticle(e.app, e.x, e.y, spd*1.5), 10, false );
-		sClock.Reset();
+		sClock.restart();
 	}
 
-	e.app.playerDeathTimer.Reset();
+	e.app.playerDeathTimer.restart();
 
 	if( lHealth > e.health ) {
 		e.app.PlaySound("hurtsound.wav");
@@ -439,8 +439,13 @@ void HasHealthTag::Step(float delta) {
 }
 
 void HasHealthTag::Draw() {
-	e.app.Draw( sf::Shape::Rectangle(sf::Vector2f(e.x-(amt/2), e.y+70), sf::Vector2f( e.x+(amt/2), e.y+62), sf::Color(180, 0, 0) ) );
-	e.app.Draw( sf::Shape::Rectangle(sf::Vector2f(e.x-(amt/2), e.y+70), sf::Vector2f( e.x+e.health-(amt/2), e.y+62), sf::Color(0, 180, 0) ) );
+	sf::RectangleShape r1( sf::Vector2f(amt, 8) );
+	r1.setFillColor( sf::Color(180, 0, 0) );
+	r1.setPosition(e.x, e.y+65);
+	e.app.Draw(r1);
+	r1.setFillColor( sf::Color(0, 180, 0) );
+	r1.setSize( sf::Vector2f( float(e.health), 8.0 ) );
+	e.app.Draw(r1);
 }
 
 void HasHealthTag::Destroy() {}
@@ -555,10 +560,10 @@ void RememberDestructionTag::Destroy() {
 EmitSmokeTag::EmitSmokeTag( Entity &entityReference ) : Tag( entityReference) { }
 void EmitSmokeTag::Init() {}
 void EmitSmokeTag::Step(float delta) { 
-	if( sClock.GetElapsedTime() > 0.3 * e.app.EvaluateOption("ParticleDensity") ) {
+	if( sClock.getElapsedTime().asSeconds() > 0.3 * e.app.EvaluateOption("ParticleDensity") ) {
 		float spd = sqrt( pow(e.vel.x, 2) + pow(e.vel.y, 2) );
 		if(spd > 0.1) e.app.AddEntity( new SmokeParticle(e.app, e.x, e.y, spd*1.5), 10, false );
-		sClock.Reset();
+		sClock.restart();
 	} 
 }
 
@@ -581,11 +586,11 @@ void ApproachPlayerTag::Step(float delta) {
 				py = it->second->y;
 				float dist = sqrt(powf(e.x-it->second->x, 2) + powf(e.y-it->second->y, 2));
 				if( dist < nearv ) {
-					e.rotation = 180+atan2f(px-e.x, py-e.y) / 3.14 * 180;
+					e.rotation = -(180+atan2f(px-e.x, py-e.y) / 3.14 * 180);
 					e.vel.y -= speed*delta*cos((e.rotation-180)/180*3.14);
 					e.vel.x -= speed*delta*sin((e.rotation-180)/180*3.14);
 				} else if( dist < farv ) {
-					e.rotation = 180+atan2f(px-e.x, py-e.y) / 3.14 * 180;
+					e.rotation = -(180+atan2f(px-e.x, py-e.y) / 3.14 * 180);
 					e.vel.y += speed*delta*cos((e.rotation-180)/180*3.14);
 					e.vel.x += speed*delta*sin((e.rotation-180)/180*3.14);
 				}
@@ -607,12 +612,12 @@ void ShootAtPlayerTag::Step(float delta) {
 			if( it->second->type == "localplayer" ) {
 				float dist = sqrt(powf(e.x-it->second->x, 2) + powf(e.y-it->second->y, 2));
 				if( dist < 600 ) {
-					if( bClock.GetElapsedTime() > 1.0/fireRate ) {
+					if( bClock.getElapsedTime().asSeconds() > 1.0/fireRate ) {
 						e.app.AddEntity( new DefinedEntity( e.app, projectileType,
-							e.x + 40*sin((e.rotation+180)/180*3.14),
-							e.y + 40*cos((e.rotation+180)/180*3.14),
+							e.x + 40*sin((-e.rotation+180)/180*3.14),
+							e.y + 40*cos((-e.rotation+180)/180*3.14),
 							e.vel, e.rotation ), 10 );
-						bClock.Reset();
+						bClock.restart();
 					}
 				}
 			}
@@ -626,8 +631,9 @@ HasShaderTag::HasShaderTag( Entity &entityReference, std::string shaderNamev ) :
 void HasShaderTag::Init() {}
 void HasShaderTag::Step(float delta) {}
 void HasShaderTag::Draw() {
-	int esize = 50;
-	if( e.app.renderWindow.ConvertCoords( 0, 0 ).x-esize < e.x &&
+	/*int esize = 50;
+	if( e.app.GetOption("UseShaders") == "Enabled" &&
+		e.app.renderWindow.ConvertCoords( 0, 0 ).x-esize < e.x &&
 		e.app.renderWindow.ConvertCoords( 0, 0 ).y-esize < e.y &&
 		e.app.renderWindow.ConvertCoords( e.app.GetSize().x, e.app.GetSize().y ).x+esize > e.x &&
 		e.app.renderWindow.ConvertCoords( e.app.GetSize().x, e.app.GetSize().y ).y+esize > e.y) {
@@ -636,6 +642,6 @@ void HasShaderTag::Draw() {
 			sf::PostFX &fx = e.app.FindShader(shaderName);
 			fx.SetParameter("position", (e.x - bLeft.x)/e.app.GetSize().x, 1.0-(e.y - bLeft.y)/e.app.GetSize().y);
 			e.app.Draw(fx);
-	}
+	}*/
 }
 void HasShaderTag::Destroy() {}

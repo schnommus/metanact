@@ -10,7 +10,6 @@
 #include <boost\shared_ptr.hpp>
 #include <boost\filesystem.hpp>
 
-
 App2D::App2D( bool useVSync,
 			  bool useCurrentResolution,
 			  const std::string &title,
@@ -19,9 +18,9 @@ App2D::App2D( bool useVSync,
 			  int size_x,
 			  int size_y)
 
-		: renderWindow( ( useCurrentResolution ? sf::VideoMode::GetDesktopMode() : sf::VideoMode( size_x, size_y )),
+		: renderWindow( ( useCurrentResolution ? sf::VideoMode::getDesktopMode() : sf::VideoMode( size_x, size_y )),
 		   title,
-		   ( ( fullscreen ) ? sf::Style::Fullscreen : sf::Style::Close ), sf::WindowSettings( 24, 8, 4 ) ), // 4xAA
+		   ( ( fullscreen ) ? sf::Style::Fullscreen : sf::Style::Close ), sf::ContextSettings( 24, 8, 4 ) ), // 4xAA
 		  eventHandler(*this),
 		  vSync(useVSync),
 		  isClosing(false),
@@ -35,14 +34,16 @@ App2D::App2D( bool useVSync,
 		  cinematicEngine(*this)
 	{
 
+	pastDeltaClock = 0;
+
 	// Maybe make this alterable
-	renderWindow.EnableKeyRepeat(true);
+	renderWindow.setKeyRepeatEnabled(true);
 
-	renderWindow.UseVerticalSync(useVSync);
+	renderWindow.setVerticalSyncEnabled(useVSync);
 
-	gameView = renderWindow.GetDefaultView();
+	gameView = renderWindow.getDefaultView();
 
-	gameView.Move(-GetSize().x/2, -GetSize().y/2); // Start a little closer to the centre
+	gameView.move(-GetSize().x/2, -GetSize().y/2); // Start a little closer to the centre
 
 	// Initialise the message scroller
 	for( int i = 0; i != maxMessages; ++i ) {
@@ -73,6 +74,8 @@ void App2D::Run() {
 		sf::Event evt;
 		while( !isClosing ) {
 
+			deltaClock.restart();
+
 			if( inGame && !cinematicEngine.IsCinematicRunning() ) {
 				if( LevelChanged() ) LoadLevel(); // Might need to do level re-load
 				CreateParticles();
@@ -81,23 +84,14 @@ void App2D::Run() {
 
 			cinematicEngine.UpdateCinematic();
 
-			while( renderWindow.GetEvent(evt) ) {
+			while( renderWindow.pollEvent(evt) ) {
 				eventHandler.Event(evt);
 			}
 			eventHandler.Tick();
-			
-			// If the framerate is too high and we are using VSync, limit it.
-			// This can happen if VSync doesn't work properly.
-			if( vSync && (1.0f/GetFrameTime()) > 100 ) {
-				renderWindow.SetFramerateLimit(60);
-			} else {
-				// Probably shouldn't do this every frame - but I haven't measured any consequences.
-				renderWindow.SetFramerateLimit(0);
-			}
 
-			renderWindow.Clear();
+			renderWindow.clear();
 			
-			renderWindow.SetView(gameView);
+			renderWindow.setView(gameView);
 
 			PerformCameraMovement();
 
@@ -109,14 +103,14 @@ void App2D::Run() {
 				 it != entities.end();
 				 ++it) {
 				if(it->first > 1000) { // Are we up to the UI?
-					renderWindow.SetView(renderWindow.GetDefaultView());
+					renderWindow.setView(renderWindow.getDefaultView());
 				}
 				// Only draw if it's relevent to a cinematic (assuming one's up)
 				if (!cinematicEngine.IsCinematicRunning() || it->second->cinematicEntity)
 					it->second->Draw();
 			}
 
-			renderWindow.SetView(renderWindow.GetDefaultView()); // make sure we are using a static view
+			renderWindow.setView(renderWindow.getDefaultView()); // make sure we are using a static view
 
 			if(GetOption("MinimalUI") == "Disabled") DrawLogMessages();
 
@@ -127,44 +121,46 @@ void App2D::Run() {
 
 			// If we're about to change levels, show loading text before the game freezes
 			if( LevelChanged() && inGame && !cinematicEngine.IsCinematicRunning() ) {
-				sf::String n( sf::Unicode::Text("Loading..."), FindFont("Action_Force.ttf", 60), 60 );
-				n.SetPosition( 0, 0 );
-				n.SetColor( sf::Color(255, 255, 255, 200) );
+				sf::Text n( "Loading...", FindFont("Action_Force.ttf", 60), 60 );
+				n.setPosition( 0, 0 );
+				n.setColor( sf::Color(255, 255, 255, 200) );
 				Draw(n);
 			}
 
-			renderWindow.SetView(gameView); // Back to the normal view
+			renderWindow.setView(gameView); // Back to the normal view
 
-			renderWindow.Display();
+			renderWindow.display();
 
 			// Destroy entities added for removal
 			ExecuteDeletionQueue();
+
+			pastDeltaClock = deltaClock.getElapsedTime().asSeconds();
 		}
-		renderWindow.Close();
+		renderWindow.close();
 	} catch ( const std::exception &e ) {
 		std::cout << "Unhandled exception: " << e.what() << std::endl;
 	} catch ( ... ) {
 		std::cout << "Non-standard unhandled exception!" << std::endl;
 	}
 
-	renderWindow.Close();
+	renderWindow.close();
 	system("pause");
 }
 
 void App2D::Draw(const sf::Drawable &object) {
-	renderWindow.Draw( object );
+	renderWindow.draw( object );
 }
 
-const sf::Input &App2D::GetInput() {
+/*const sf::Input &App2D::GetInput() {
 	return renderWindow.GetInput();
-}
+}*/
 
 void App2D::Close() {
 	isClosing = true;
 }
 
 sf::Vector2i App2D::GetSize() const {
-	return sf::Vector2i(renderWindow.GetWidth(), renderWindow.GetHeight());
+	return sf::Vector2i(renderWindow.getSize().x, renderWindow.getSize().y);
 }
 
 EventHandler &App2D::GetEventHandler() {
@@ -172,7 +168,7 @@ EventHandler &App2D::GetEventHandler() {
 }
 
 float App2D::GetFrameTime() const {
-	return renderWindow.GetFrameTime();
+	return pastDeltaClock;
 }
 
 long long App2D::nextId() {
@@ -239,18 +235,20 @@ void App2D::DisplayMessage(std::string message) {
 void App2D::DrawSubtitles() 
 {
 	if(currentDialogue != "") { // Draw subtitles
-		sf::String n( sf::Unicode::Text(currentSubtitles), FindFont("Temp7c.ttf", 15), 15 );
-		n.SetPosition( GetSize().x/2 - n.GetCharacterPos(currentSubtitles.size()-1).x/2, GetSize().y-100 );
-		n.SetColor( sf::Color(255, 255, 255, 255) );
-		sf::FloatRect backgroundRect = n.GetRect();
-		sf::Shape r = sf::Shape::Rectangle(backgroundRect.Left, backgroundRect.Bottom, backgroundRect.Right, backgroundRect.Top, sf::Color::Black);
+		sf::Text n( sf::String(currentSubtitles), FindFont("Temp7c.ttf", 15), 15 );
+		n.setPosition( GetSize().x/2 - n.getLocalBounds().width/2, GetSize().y-100 );
+		n.setColor( sf::Color(255, 255, 255, 255) );
+
+		sf::RectangleShape r( sf::Vector2f(n.getLocalBounds().width, n.getLocalBounds().height));
+		r.setFillColor(sf::Color::Black);
+		r.setPosition(n.getPosition());
 		Draw(r);
 		Draw(n);
 	}
 
 	// Dialogue has to be checked for 'stoppage' every frame
 	for( std::vector<sf::Sound*>::iterator it = playingSounds.begin(); it != playingSounds.end(); ++it ) {
-		if( *it == currentDialoguePtr && (*it)->GetStatus() == sf::Sound::Stopped) {
+		if( *it == currentDialoguePtr && (*it)->getStatus() == sf::Sound::Stopped) {
 			currentDialogue = "";
 			currentDialoguePtr = nullptr;
 			delete (*it);
@@ -267,9 +265,9 @@ void App2D::DisplayBigMessage(std::string message) {
 void App2D::CreateParticles() 
 {
 	// Make binary particles for effect
-	if(binaryReplaceTimer.GetElapsedTime() > 0.05f  * EvaluateOption("ParticleDensity"))	 {
+	if(binaryReplaceTimer.getElapsedTime().asSeconds() > 0.05f  * EvaluateOption("ParticleDensity"))	 {
 		AddEntity( new BinaryParticle(*this), 1 );
-		binaryReplaceTimer.Reset();
+		binaryReplaceTimer.restart();
 	}
 }
 
@@ -279,26 +277,26 @@ sf::Font &App2D::FindFont( std::string dir, int size ) {
 	dir = "../media/font/" + dir;
 	if( fontMap.find(dir) == fontMap.end() ) {
 		std::cout << "New font: " << dir << std::endl;
-		if(!fontMap[dir].LoadFromFile(dir, size)) {
+		if(!fontMap[dir].loadFromFile(dir)) {
 			throw std::exception(std::string(dir + " could not be loaded").c_str());
 		}
 	}
 	return fontMap.find(dir)->second;
 }
 
-sf::Image &App2D::FindImage( std::string dir ) {
+sf::Texture &App2D::FindTexture( std::string dir ) {
 	dir = "../media/image/" + dir;
-	if( imageMap.find(dir) == imageMap.end() ) {
+	if( textureMap.find(dir) == textureMap.end() ) {
 		std::cout << "New image: " << dir << std::endl;
-		if(!imageMap[dir].LoadFromFile(dir)) {
+		if(!textureMap[dir].loadFromFile(dir)) {
 			throw std::exception(std::string(dir + " could not be loaded").c_str());
 		}
 	}
-	return imageMap.find(dir)->second;
+	return textureMap.find(dir)->second;
 }
 
-sf::PostFX &App2D::FindShader( std::string dir ) {
-	dir = "../media/shader/" + dir;
+sf::Shader &App2D::FindShader( std::string dir ) {
+	/*dir = "../media/shader/" + dir;
 	if( shaderMap.find(dir) == shaderMap.end() ) {
 		std::cout << "New shader: " << dir << std::endl;
 		if(!shaderMap[dir].LoadFromFile(dir)) {
@@ -306,7 +304,8 @@ sf::PostFX &App2D::FindShader( std::string dir ) {
 		}
 		shaderMap[dir].SetTexture("framebuffer", NULL);
 	}
-	return shaderMap.find(dir)->second;
+	return shaderMap.find(dir)->second;*/
+	return sf::Shader();
 }
 
 
@@ -314,25 +313,30 @@ sf::PostFX &App2D::FindShader( std::string dir ) {
 sf::Sound *App2D::PlaySound( std::string sound, bool loop, bool useDist, int x, int y, int vol ) {
 	sound = "../media/sound/" + sound;
 	if( soundMap.find(sound) == soundMap.end() ) {
-		if(!soundMap[sound].LoadFromFile(sound)) {
+		if(!soundMap[sound].loadFromFile(sound)) {
 			throw std::exception(std::string(sound + " could not be loaded").c_str());
 		}
 	}
+
+	sf::Sound *newSound = new sf::Sound(soundMap[sound]);
+	playingSounds.push_back( newSound );
+	newSound->setLoop(loop);
+
 	if( !useDist ) { // Use distance from camera as volume
-		playingSounds.push_back( new sf::Sound(soundMap[sound], loop, 1, vol) );
+		newSound->setVolume(vol);
 	} else {
-		float dist = sqrt(powf(x-gameView.GetCenter().x, 2) + powf(y-gameView.GetCenter().y, 2));
+		float dist = sqrt(powf(x-gameView.getCenter().x, 2) + powf(y-gameView.getCenter().y, 2));
 		float v = 100-(dist/20.0);
-		playingSounds.push_back( new sf::Sound(soundMap[sound], loop, 1, v > 0 ? v : 0 ) );
+		newSound->setVolume( v > 0 ? v : 0 );
 	}
-	playingSounds.back()->Play();
+	playingSounds.back()->play();
 
 	// Get rid of all the sounds that have stopped playing
 	bool isErasing = true; // Boolean required 'cause of iterator invalidation
 	while(isErasing) {
 		isErasing = false;
 		for( std::vector<sf::Sound*>::iterator it = playingSounds.begin(); it != playingSounds.end(); ++it ) {
-			if( (*it)->GetStatus() == sf::Sound::Stopped) {
+			if( (*it)->getStatus() == sf::Sound::Stopped) {
 				if( *it == currentDialoguePtr ) // Keep track of when dialogue is finished for subtitles
 					currentDialogue = "";
 				delete (*it);
@@ -349,7 +353,7 @@ sf::Sound *App2D::PlaySound( std::string sound, bool loop, bool useDist, int x, 
 void App2D::SetMusic(std::string music) {
 	static std::string lastMusic;
 	if( lastMusic != music ) {
-		if( currentMusic ) currentMusic->Stop();
+		if( currentMusic ) currentMusic->stop();
 		currentMusic = PlaySound(music, true);
 	}
 	lastMusic = music;
@@ -399,32 +403,35 @@ void App2D::DrawMinimap() {
 	double fx = sx/abs(field.bleft.x - field.tright.x);
 	double fy = sy/abs(field.bleft.y - field.tright.y);
 
-	sf::Shape box = sf::Shape::Rectangle( renderWindow.GetWidth()-sx, renderWindow.GetHeight()-sy,
-										  renderWindow.GetWidth()-1, renderWindow.GetHeight()-1, sf::Color(0, 0, 0, 150), 1, sf::Color(180, 180, 180) );
+	sf::RectangleShape box( sf::Vector2f(sx-1, sy-1) );
+	box.setPosition(GetSize().x-sx, GetSize().y-sy);
+	box.setFillColor( sf::Color(0, 0, 0, 150) );
+	box.setOutlineColor(sf::Color(180, 180, 180) );
+	box.setOutlineThickness(1);
 	Draw(box);
-	sf::Shape s = sf::Shape::Line(0, 0, 1, 1, 3, sf::Color(255, 255, 255) );
+	sf::CircleShape s(3, 3);
 
 	for ( EntityMap::iterator it = entities.begin(); it != entities.end(); ++it ) {
 		if( !it->second->type.empty() && it->second->isEnemy ) {
-			s.SetColor( sf::Color( 255, 0, 0 ) );
-			s.SetPosition( renderWindow.GetWidth() - sx + (abs(field.bleft.x)+it->second->x)*fx,
-						   renderWindow.GetHeight() - sy + (abs(field.bleft.y)+it->second->y)*fy );
+			s.setFillColor( sf::Color( 255, 0, 0 ) );
+			s.setPosition( GetSize().x - sx + (abs(field.bleft.x)+it->second->x)*fx,
+						   GetSize().y - sy + (abs(field.bleft.y)+it->second->y)*fy );
 			Draw(s);
 		} else if ( !it->second->type.empty() && it->second->type == "localplayer" ) {
-			s.SetColor( sf::Color( 0, 255, 0 ) );
-			s.SetPosition( renderWindow.GetWidth() - sx + (abs(field.bleft.x)+it->second->x)*fx,
-						   renderWindow.GetHeight() - sy + (abs(field.bleft.y)+it->second->y)*fy );
+			s.setFillColor( sf::Color( 0, 255, 0 ) );
+			s.setPosition( GetSize().x - sx + (abs(field.bleft.x)+it->second->x)*fx,
+				GetSize().y - sy + (abs(field.bleft.y)+it->second->y)*fy );
 			Draw(s);
 		} else if ( !it->second->type.empty() && it->second->type == "warper") {
-			s.SetColor( sf::Color( 0, 0, 255 ) );
-			if( it->second->displayName == ".." ) s.SetColor( sf::Color( 255, 255, 0 ) );
-			s.SetPosition( renderWindow.GetWidth() - sx + (abs(field.bleft.x)+it->second->x)*fx,
-						   renderWindow.GetHeight() - sy + (abs(field.bleft.y)+it->second->y)*fy );
+			s.setFillColor( sf::Color( 0, 0, 255 ) );
+			if( it->second->displayName == ".." ) s.setFillColor( sf::Color( 255, 255, 0 ) );
+			s.setPosition( GetSize().x - sx + (abs(field.bleft.x)+it->second->x)*fx,
+				GetSize().y - sy + (abs(field.bleft.y)+it->second->y)*fy );
 			Draw(s);
 		} else if( !it->second->type.empty() && InField(it->second.get()) ) {
-			s.SetColor( sf::Color( 128, 128, 128 ) );
-			s.SetPosition( renderWindow.GetWidth() - sx + (abs(field.bleft.x)+it->second->x)*fx,
-						   renderWindow.GetHeight() - sy + (abs(field.bleft.y)+it->second->y)*fy );
+			s.setFillColor( sf::Color( 128, 128, 128 ) );
+			s.setPosition( GetSize().x - sx + (abs(field.bleft.x)+it->second->x)*fx,
+				GetSize().y - sy + (abs(field.bleft.y)+it->second->y)*fy );
 			Draw(s);
 		}
 	}
@@ -724,7 +731,7 @@ void App2D::LoadLevel() {
 
 void App2D::RespawnPlayerIfDead() {
 	// Make sure there is a player
-	if( playerDeathTimer.GetElapsedTime() > 3.0f && CountEntityOfType("localplayer") == 0) {
+	if( playerDeathTimer.getElapsedTime().asSeconds() > 3.0f && CountEntityOfType("localplayer") == 0) {
 		playerName = GetOption("PlayerName");
 		AddEntity( new DefinedEntity( *this, "localplayer", 150, 150, sf::Vector2f(), 0, true, playerName ), 10 );
 	}
@@ -733,29 +740,35 @@ void App2D::RespawnPlayerIfDead() {
 void App2D::PerformCameraMovement() {
 	//Camera controls
 	if( following ) {
-		cdelta.x = toFollow->x-gameView.GetCenter().x;
-		cdelta.y = toFollow->y-gameView.GetCenter().y;
+		cdelta.x = toFollow->x-gameView.getCenter().x;
+		cdelta.y = toFollow->y-gameView.getCenter().y;
 	}
 	// Camera slowdown
 	cdelta.x += (-cdelta.x*GetFrameTime());
 	cdelta.y += (-cdelta.y*GetFrameTime());
 	float cSpd = 5; // Speed of camera following
-	gameView.Move(cdelta.x*GetFrameTime()*cSpd, cdelta.y*GetFrameTime()*cSpd);
+	gameView.move(cdelta.x*GetFrameTime()*cSpd, cdelta.y*GetFrameTime()*cSpd);
 }
 
 void App2D::DrawGameField() {
-	Draw( sf::Shape::Line(field.bleft.x, field.bleft.y, field.tright.x, field.bleft.y, 3, sf::Color( 0, 0, 0 ), 1, sf::Color(50, 50, 255) ) );
+	/*sf::VertexArray v(sf::Lines, 0);
+	v.append(sf::Vertex(field.bleft));
+	v.append(sf::Vertex(field.));
+	v.append(sf::Vertex(field.tleft));
+	v.append(sf::Vertex(field.bleft));
+
+	Draw( sf::Lines(field.bleft.x, field.bleft.y, field.tright.x, field.bleft.y, 3, sf::Color( 0, 0, 0 ), 1, sf::Color(50, 50, 255) ) );
 	Draw( sf::Shape::Line(field.bleft.x, field.bleft.y, field.bleft.x, field.tright.y, 3, sf::Color( 0, 0, 0 ), 1, sf::Color(50, 50, 255) ) );
 	Draw( sf::Shape::Line(field.bleft.x, field.tright.y, field.tright.x, field.tright.y, 3, sf::Color( 0, 0, 0 ), 1, sf::Color(50, 50, 255) ) );
-	Draw( sf::Shape::Line(field.tright.x, field.tright.y, field.tright.x, field.bleft.y, 3, sf::Color( 0, 0, 0 ), 1, sf::Color(50, 50, 255) ) );
+	Draw( sf::Shape::Line(field.tright.x, field.tright.y, field.tright.x, field.bleft.y, 3, sf::Color( 0, 0, 0 ), 1, sf::Color(50, 50, 255) ) );*/
 }
 
 void App2D::DrawLogMessages() {
 	// Draw messages, scrolling them up when new ones arrive (if minimal UI is disabled)
 	for( int i = messageList.size()-maxMessages, j = 0; i != messageList.size(); ++i, ++j ) {
-		sf::String n( sf::Unicode::Text(messageList[i]), FindFont("BlackWolf.ttf", 12), 12 );
-		n.SetPosition( 0, renderWindow.GetHeight()-maxMessages*15+j*15-5 );
-		n.SetColor( sf::Color(255, 255, 255, 200) );
+		sf::Text n( sf::String(messageList[i]), FindFont("BlackWolf.ttf", 12), 12 );
+		n.setPosition( 0, GetSize().y-maxMessages*15+j*15-5 );
+		n.setColor( sf::Color(255, 255, 255, 200) );
 		Draw(n);
 	}
 }

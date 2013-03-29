@@ -6,7 +6,7 @@
 
 void CinematicEngine::RunCinematic( std::string filename ) {
 	cinematicRunning = true;
-	masterClock.Reset();
+	masterClock.restart();
 	eventMap.clear();
 	namedEntityMap.clear();
 
@@ -100,18 +100,18 @@ void CinematicEngine::UpdateCinematic() {
 				break;
 			} 
 
-			if( (*it)->endTime < masterClock.GetElapsedTime() ) {
+			if( (*it)->endTime < masterClock.getElapsedTime().asSeconds() ) {
 				(*it)->EndMovement();
 				delete *it;
 				activeMovements.erase(it);
 				break;
 			}
 
-			(*it)->ApplyForGlobalTime( masterClock.GetElapsedTime() );
+			(*it)->ApplyForGlobalTime( masterClock.getElapsedTime().asSeconds() );
 		}
 
 		for( EventMapType::iterator e = eventMap.begin(); e != eventMap.end(); ++e ) {
-			if( e->first < masterClock.GetElapsedTime() ) {
+			if( e->first < masterClock.getElapsedTime().asSeconds() ) {
 				// Do what e->second says to do
 				std::istringstream iss(e->second);
 				std::string s; iss >> s;
@@ -141,11 +141,11 @@ void CinematicEngine::UpdateCinematic() {
 				} else if (s == "MOVE_LINEAR") {
 					std::string ename; float tx, ty, etime; iss >> ename >> tx >> ty >> etime;
 					Entity *e = app.GetEntityWithId( namedEntityMap.at(ename) );
-					activeMovements.push_back( new LinearMovement(app, masterClock.GetElapsedTime(), etime, sf::Vector2f(e->x, e->y), sf::Vector2f(tx, ty), e->id ) );
+					activeMovements.push_back( new LinearMovement(app, masterClock.getElapsedTime().asSeconds(), etime, sf::Vector2f(e->x, e->y), sf::Vector2f(tx, ty), e->id ) );
 				} else if (s == "MOVE_SINE") {
 					std::string ename; float tx, ty, etime; iss >> ename >> tx >> ty >> etime;
 					Entity *e = app.GetEntityWithId( namedEntityMap.at(ename) );
-					activeMovements.push_back( new SineMovement(app, masterClock.GetElapsedTime(), etime, sf::Vector2f(e->x, e->y), sf::Vector2f(tx, ty), e->id ) );
+					activeMovements.push_back( new SineMovement(app, masterClock.getElapsedTime().asSeconds(), etime, sf::Vector2f(e->x, e->y), sf::Vector2f(tx, ty), e->id ) );
 				}
 
 				// Then we don't have to worry about it any more

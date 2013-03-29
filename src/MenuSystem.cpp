@@ -207,6 +207,20 @@ public:
 	}
 };
 
+class UseShaders : public MenuItem {
+public:
+	UseShaders( App2D &a, MenuSystem &m ) : MenuItem(a, m) {
+		name = "Shaders";
+		attributes.push_back("Enabled");
+		attributes.push_back("Disabled");
+
+		InitializeToCurrent(attributes, currentAttribute, "UseShaders", app);
+	}
+	virtual void Clicked() {
+		CycleOptions(attributes, currentAttribute, "UseShaders", app);
+	}
+};
+
 class GoBack : public MenuItem {
 public:
 	GoBack( App2D &a, MenuSystem &m ) : MenuItem(a, m) {
@@ -230,6 +244,7 @@ public:
 		items.push_back( boost::shared_ptr<MenuItem>( new ControlScheme(app, ms) ) );
 		items.push_back( boost::shared_ptr<MenuItem>( new ParticleDensity(app, ms) ) );
 		items.push_back( boost::shared_ptr<MenuItem>( new MinimalUI(app, ms) ) );
+		items.push_back( boost::shared_ptr<MenuItem>( new UseShaders(app, ms) ) );
 		items.push_back( boost::shared_ptr<MenuItem>( new Directory(app, ms) ) );
 		items.push_back( boost::shared_ptr<MenuItem>( new GoBack(app, ms) ) );
 	}
@@ -286,8 +301,8 @@ MenuSystem::MenuSystem( App2D &a ) : Entity(a) {
 
 	DisplayMenu(Menu::MainMenu);
 
-	mText.SetColor( sf::Color(255, 255, 255, 255) );
-	mText.SetFont(app.FindFont("Action_Force.ttf", 40));
+	mText.setColor( sf::Color(255, 255, 255, 255) );
+	mText.setFont(app.FindFont("Action_Force.ttf", 40));
 }
 
 bool MenuSystem::onStep(float delta) {
@@ -306,13 +321,13 @@ void MenuSystem::Draw() {
 
 	mTextOSS.str(""); //Clear OSS
 	mTextOSS << currentMenu->title;
-	mText.SetText( mTextOSS.str() );
-	mText.SetSize(40);
+	mText.setString( mTextOSS.str() );
+	mText.setCharacterSize(40);
 
-	mText.SetPosition(0, 0);
-	mText.SetPosition(app.GetSize().x/2 - mText.GetCharacterPos(mTextOSS.str().size()-1).x/2, app.GetSize().y/2-currentMenu->items.size()*25-40 );
+	mText.setPosition(0, 0);
+	mText.setPosition(app.GetSize().x/2 - mText.getLocalBounds().width/2, app.GetSize().y/2-currentMenu->items.size()*25-40 );
 
-	mText.SetColor( sf::Color(255, 255, 255, 255) );
+	mText.setColor( sf::Color(255, 255, 255, 255) );
 	app.Draw(mText);
 
 	for(int i = 0; i != currentMenu->items.size(); ++i ) {
@@ -324,21 +339,21 @@ void MenuSystem::Draw() {
 			mTextOSS << " [" << currentMenu->items[i]->attributes[currentMenu->items[i]->currentAttribute] << "]";
 		}
 
-		mText.SetText( mTextOSS.str() );
-		mText.SetSize(25);
+		mText.setString( mTextOSS.str() );
+		mText.setCharacterSize(25);
 
-		mText.SetPosition(0, 0);
-		mText.SetPosition(app.GetSize().x/2 - mText.GetCharacterPos(mTextOSS.str().size()-1).x/2, i*50 + 50 + app.GetSize().y/2 - currentMenu->items.size()*25 );
+		mText.setPosition(0, 0);
+		mText.setPosition(app.GetSize().x/2 - mText.getLocalBounds().width/2, i*50 + 50 + app.GetSize().y/2 - currentMenu->items.size()*25 );
 
 		//Check whether item is hovered over, pressed, or clicked
-		if( mText.GetPosition().x < app.GetInput().GetMouseX() &&
-			mText.GetPosition().x+mText.GetCharacterPos(mTextOSS.str().size()-1).x > app.GetInput().GetMouseX() &&
-			mText.GetPosition().y < app.GetInput().GetMouseY() &&
-			mText.GetPosition().y+mText.GetSize() > app.GetInput().GetMouseY() ) {
+		if( mText.getPosition().x < sf::Mouse::getPosition().x &&
+			mText.getPosition().x+mText.getLocalBounds().width > sf::Mouse::getPosition().x &&
+			mText.getPosition().y < sf::Mouse::getPosition().y &&
+			mText.getPosition().y+mText.getLocalBounds().height > sf::Mouse::getPosition().y ) {
 			currentMenu->items[i]->hovering = true;
-			if(app.GetInput().IsMouseButtonDown(sf::Mouse::Left))
+			if(sf::Mouse::isButtonPressed(sf::Mouse::Left))
 				currentMenu->items[i]->downed = true;
-			if(!app.GetInput().IsMouseButtonDown(sf::Mouse::Left) && currentMenu->items[i]->downed) {
+			if(!sf::Mouse::isButtonPressed(sf::Mouse::Left) && currentMenu->items[i]->downed) {
 				currentMenu->items[i]->Clicked();
 				currentMenu->items[i]->downed = false;
 			}
@@ -348,11 +363,11 @@ void MenuSystem::Draw() {
 		}
 
 		if( currentMenu->items[i]->hovering && !currentMenu->items[i]->disabled )
-			mText.SetColor( sf::Color(255, 255, 255, 255) );
+			mText.setColor( sf::Color(255, 255, 255, 255) );
 		else if ( !currentMenu->items[i]->disabled )
-			mText.SetColor( sf::Color(255, 255, 255, 190) );
+			mText.setColor( sf::Color(255, 255, 255, 190) );
 		else
-			mText.SetColor( sf::Color(255, 255, 255, 100) );
+			mText.setColor( sf::Color(255, 255, 255, 100) );
 
 		app.Draw(mText);
 	}

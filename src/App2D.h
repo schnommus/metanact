@@ -68,10 +68,6 @@ public:
 	/// \param object : The drawable object to draw. The draw order will depend on the entities' draw order specified on creation.
 	void Draw( const sf::Drawable &object );
 
-	/// Get SFML's internal input class. Use it to check if a key is down, mouse position etc.
-	/// \return The input class.
-	const sf::Input &GetInput();
-
 	/// Closes the application.
 	void Close();
 
@@ -92,9 +88,9 @@ public:
 
 	void PlayDialogue(std::string filename);
 	
-	sf::Image &FindImage( std::string dir );
+	sf::Texture &FindTexture( std::string dir );
 	sf::Font &FindFont( std::string dir, int size=30 );
-	sf::PostFX &FindShader( std::string dir );
+	sf::Shader &FindShader( std::string dir );
 
 	int CountEntityOfType( std::string type );
 
@@ -192,9 +188,9 @@ public:
 
 	std::map< std::string, std::string > gameOptions;
 
-	std::map< std::string, sf::Image > imageMap;
+	std::map< std::string, sf::Texture > textureMap;
 
-	std::map< std::string, sf::PostFX > shaderMap;
+	std::map< std::string, sf::Shader > shaderMap;
 
 	std::map< std::string, sf::Font > fontMap;
 
@@ -211,6 +207,9 @@ public:
 
 	sf::Clock playerDeathTimer;
 	sf::Clock binaryReplaceTimer;
+
+	sf::Clock deltaClock;
+	float pastDeltaClock;
 };
 
 // Include the default entities.

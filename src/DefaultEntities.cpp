@@ -4,7 +4,7 @@
 bool SplashScreen::onStep(float delta) {
 	if(!c) {
 		// Allow skipping of splash screen on escape key
-		if( app.GetInput().IsKeyDown(sf::Key::Escape) ) {
+		if( sf::Keyboard::isKeyPressed(sf::Keyboard::Escape) ) {
 			c = true;
 		}
 
@@ -24,9 +24,9 @@ bool SplashScreen::onStep(float delta) {
 		}
 
 		if(s)
-			mets.SetColor(sf::Color(255, 255, 255, alpha));
+			mets.setColor(sf::Color(255, 255, 255, alpha));
 		else
-			schs.SetColor(sf::Color(255, 255, 255, alpha));
+			schs.setColor(sf::Color(255, 255, 255, alpha));
 	} else {
 		//app.inGame = true;
 		app.AddEntity(new FPSMeter(app), 1001, true);
