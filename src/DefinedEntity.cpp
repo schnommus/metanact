@@ -34,16 +34,16 @@ DefinedEntity::DefinedEntity( App2D &app, std::string type, int xpos, int ypos, 
 		if ( tag == "NAME" ) {
 			ifs >> type;
 		} else if ( tag == "FILE" ) {
-			std::string fname;
+			/*std::string fname;
 			ifs >> fname;
 			fname = "../media/entity/shape/" + fname + ".sdef";
-			sv = LineReader::Read(fname.c_str());
+			sv = LineReader::Read(fname.c_str());*/
 		} else if ( tag == "IMAGE" ) {
 			std::string iname;
 			ifs >> iname;
 			imageDir = iname;
-			imageSprite.SetImage( app.FindImage(iname) );
-			imageSprite.SetCenter( imageSprite.GetSize().x/2, imageSprite.GetSize().y/2 );
+			imageSprite.setTexture( app.FindTexture(iname) );
+			imageSprite.setOrigin( imageSprite.getLocalBounds().width/2, imageSprite.getLocalBounds().height/2 );
 		} else if (tag == "SCALE") {
 			float scalev;
 			ifs >> scalev;
@@ -177,39 +177,39 @@ bool DefinedEntity::onStep( float delta ) {
 void DefinedEntity::Draw() {
 	int esize = 50;
 
-	if ( app.renderWindow.ConvertCoords( 0, 0 ).x-esize < x &&
-		 app.renderWindow.ConvertCoords( 0, 0 ).y-esize < y &&
-		 app.renderWindow.ConvertCoords( app.GetSize().x, app.GetSize().y ).x+esize > x &&
-		 app.renderWindow.ConvertCoords( app.GetSize().x, app.GetSize().y ).y+esize > y &&
+	if ( app.renderWindow.convertCoords( sf::Vector2i(0, 0) ).x-esize < x &&
+		 app.renderWindow.convertCoords( sf::Vector2i(0, 0) ).y-esize < y &&
+		 app.renderWindow.convertCoords( sf::Vector2i(app.GetSize().x, app.GetSize().y ) ).x+esize > x &&
+		 app.renderWindow.convertCoords( sf::Vector2i(app.GetSize().x, app.GetSize().y ) ).y+esize > y &&
 		 (!onUnlockOnly || app.currentLevelUnlocked) && (!app.cinematicEngine.IsCinematicRunning() || cinematicEntity) ) {
 
 		if( !drawOverride ) {
-			for( int i = 0; i != sv.size(); ++i ) {
+			/*for( int i = 0; i != sv.size(); ++i ) {
 				sv[i].SetPosition(x, y);
 				sv[i].SetRotation(rotation);
 				sv[i].SetScale(scale, scale);
 				app.Draw(sv[i]);
-			}
+			}*/
 			if( !imageDir.empty() ){
-				imageSprite.SetPosition(x, y);
-				imageSprite.SetRotation(rotation);
-				imageSprite.SetScale(scale, scale);
+				imageSprite.setPosition(x, y);
+				imageSprite.setRotation(rotation);
+				imageSprite.setScale(scale, scale);
 				app.Draw(imageSprite);
 			}
 		}
 
 		if( displayName.length() > 0 ) {
 			// Set the alpha of the name depending on screen position
-			sf::Vector2f camPos = app.renderWindow.ConvertCoords( app.GetSize().x/2, app.GetSize().y/2 );
+			sf::Vector2f camPos = app.renderWindow.convertCoords( sf::Vector2i(app.GetSize().x/2, app.GetSize().y/2) );
 			int dist = sqrt(pow(x-camPos.x,2) + pow(y-camPos.y,2));
 			int a = app.GetSize().x/3-dist;
 			if( a < 0 ) a = 0; else if (a > 150) a = 150;
 
 			// Draw the entity display name
-			sf::String n( sf::Unicode::Text(displayName), app.FindFont("Temp7c.ttf"), 15 );
-			int offs = n.GetCharacterPos( displayName.length()-1 ).x - n.GetCharacterPos( 0 ).x;
-			n.SetPosition( x - offs/2, y - 60 );
-			n.SetColor( sf::Color(255, 255, 255, a) );
+			sf::Text n( sf::String(displayName), app.FindFont("Temp7c.ttf"), 15 );
+			int offs = n.getLocalBounds().width;
+			n.setPosition( x - offs/2, y - 60 );
+			n.setColor( sf::Color(255, 255, 255, a) );
 			app.Draw(n);
 		}
 

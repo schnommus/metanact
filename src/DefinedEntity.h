@@ -10,7 +10,7 @@
 #include "Tags.h"
 
 // Class to read line-shape definitions
-class LineReader {
+/*class LineReader {
 public:
 	static std::vector<sf::Shape> Read ( const char *file ) {
 		std::ifstream ifs;
@@ -38,7 +38,7 @@ public:
 		}
 		return shapeVector;
 	}
-};
+};*/
 
 class GravityData {
 public:

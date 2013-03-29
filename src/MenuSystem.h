@@ -66,7 +66,7 @@ public:
 private:
 	CppEventHandler hStepEvent;
 	sf::Clock binaryReplaceTimer;
-	sf::String mText;
+	sf::Text mText;
 	std::ostringstream mTextOSS;
 	std::vector<boost::shared_ptr<MenuScreen>> menus;
 	MenuScreen *currentMenu, *newCurrentMenu;

@@ -46,7 +46,7 @@ public:
 	virtual void Destroy();
 	float gRadius, gStrength;
 	bool sRadius; short alt;
-	sf::Shape rCircle;
+//	sf::Shape rCircle;
 };
 
 class UseRandomRotationTag : public Tag {

@@ -11,12 +11,12 @@ public:
 		// Register events
 		hStepEvent = app.GetEventHandler().stepEvent.attach(this, &FPSMeter::onStep);
 
-		strFPS.SetFont(app.FindFont("BlackWolf.ttf", 12)); strFPS.SetSize(12);
-		strObjects.SetFont(app.FindFont("BlackWolf.ttf", 12)); strObjects.SetSize(12);
+		strFPS.setFont(app.FindFont("BlackWolf.ttf", 12)); strFPS.setCharacterSize(12);
+		strObjects.setFont(app.FindFont("BlackWolf.ttf", 12)); strObjects.setCharacterSize(12);
 
 		// Set text colours
-		strFPS.SetColor( sf::Color(200, 200, 255, 200 ) );
-		strObjects.SetColor( sf::Color(200, 200, 255, 200 ) );
+		strFPS.setColor( sf::Color(200, 200, 255, 200 ) );
+		strObjects.setColor( sf::Color(200, 200, 255, 200 ) );
 
 		cinematicEntity = true;
 	}
@@ -30,13 +30,13 @@ public:
 		// Update FPS
 		oss.str("");
 		oss << int(1.f/delta) << " FPS";
-		strFPS.SetText( oss.str() );
+		strFPS.setString( oss.str() );
 
 		// Update object count
 		oss.str("");
 		oss << app.GetObjectCount() << " Objects";
-		strObjects.SetText( oss.str() );
-		strObjects.SetPosition( app.GetSize().x - strObjects.GetCharacterPos(oss.str().size()).x, 0 );
+		strObjects.setString( oss.str() );
+		strObjects.setPosition( app.GetSize().x - strObjects.getLocalBounds().width, 0 );
 		return true;
 	}
 
@@ -51,7 +51,7 @@ public:
 private:
 	CppEventHandler hStepEvent;
 	std::ostringstream oss;
-	sf::String strFPS, strObjects;
+	sf::Text strFPS, strObjects;
 };
 
 // Ugly class to show splash screens
@@ -62,20 +62,17 @@ public:
 		hStepEvent = app.GetEventHandler().stepEvent.attach(this, &SplashScreen::onStep);
 
 		// Load and init splash images in middle of screen
-		schs.SetImage(app.FindImage("SchnommusLogo.png"));
-		mets.SetImage(app.FindImage("MetanactLogo.png"));
+		schs.setTexture(app.FindTexture("SchnommusLogo.png"));
+		mets.setTexture(app.FindTexture("MetanactLogo.png"));
 
-		met.SetSmooth(false);
-		sch.SetSmooth(false);
+		mets.setOrigin( mets.getLocalBounds().width/2, mets.getLocalBounds().height/2 );
+		schs.setOrigin( schs.getLocalBounds().width/2, schs.getLocalBounds().height/2 );
 
-		mets.SetCenter( mets.GetSize().x/2, mets.GetSize().y/2 );
-		schs.SetCenter( schs.GetSize().x/2, schs.GetSize().y/2 );
+		mets.setPosition( app.GetSize().x/2, app.GetSize().y/2 );
+		schs.setPosition( app.GetSize().x/2, app.GetSize().y/2 );
 
-		mets.SetPosition( app.GetSize().x/2, app.GetSize().y/2 );
-		schs.SetPosition( app.GetSize().x/2, app.GetSize().y/2 );
-
-		mets.SetColor(sf::Color(255, 255, 255, 0));
-		schs.SetColor(sf::Color(255, 255, 255, 0));
+		mets.setColor(sf::Color(255, 255, 255, 0));
+		schs.setColor(sf::Color(255, 255, 255, 0));
 
 		// Null some state values
 		alpha = 0;
@@ -96,7 +93,6 @@ public:
 
 private:
 	CppEventHandler hStepEvent;
-	sf::Image met, sch;
 	sf::Sprite mets, schs;
 	float alpha; // Stores alpha
 	bool f, s, c; // Finished displaying this image, second image active, complete
@@ -109,13 +105,13 @@ public:
 		hStepEvent = app.GetEventHandler().stepEvent.attach(this, &BinaryParticle::onStep);
 		alpha = 2; gd = false;
 		int sDelta = 1000;
-		sf::Vector2f v = app.renderWindow.ConvertCoords((rand()%(app.GetSize().x+sDelta))-sDelta/2, (rand()%(app.GetSize().y+sDelta))-sDelta/2);
+		sf::Vector2f v = app.renderWindow.convertCoords(sf::Vector2i( (rand()%(app.GetSize().x+sDelta))-sDelta/2, (rand()%(app.GetSize().y+sDelta))-sDelta/2) );
 		x = v.x;
 		y = v.y;
 		fScale = 3/float(rand()%10+1);
-		s.SetFont(app.FindFont("Temp7c.ttf"));
-		s.SetSize((10/fScale+7 > 20 ? 20 : 10/fScale+7));
-		s.SetText((rand()%2)?"0":"1");
+		s.setFont(app.FindFont("Temp7c.ttf"));
+		s.setCharacterSize((10/fScale+7 > 20 ? 20 : 10/fScale+7));
+		s.setString((rand()%2)?"0":"1");
 		cinematicEntity = true;
 	}
 
@@ -132,8 +128,8 @@ public:
 		else alpha -= 100*delta;
 		if( alpha > 150 ) gd = true;
 		if(alpha < 1) app.RemoveEntity(this->id);
-		s.SetColor( sf::Color(50, 255, 50, alpha ) );
-		s.SetPosition(x, y);
+		s.setColor( sf::Color(50, 255, 50, alpha ) );
+		s.setPosition(x, y);
 		return true;
 	}
 
@@ -144,7 +140,7 @@ public:
 
 private:
 	CppEventHandler hStepEvent;
-	sf::String s; float alpha, fScale; bool gd;
+	sf::Text s; float alpha, fScale; bool gd;
 };
 
 class BigMessage : public Entity {
@@ -155,10 +151,10 @@ public:
 		alpha = 255;
 		y = 80;
 
-		s.SetFont(app.FindFont("Action_Force.ttf"));
-		s.SetSize(30);
-		s.SetText(message.c_str());
-		x = app.GetSize().x/2 - s.GetCharacterPos(message.size()-1).x/2;
+		s.setFont(app.FindFont("Action_Force.ttf"));
+		s.setCharacterSize(30);
+		s.setString(message.c_str());
+		x = app.GetSize().x/2 - s.getLocalBounds().width/2;
 	}
 
 	~BigMessage() {
@@ -170,8 +166,9 @@ public:
 		y -= 30*delta;
 		alpha -= 100*delta;
 		if(alpha < 1) app.RemoveEntity(this->id);
-		s.SetColor( sf::Color(255, 255, 255, alpha ) );
-		s.SetPosition(x, y);
+		s.setColor( sf::Color(255, 255, 255, alpha ) );
+		s.setPosition(x, y);
+		x = app.GetSize().x/2 - s.getLocalBounds().width/2;
 		return true;
 	}
 
@@ -182,7 +179,7 @@ public:
 
 private:
 	CppEventHandler hStepEvent;
-	sf::String s; float alpha;
+	sf::Text s; float alpha;
 };
 
 class SmokeParticle : public Entity {
@@ -195,9 +192,9 @@ public:
 		y = py;
 		strength = strength_v;
 		fScale = 15;
-		s.SetImage( app.FindImage("ring.png") );
-		s.SetCenter( s.GetSize().x/2, s.GetSize().y/2 );
-		s.SetScale(0.6, 0.6);
+		s.setTexture( app.FindTexture("ring.png") );
+		s.setOrigin( s.getLocalBounds().width/2, s.getLocalBounds().height/2 );
+		s.setScale(0.6, 0.6);
 
 		cinematicEntity = true;
 		
@@ -213,9 +210,9 @@ public:
 		else alpha -= 100*delta;
 		if( alpha > strength ) gd = true;
 		if(alpha < 1) app.RemoveEntity(this->id);
-		s.SetColor( sf::Color(255, 255, 255, alpha ) );
-		s.Scale(1-0.5*delta, 1-0.5*delta);
-		s.SetPosition(x, y);
+		s.setColor( sf::Color(255, 255, 255, alpha ) );
+		s.scale(1-0.5*delta, 1-0.5*delta);
+		s.setPosition(x, y);
 		return true;
 	}
 

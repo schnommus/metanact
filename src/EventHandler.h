@@ -20,10 +20,10 @@ public:
 	CppEvent1<bool, float> stepEvent;
 
 	/// Triggered on a key press. The parameter is an sf::Key code.
-	CppEvent1<bool, sf::Key::Code> keyPressEvent;
+	CppEvent1<bool, sf::Keyboard::Key> keyPressEvent;
 
 	/// Triggered on a key release. The parameter is an sf::Key code.
-	CppEvent1<bool, sf::Key::Code> keyReleaseEvent;
+	CppEvent1<bool, sf::Keyboard::Key> keyReleaseEvent;
 
 	/// Triggered on a mouse button press. The parameter is an sf::Mouse button.
 	CppEvent1<bool, sf::Mouse::Button> mousePressEvent;

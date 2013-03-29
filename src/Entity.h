@@ -35,7 +35,7 @@ public:
 	App2D &app;
 
 	/// Internal shape
-	std::vector<sf::Shape> sv;
+//	std::vector<sf::Shape> sv;
 
 	/// Is the entity warping?
 	bool inWarp;

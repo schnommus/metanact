@@ -68,10 +68,10 @@
     <IntDir>obj\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>C:\boost_1_50_0\boost_1_50_0;C:\Dev\SFML_1_6_VS2010\include;$(IncludePath)</IncludePath>
+    <IncludePath>C:\boost_1_50_0\boost_1_50_0;C:\Dev\SFML-2.0-rc\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <LibraryPath>C:\Dev\SFML_1_6_VS2010\lib\vc2008;C:\boost_1_50_0\boost_1_50_0\stage\lib;$(LibraryPath)</LibraryPath>
+    <LibraryPath>C:\Dev\SFML-2.0-rc\lib;C:\boost_1_50_0\boost_1_50_0\stage\lib;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)bin\</OutDir>
     <TargetName>$(ProjectName)_release</TargetName>
     <IntDir>obj\$(Configuration)\</IntDir>
@@ -96,6 +96,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>SFML_STATIC;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
