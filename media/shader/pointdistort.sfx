@@ -1,18 +1,18 @@
-texture framebuffer
-vec2 position
+uniform sampler2D framebuffer;
+uniform vec2 position;
 
-effect
-{
-	float dist = distance(_in, position);
+void main() {
+	float dist = distance(gl_TexCoord[0].xy, position);
 	float len = 1/((100*dist*dist-0.025) * 10);
 
 	if (len < 0.05) {
-		_out = framebuffer(_in);
+		//gl_FragColor = texture2D( framebuffer, gl_TexCoord[0].xy);
+		gl_FragColor.a = 0.0;
 	} else {
-		_out = framebuffer(_in + (_in - position) * len);
-		_out.a = 0.5;
-		if( _out.r == 0 &&  _out.g == 0 && _out.b == 0.0 ) {
-			_out.a = 0.0;
+		gl_FragColor = texture2D( framebuffer, gl_TexCoord[0].xy + (gl_TexCoord[0].xy - position) * len);
+		gl_FragColor.a = 0.5;
+		if( gl_FragColor.r == 0 &&  gl_FragColor.g == 0 && gl_FragColor == 0.0 ) {
+			gl_FragColor.a = 0.0;
 		}
 	}
 }

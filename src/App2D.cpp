@@ -129,6 +129,7 @@ void App2D::Run() {
 
 			renderWindow.setView(gameView); // Back to the normal view
 
+
 			renderWindow.display();
 
 			// Destroy entities added for removal
@@ -296,16 +297,16 @@ sf::Texture &App2D::FindTexture( std::string dir ) {
 }
 
 sf::Shader &App2D::FindShader( std::string dir ) {
-	/*dir = "../media/shader/" + dir;
+	dir = "../media/shader/" + dir;
 	if( shaderMap.find(dir) == shaderMap.end() ) {
 		std::cout << "New shader: " << dir << std::endl;
-		if(!shaderMap[dir].LoadFromFile(dir)) {
+		shaderMap[dir] = new sf::Shader;
+		if(!shaderMap[dir]->loadFromFile(dir, sf::Shader::Fragment)) {
 			throw std::exception(std::string(dir + " could not be loaded").c_str());
 		}
-		shaderMap[dir].SetTexture("framebuffer", NULL);
+		shaderMap[dir]->setParameter("framebuffer", sf::Shader::CurrentTexture);
 	}
-	return shaderMap.find(dir)->second;*/
-	return sf::Shader();
+	return *shaderMap.find(dir)->second;
 }
 
 
@@ -751,16 +752,14 @@ void App2D::PerformCameraMovement() {
 }
 
 void App2D::DrawGameField() {
-	/*sf::VertexArray v(sf::Lines, 0);
-	v.append(sf::Vertex(field.bleft));
-	v.append(sf::Vertex(field.));
-	v.append(sf::Vertex(field.tleft));
-	v.append(sf::Vertex(field.bleft));
+	sf::VertexArray f(sf::LinesStrip, 5);
+	f[0].position = sf::Vector2f( field.bleft.x, field.bleft.y ); f[0].color = sf::Color(5, 5, 255);
+	f[1].position = sf::Vector2f( field.bleft.x , field.tright.y ); f[1].color = sf::Color(5, 5, 255);
+	f[2].position = sf::Vector2f( field.tright.x , field.tright.y ); f[2].color = sf::Color(5, 5, 255);
+	f[3].position = sf::Vector2f( field.tright.x , field.bleft.y ); f[3].color = sf::Color(5, 5, 255);
+	f[4].position = sf::Vector2f( field.bleft.x, field.bleft.y ); f[4].color = sf::Color(5, 5, 255);
 
-	Draw( sf::Lines(field.bleft.x, field.bleft.y, field.tright.x, field.bleft.y, 3, sf::Color( 0, 0, 0 ), 1, sf::Color(50, 50, 255) ) );
-	Draw( sf::Shape::Line(field.bleft.x, field.bleft.y, field.bleft.x, field.tright.y, 3, sf::Color( 0, 0, 0 ), 1, sf::Color(50, 50, 255) ) );
-	Draw( sf::Shape::Line(field.bleft.x, field.tright.y, field.tright.x, field.tright.y, 3, sf::Color( 0, 0, 0 ), 1, sf::Color(50, 50, 255) ) );
-	Draw( sf::Shape::Line(field.tright.x, field.tright.y, field.tright.x, field.bleft.y, 3, sf::Color( 0, 0, 0 ), 1, sf::Color(50, 50, 255) ) );*/
+	Draw(f);
 }
 
 void App2D::DrawLogMessages() {

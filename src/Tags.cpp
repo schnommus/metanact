@@ -420,9 +420,10 @@ void IsLocalPlayerTag::Destroy() {
 		" finds it hard to stay alive"
 	};
 	e.app.DisplayMessage( e.app.playerName + deathSayings[rand()%6] );
+	e.app.DisplayBigMessage( e.app.playerName + deathSayings[rand()%6] );
 	e.app.PlayDialogue("deathvocals.ogg");
 	// Aaand launch an opening cinematic
-	e.app.cinematicEngine.RunCinematic("cin1.cnm");
+	//e.app.cinematicEngine.RunCinematic("cin1.cnm");
 }
 
 
@@ -441,7 +442,7 @@ void HasHealthTag::Step(float delta) {
 void HasHealthTag::Draw() {
 	sf::RectangleShape r1( sf::Vector2f(amt, 8) );
 	r1.setFillColor( sf::Color(180, 0, 0) );
-	r1.setPosition(e.x, e.y+65);
+	r1.setPosition(e.x-amt/2, e.y+65);
 	e.app.Draw(r1);
 	r1.setFillColor( sf::Color(0, 180, 0) );
 	r1.setSize( sf::Vector2f( float(e.health), 8.0 ) );
@@ -631,17 +632,32 @@ HasShaderTag::HasShaderTag( Entity &entityReference, std::string shaderNamev ) :
 void HasShaderTag::Init() {}
 void HasShaderTag::Step(float delta) {}
 void HasShaderTag::Draw() {
-	/*int esize = 50;
+	int esize = 50;
 	if( e.app.GetOption("UseShaders") == "Enabled" &&
-		e.app.renderWindow.ConvertCoords( 0, 0 ).x-esize < e.x &&
-		e.app.renderWindow.ConvertCoords( 0, 0 ).y-esize < e.y &&
-		e.app.renderWindow.ConvertCoords( e.app.GetSize().x, e.app.GetSize().y ).x+esize > e.x &&
-		e.app.renderWindow.ConvertCoords( e.app.GetSize().x, e.app.GetSize().y ).y+esize > e.y) {
-			sf::Vector2f bLeft = e.app.renderWindow.ConvertCoords(0, 0);
-			sf::Vector2f tRight = e.app.renderWindow.ConvertCoords(e.app.GetSize().x, e.app.GetSize().y);
-			sf::PostFX &fx = e.app.FindShader(shaderName);
-			fx.SetParameter("position", (e.x - bLeft.x)/e.app.GetSize().x, 1.0-(e.y - bLeft.y)/e.app.GetSize().y);
-			e.app.Draw(fx);
-	}*/
+		e.app.renderWindow.convertCoords( sf::Vector2i(0, 0) ).x-esize < e.x &&
+		e.app.renderWindow.convertCoords( sf::Vector2i(0, 0) ).y-esize < e.y &&
+		e.app.renderWindow.convertCoords( sf::Vector2i(e.app.GetSize().x, e.app.GetSize().y ) ).x+esize > e.x &&
+		e.app.renderWindow.convertCoords( sf::Vector2i(e.app.GetSize().x, e.app.GetSize().y ) ).y+esize > e.y &&
+		(!e.onUnlockOnly || e.app.currentLevelUnlocked) && (!e.app.cinematicEngine.IsCinematicRunning() || e.cinematicEntity) ) {
+			sf::Vector2f bLeft = e.app.renderWindow.convertCoords( sf::Vector2i(0, 0) );
+			sf::Vector2f tRight = e.app.renderWindow.convertCoords( sf::Vector2i(e.app.GetSize().x, e.app.GetSize().y) );
+			sf::Shader &fx = e.app.FindShader(shaderName);
+
+			fx.setParameter("position", (e.x - bLeft.x)/e.app.GetSize().x, 1.0-(e.y - bLeft.y)/e.app.GetSize().y);
+
+			sf::Texture t;
+			if(!t.create(e.app.GetSize().x, e.app.GetSize().y)) throw std::exception("couldn't create postprocessing texture!");
+			
+			t.update(e.app.renderWindow);
+			sf::Sprite s;
+			s.setTexture(t);
+			s.setPosition(e.app.gameView.getCenter().x-e.app.GetSize().x/2, e.app.gameView.getCenter().y-e.app.GetSize().y/2);
+			
+
+			sf::RenderStates st;
+			st.shader = &fx;
+			//st.texture = &t;
+			e.app.renderWindow.draw(s, st);
+	}
 }
 void HasShaderTag::Destroy() {}
