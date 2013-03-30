@@ -190,7 +190,7 @@ public:
 
 	std::map< std::string, sf::Texture > textureMap;
 
-	std::map< std::string, sf::Shader > shaderMap;
+	std::map< std::string, sf::Shader* > shaderMap;
 
 	std::map< std::string, sf::Font > fontMap;
 
