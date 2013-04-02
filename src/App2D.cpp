@@ -48,6 +48,8 @@ App2D::App2D( bool useVSync,
 	persistanceTarget.create(GetSize().x, GetSize().y);
 	persistanceTarget.clear(sf::Color(0, 0, 0, 0));
 
+	currentPlayerScore = 0;
+
 	// Initialise the message scroller
 	for( int i = 0; i != maxMessages; ++i ) {
 		messageList.push_back("");
@@ -133,6 +135,16 @@ void App2D::Run() {
 			if(GetOption("MinimalUI") == "Disabled") DrawLogMessages();
 
 			DrawSubtitles();
+
+			// Draw score
+			std::ostringstream outs;
+			outs.imbue(std::locale("")); // For commas
+			outs << std::fixed << currentPlayerScore << " qB";
+			sf::Text n( outs.str(), FindFont("Action_Force.ttf", 35), 35 );
+			n.setPosition( GetSize().x/2-n.getLocalBounds().width/2, 0 );
+			n.setColor( sf::Color(255, 255, 255, 200) );
+			if(inGame && !cinematicEngine.IsCinematicRunning() ) Draw(n);
+
 
 			// Draw minimap
 			if(inGame && !cinematicEngine.IsCinematicRunning() ) DrawMinimap();
@@ -581,6 +593,7 @@ void App2D::WipeCurrentGame() {
 	}
 	currentPath = ""; // Wipe so deletion thinks we're changing levels
 	oldpath = " ";
+	currentPlayerScore = 0;
 	ExecuteDeletionQueue();
 	currentPath = GetOption("InitialDirectory");
 }
@@ -595,6 +608,10 @@ void App2D::ReEnterGame() {
 			if ( all.find('=') != std::string::npos) // If there's an '='
 				n = all.substr(0, all.find('=')), msg = all.substr(all.find('=')+1, all.size()-1 );
 			if( n == "currentPath") currentPath = msg;
+			if( n == "playerScore") {
+				std::istringstream iss(msg);
+				iss >> currentPlayerScore;
+			}
 			std::cout << "Got current path from file: " << currentPath << std::endl;
 		}
 		ifs.close();
@@ -736,7 +753,7 @@ void App2D::LoadLevel() {
 	}
 
 
-	AddEntity( new DefinedEntity( *this, "spawner" ), 10 );
+	AddEntity( new DefinedEntity( *this, "spawner" ), 9 );
 
 	std::ofstream ofs;
 	ofs.open("saves/!header.sav", std::ios::out | std::ios::trunc);
@@ -744,7 +761,8 @@ void App2D::LoadLevel() {
 	if( !ofs.is_open() ) {
 		throw std::exception("Couldn't open !header file for writing");
 	} else {
-		ofs << "currentPath=" << currentPath;
+		ofs << "currentPath=" << currentPath << std::endl;
+		ofs << "playerScore=" << currentPlayerScore << std::endl;
 	}
 
 	int r = rand()%8;

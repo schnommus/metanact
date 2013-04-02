@@ -513,6 +513,7 @@ void IncreaseScoreItemTag::Step(float delta) {
 				e.app.DisplayMessage( oss.str() );
 				e.app.DisplayBigMessage( oss.str() );
 				e.app.PlaySound("junksound.wav");
+				e.app.currentPlayerScore += 10000;
 				e.app.RemoveEntity(e.id);
 			}
 		}
@@ -590,12 +591,12 @@ void ApproachPlayerTag::Step(float delta) {
 				float dist = sqrt(powf(e.x-it->second->x, 2) + powf(e.y-it->second->y, 2));
 				if( dist < nearv ) {
 					e.rotation = -(180+atan2f(px-e.x, py-e.y) / 3.14 * 180);
-					e.vel.y -= speed*delta*cos((e.rotation-180)/180*3.14);
-					e.vel.x -= speed*delta*sin((e.rotation-180)/180*3.14);
+					e.vel.y -= speed*delta*cos((-e.rotation-180)/180*3.14);
+					e.vel.x -= speed*delta*sin((-e.rotation-180)/180*3.14);
 				} else if( dist < farv ) {
 					e.rotation = -(180+atan2f(px-e.x, py-e.y) / 3.14 * 180);
-					e.vel.y += speed*delta*cos((e.rotation-180)/180*3.14);
-					e.vel.x += speed*delta*sin((e.rotation-180)/180*3.14);
+					e.vel.y += speed*delta*cos((-e.rotation-180)/180*3.14);
+					e.vel.x += speed*delta*sin((-e.rotation-180)/180*3.14);
 				}
 			}
 	}

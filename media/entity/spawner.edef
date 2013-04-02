@@ -1,5 +1,5 @@
 NAME spawner
-FILE spawner
+IMAGE spawner.png
 WOBBLES 0.05 10
 ROTATES -30
 WARP_TARGET 50 0

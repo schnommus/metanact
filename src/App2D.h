@@ -180,6 +180,9 @@ public:
 	EntityMap entities;
 
 	std::string playerName;
+
+	int currentPlayerScore;
+
 	std::vector<std::string> messageList;
 	int maxMessages;
 
