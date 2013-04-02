@@ -1,0 +1,8 @@
+uniform sampler2D framebuffer;
+
+void main() {
+	gl_FragColor = texture2D( framebuffer, gl_TexCoord[0].xy);
+	if( gl_FragColor.r <= 0.2 && gl_FragColor.g <= 0.2 && gl_FragColor.b <= 0.2 ) {
+		gl_FragColor.a = 0.0;
+	}
+}

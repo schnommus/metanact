@@ -15,6 +15,7 @@ DefinedEntity::DefinedEntity( App2D &app, std::string type, int xpos, int ypos, 
 	cinematicEntity = false;
 	displayName = dispName;
 	scale = mscale;
+	isPersistant = false;
 
 	std::ifstream ifs;
 	type = "../media/entity/" + type + ".edef";
@@ -155,6 +156,8 @@ DefinedEntity::DefinedEntity( App2D &app, std::string type, int xpos, int ypos, 
 			std::string sn;
 			ifs >> sn;
 			tagList.push_back( boost::shared_ptr<Tag>( new HasShaderTag( *this, sn ) ) );
+		} else if (tag == "IS_PERSISTANT") {
+			isPersistant = true;
 		}
 	}
 
@@ -195,6 +198,8 @@ void DefinedEntity::Draw() {
 				imageSprite.setRotation(rotation);
 				imageSprite.setScale(scale, scale);
 				app.Draw(imageSprite);
+				if(isPersistant)
+					app.persistanceTarget.draw(imageSprite);
 			}
 		}
 

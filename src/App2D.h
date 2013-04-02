@@ -13,6 +13,7 @@
 #include <map>
 #include <utility>
 #include <memory>
+#include <queue>
 
 #include "Entity.h"
 #include "EventHandler.h"
@@ -92,6 +93,8 @@ public:
 	sf::Font &FindFont( std::string dir, int size=30 );
 	sf::Shader &FindShader( std::string dir );
 
+	void DrawPostProcessingEffects();
+
 	int CountEntityOfType( std::string type );
 
 	std::string GetOption( std::string type );
@@ -168,6 +171,8 @@ public:
 	bool isClosing;
 	sf::RenderWindow renderWindow;
 
+	sf::RenderTexture persistanceTarget;
+
 	sf::View gameView;
 
 	PlayingField field;
@@ -191,6 +196,9 @@ public:
 	std::map< std::string, sf::Texture > textureMap;
 
 	std::map< std::string, sf::Shader* > shaderMap;
+
+	// Push to this to add PP effect. A bit nasty but it works
+	std::queue< std::pair<std::string, sf::Vector2f> > postProcessingStack;
 
 	std::map< std::string, sf::Font > fontMap;
 
