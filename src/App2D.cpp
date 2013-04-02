@@ -45,6 +45,9 @@ App2D::App2D( bool useVSync,
 
 	gameView.move(-GetSize().x/2, -GetSize().y/2); // Start a little closer to the centre
 
+	persistanceTarget.create(GetSize().x, GetSize().y);
+	persistanceTarget.clear(sf::Color(0, 0, 0, 0));
+
 	// Initialise the message scroller
 	for( int i = 0; i != maxMessages; ++i ) {
 		messageList.push_back("");
@@ -92,8 +95,23 @@ void App2D::Run() {
 			renderWindow.clear();
 			
 			renderWindow.setView(gameView);
+			
+			sf::RectangleShape rs(sf::Vector2f( GetSize().x, GetSize().y) );
+			rs.setPosition(gameView.getCenter().x-GetSize().x/2, gameView.getCenter().y-GetSize().y/2);
+			rs.setFillColor(sf::Color(0, 0, 0, 3000*GetFrameTime()));
+			persistanceTarget.draw(rs);
+			persistanceTarget.setView(gameView);
+			persistanceTarget.display();
 
-			PerformCameraMovement();
+			//Draw the persistent stuff
+			sf::Sprite sp(persistanceTarget.getTexture());
+			sp.setPosition(gameView.getCenter().x-GetSize().x/2, gameView.getCenter().y-GetSize().y/2);
+			//Draw(sp);
+
+			sf::Shader *pc = &FindShader("persistanceclean.sfx");
+			sf::RenderStates res(pc);
+			renderWindow.draw(sp, res);
+
 
 			// Draw the game field
 			if( CountEntityOfType("warper") > 0 && !cinematicEngine.IsCinematicRunning() ) DrawGameField();
@@ -129,8 +147,11 @@ void App2D::Run() {
 
 			renderWindow.setView(gameView); // Back to the normal view
 
+			DrawPostProcessingEffects();
 
 			renderWindow.display();
+
+			PerformCameraMovement();
 
 			// Destroy entities added for removal
 			ExecuteDeletionQueue();
@@ -296,6 +317,9 @@ sf::Texture &App2D::FindTexture( std::string dir ) {
 	return textureMap.find(dir)->second;
 }
 
+
+// MEMORY LEAK HERE
+// Shaders are never deleted. Not that it really matters but should probably get around to it
 sf::Shader &App2D::FindShader( std::string dir ) {
 	dir = "../media/shader/" + dir;
 	if( shaderMap.find(dir) == shaderMap.end() ) {
@@ -781,4 +805,27 @@ bool App2D::IsLastSave() {
 		return true;
 	}
 	return false;
+}
+
+void App2D::DrawPostProcessingEffects() {
+	sf::Texture t;
+	if(!t.create(GetSize().x, GetSize().y)) throw std::exception("couldn't create postprocessing texture!");
+
+	while( postProcessingStack.size() > 0 ) {
+		std::pair< std::string, sf::Vector2f > info( postProcessingStack.front() );
+		sf::Shader &fx = FindShader(info.first);
+		fx.setParameter("position", info.second.x, info.second.y);
+
+		t.update(renderWindow);
+		sf::Sprite s;
+		s.setTexture(t);
+		s.setPosition(gameView.getCenter().x-GetSize().x/2, gameView.getCenter().y-GetSize().y/2);
+
+
+		sf::RenderStates st;
+		st.shader = &fx;
+		renderWindow.draw(s, st);
+
+		postProcessingStack.pop();
+	}
 }

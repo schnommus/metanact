@@ -158,6 +158,8 @@ void DecaysTag::Draw() {
 	e.imageSprite.setRotation(e.rotation);
 	e.imageSprite.setScale(e.scale, e.scale);
 	e.app.Draw(e.imageSprite);
+	if(e.isPersistant)
+		e.app.persistanceTarget.draw(e.imageSprite);
 }
 
 void DecaysTag::Destroy() {}
@@ -641,23 +643,10 @@ void HasShaderTag::Draw() {
 		(!e.onUnlockOnly || e.app.currentLevelUnlocked) && (!e.app.cinematicEngine.IsCinematicRunning() || e.cinematicEntity) ) {
 			sf::Vector2f bLeft = e.app.renderWindow.convertCoords( sf::Vector2i(0, 0) );
 			sf::Vector2f tRight = e.app.renderWindow.convertCoords( sf::Vector2i(e.app.GetSize().x, e.app.GetSize().y) );
-			sf::Shader &fx = e.app.FindShader(shaderName);
 
-			fx.setParameter("position", (e.x - bLeft.x)/e.app.GetSize().x, 1.0-(e.y - bLeft.y)/e.app.GetSize().y);
+			sf::Vector2f v( (e.x - bLeft.x)/e.app.GetSize().x, 1.0-(e.y - bLeft.y)/e.app.GetSize().y );
 
-			sf::Texture t;
-			if(!t.create(e.app.GetSize().x, e.app.GetSize().y)) throw std::exception("couldn't create postprocessing texture!");
-			
-			t.update(e.app.renderWindow);
-			sf::Sprite s;
-			s.setTexture(t);
-			s.setPosition(e.app.gameView.getCenter().x-e.app.GetSize().x/2, e.app.gameView.getCenter().y-e.app.GetSize().y/2);
-			
-
-			sf::RenderStates st;
-			st.shader = &fx;
-			//st.texture = &t;
-			e.app.renderWindow.draw(s, st);
+			e.app.postProcessingStack.push( std::pair< std::string, sf::Vector2f >(shaderName, v) );
 	}
 }
 void HasShaderTag::Destroy() {}

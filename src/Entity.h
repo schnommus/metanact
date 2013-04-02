@@ -61,6 +61,8 @@ public:
 	std::string imageDir;
 	sf::Sprite imageSprite;
 
+	bool isPersistant;
+
 	sf::Clock deletionTimeout;
 protected:
 	Entity( const Entity& );
