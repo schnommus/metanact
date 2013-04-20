@@ -338,6 +338,7 @@ void IsLocalPlayerTag::Init() {
 }
 
 void IsLocalPlayerTag::Step(float delta) {
+
 	sf::Vector2f MousePos = e.app.renderWindow.convertCoords( sf::Vector2i(sf::Mouse::getPosition().x, sf::Mouse::getPosition().y) );
 	e.rotation = -(180+atan2f(MousePos.x-e.x, MousePos.y-e.y) / 3.14 * 180);
 
@@ -378,6 +379,9 @@ void IsLocalPlayerTag::Step(float delta) {
 		}
 
 	}
+
+	projectileType = e.app.playerData.CurrentWeaponDetails().projectileType;
+	fireRate = e.app.playerData.CurrentWeaponDetails().fireRate;
 
 	if( sf::Mouse::isButtonPressed( sf::Mouse::Left ) && bClock.getElapsedTime().asSeconds() > 1.0/fireRate ) {
 		e.app.AddEntity( new DefinedEntity( e.app, projectileType,

@@ -31,6 +31,9 @@
     <ClCompile Include="src\MenuSystem.cpp">
       <Filter>Engine</Filter>
     </ClCompile>
+    <ClCompile Include="src\PlayerData.cpp">
+      <Filter>Logic</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\App2D.h">
@@ -62,6 +65,12 @@
     </ClInclude>
     <ClInclude Include="src\MenuSystem.h">
       <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="src\PlayerData.h">
+      <Filter>Logic</Filter>
+    </ClInclude>
+    <ClInclude Include="src\LootData.h">
+      <Filter>Logic</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

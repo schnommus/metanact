@@ -250,6 +250,36 @@ public:
 	}
 };
 
+// DEFINITIONS FOR "INVENTORY"
+
+class EquippedWeapon : public MenuItem {
+public:
+	EquippedWeapon( App2D &a, MenuSystem &m ) : MenuItem(a, m) {
+		name = "Equipped Weapon";
+
+		std::vector< std::string > lootTypes = app.playerData.FoundLootTypes();
+		for( int i = 0; i != lootTypes.size(); ++i ) {
+			attributes.push_back( app.playerData.GetLootOfType( lootTypes[i] ).realName );
+			//Make sure the option starts on player's current weapon
+			if( app.playerData.GetLootOfType( lootTypes[i] ).fileName == app.playerData.CurrentWeaponDetails().fileName )
+				currentAttribute = i;
+		}
+	}
+	virtual void Clicked() {
+		if( ++currentAttribute == attributes.size() ) currentAttribute = 0;
+		app.playerData.SetCurrentWeapon( app.playerData.GetLootTypeForName(attributes[currentAttribute]) );
+	}
+};
+
+class InventoryMenu : public MenuScreen {
+public:
+	InventoryMenu( App2D &a, MenuSystem &m ) : MenuScreen(a, m) {
+		title = "Inventory";
+		items.push_back( boost::shared_ptr<MenuItem>( new EquippedWeapon(app, ms) ) );
+		items.push_back( boost::shared_ptr<MenuItem>( new ResumeGame(app, ms) ) );
+	}
+};
+
 // DEFINITIONS FOR "NEW GAME MENU"
 
 class YesNewGame : public MenuItem {
@@ -298,6 +328,7 @@ MenuSystem::MenuSystem( App2D &a ) : Entity(a) {
 	menus.push_back( boost::shared_ptr<MenuScreen>( new OptionsMenu(app, *this) ) );
 	menus.push_back( boost::shared_ptr<MenuScreen>( new PauseMenu(app, *this) ) );
 	menus.push_back( boost::shared_ptr<MenuScreen>( new NewGameMenu(app, *this) ) );
+	menus.push_back( boost::shared_ptr<MenuScreen>( new InventoryMenu(app, *this) ) );
 
 	DisplayMenu(Menu::MainMenu);
 

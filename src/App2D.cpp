@@ -31,7 +31,8 @@ App2D::App2D( bool useVSync,
 		  currentId(1),
 		  currentViewId(1),
 		  currentMusic(0),
-		  cinematicEngine(*this)
+		  cinematicEngine(*this),
+		  playerData(*this)
 	{
 
 	pastDeltaClock = 0;
@@ -71,6 +72,8 @@ void App2D::Run() {
 		SetMusic("metmain.ogg");
 
 		LoadOptions();
+
+		playerData.Init();
 
 		GetEventHandler().RegisterGenericEventType("gravity");
 
