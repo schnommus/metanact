@@ -18,6 +18,7 @@
 #include "Entity.h"
 #include "EventHandler.h"
 #include "CinematicEngine.h"
+#include "PlayerData.h"
 
 using std::tr1::shared_ptr;
 
@@ -167,6 +168,8 @@ private:
 	EventHandler eventHandler;
 public:
 	CinematicEngine cinematicEngine;
+
+	PlayerData playerData;
 
 	bool isClosing;
 	sf::RenderWindow renderWindow;

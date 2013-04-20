@@ -37,7 +37,8 @@ namespace Menu {
 		MainMenu = 0,
 		OptionsMenu = 1,
 		PauseMenu = 2,
-		NewGameMenu = 3
+		NewGameMenu = 3,
+		InventoryMenu = 4
 	};
 }
 

@@ -21,6 +21,13 @@ void EventHandler::Event( const sf::Event &evt ) {
 				ms->DisplayMenu(Menu::PauseMenu);
 			}
 
+			if( evt.key.code == sf::Keyboard::E && app.inGame && !app.cinematicEngine.IsCinematicRunning() ) {
+				app.inGame = false;
+				MenuSystem *ms = new MenuSystem(app);
+				app.AddEntity(ms, 1001, true);
+				ms->DisplayMenu(Menu::InventoryMenu);
+			}
+
 			keyPressEvent.notify(evt.key.code);
 		break;
 

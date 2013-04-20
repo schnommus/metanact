@@ -18,6 +18,7 @@
     <ClCompile Include="src\EventHandler.cpp" />
     <ClCompile Include="src\MenuSystem.cpp" />
     <ClCompile Include="src\Metanact.cpp" />
+    <ClCompile Include="src\PlayerData.cpp" />
     <ClCompile Include="src\Tags.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -28,7 +29,9 @@
     <ClInclude Include="src\DefinedEntity.h" />
     <ClInclude Include="src\Entity.h" />
     <ClInclude Include="src\EventHandler.h" />
+    <ClInclude Include="src\LootData.h" />
     <ClInclude Include="src\MenuSystem.h" />
+    <ClInclude Include="src\PlayerData.h" />
     <ClInclude Include="src\Tag.h" />
     <ClInclude Include="src\Tags.h" />
   </ItemGroup>

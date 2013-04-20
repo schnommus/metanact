@@ -1,5 +1,5 @@
 NAME explosion
-FILE explosion
+IMAGE explosion.png
 USE_RANDOM_ROTATION
 OVERRIDE_DRAW
 HAS_VELOCITY
