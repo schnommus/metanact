@@ -7,6 +7,9 @@
     <Filter Include="Logic">
       <UniqueIdentifier>{0560f3f3-7f21-4399-9d7d-a60c6551573a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Engine\JsonCpp">
+      <UniqueIdentifier>{c742bab3-d318-4d2f-8dc4-cab9bec2b41a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\App2D.cpp">
@@ -33,6 +36,12 @@
     </ClCompile>
     <ClCompile Include="src\PlayerData.cpp">
       <Filter>Logic</Filter>
+    </ClCompile>
+    <ClCompile Include="src\jsoncpp\jsoncpp.cpp">
+      <Filter>Engine\JsonCpp</Filter>
+    </ClCompile>
+    <ClCompile Include="src\JsonParser.cpp">
+      <Filter>Engine</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -71,6 +80,15 @@
     </ClInclude>
     <ClInclude Include="src\LootData.h">
       <Filter>Logic</Filter>
+    </ClInclude>
+    <ClInclude Include="src\jsoncpp\json\json.h">
+      <Filter>Engine\JsonCpp</Filter>
+    </ClInclude>
+    <ClInclude Include="src\jsoncpp\json\json-forwards.h">
+      <Filter>Engine\JsonCpp</Filter>
+    </ClInclude>
+    <ClInclude Include="src\JsonParser.h">
+      <Filter>Engine</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

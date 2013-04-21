@@ -1,0 +1,7 @@
+{
+	"Category": "Weapon",
+	"Name": "Standard Laser",
+	"FireRate": 5.0,
+	"ProjectileType": "bullet",
+	"Description": "Standard, fleet issue laser. Good at taking out asteroids and not much else."
+}

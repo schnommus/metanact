@@ -1,4 +1,7 @@
 #include "PlayerData.h"
+#include "JsonParser.h"
+#include "App2D.h"
+
 #include <fstream>
 #include <iostream>
 #include <sstream>
@@ -43,19 +46,11 @@ void PlayerData::Init() {
 }
 
 void PlayerData::LoadLootTypes() {
-	std::ifstream ifs;
-	ifs.open("../media/entity/!loot.ldb", std::ios::in);
+	Json::Value root = app.GetJsonParser().GetRootNode( "../media/entity/loot/!lootindex.json" );
 
-	if( !ifs.is_open() ) {
-		throw std::exception("Couldn't open loot database!");
+	for( int i = 0; i != root["LootFileNames"].size(); ++i ) {
+		lootTypes.push_back( root["LootFileNames"][i].asCString() );
 	}
-
-	while( !ifs.eof() ) {
-		std::string all; getline(ifs, all);
-		lootTypes.push_back( all );
-	}
-
-	ifs.close();
 }
 
 void PlayerData::PopulateLootDetails() {
@@ -65,45 +60,29 @@ void PlayerData::PopulateLootDetails() {
 }
 
 std::shared_ptr<Loot> PlayerData::LootFromFile( std::string file ) {
-	std::ifstream ifs;
-	ifs.open("../media/entity/loot/" + file, std::ios::in);
+	Json::Value root = app.GetJsonParser().GetRootNode( "../media/entity/loot/" + file );
 
-	if( !ifs.is_open() ) {
-		throw std::exception(std::string("Couldn't open loot file: " + file).c_str());
-	}
+	Loot *theLoot = nullptr; // Will store different children of Loot, i.e WeaponLoot, EngineLoot etc.
 
-	std::string category; getline(ifs, category);
-
-	Loot *theLoot = nullptr;
-	
-	// Files are currently order-dependant
-	// Thinking of moving everything over to XML
-
-	if( category == "WEAPON" ) {
+	if( root["Category"].asString() == "Weapon" ) {
 		WeaponLoot *weaponLoot = new WeaponLoot;
 
-		weaponLoot->fileName = file; //filename
+		weaponLoot->fireRate = root["FireRate"].asFloat();
+		weaponLoot->projectileType = root["ProjectileType"].asString();
 
-		weaponLoot->category = category; //category
-
-		std::string line; getline(ifs, line); // name
-		weaponLoot->realName = line;
-
-		getline(ifs, line); // firerate
-		std::istringstream iss(line);
-		iss >> weaponLoot->fireRate;
-
-		getline(ifs, line); // projectile type
-		weaponLoot->projectileType = line;
-
-		getline(ifs, line); // description
-		weaponLoot->description = line;
 		theLoot = weaponLoot;
-
-		std::cout << "Loot type loaded: " << weaponLoot->realName << std::endl;
 	}
 
-	ifs.close();
+	if( theLoot == nullptr ) {
+		throw std::exception( std::string("Unrecognized loot category \'" + root["Category"].asString() + "\' in: " + file).c_str() );
+	}
+
+	theLoot->fileName = file;
+	theLoot->category = root["Category"].asString();
+	theLoot->realName = root["Name"].asString();
+	theLoot->description = root["Description"].asString();
+
+	std::cout << "Loot type loaded: " << theLoot->realName << std::endl;
 
 	return std::shared_ptr<Loot>(theLoot);
 }
