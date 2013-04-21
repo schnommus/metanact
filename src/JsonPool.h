@@ -4,7 +4,7 @@
 #include <string>
 #include <map>
 
-class JsonParser {
+class JsonPool {
 public:
 	Json::Value &GetRootNode( std::string filename );
 private:
