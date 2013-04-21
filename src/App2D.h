@@ -19,6 +19,7 @@
 #include "EventHandler.h"
 #include "CinematicEngine.h"
 #include "PlayerData.h"
+#include "JsonParser.h"
 
 using std::tr1::shared_ptr;
 
@@ -127,6 +128,8 @@ public:
 	//Delete entites added to deletion queue
 	void ExecuteDeletionQueue();
 
+	JsonParser &GetJsonParser();
+
 	/// Remove an entity from the manager.
 	/// \param id : The id of the entity to remove. For deleting itself, an entity can call this with it's own id.
 	void RemoveEntity( long long id );
@@ -170,6 +173,8 @@ public:
 	CinematicEngine cinematicEngine;
 
 	PlayerData playerData;
+
+	JsonParser jsonParser;
 
 	bool isClosing;
 	sf::RenderWindow renderWindow;

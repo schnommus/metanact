@@ -208,6 +208,10 @@ float App2D::GetFrameTime() const {
 	return pastDeltaClock;
 }
 
+JsonParser &App2D::GetJsonParser() {
+	return jsonParser;
+}
+
 long long App2D::nextId() {
 	return ++currentId;
 }
@@ -334,7 +338,7 @@ sf::Texture &App2D::FindTexture( std::string dir ) {
 
 
 // MEMORY LEAK HERE
-// Shaders are never deleted. Not that it really matters but should probably get around to it
+// Shaders are never deleted. Not that it really matters (there's only 2) but should probably get around to it
 sf::Shader &App2D::FindShader( std::string dir ) {
 	dir = "../media/shader/" + dir;
 	if( shaderMap.find(dir) == shaderMap.end() ) {

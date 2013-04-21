@@ -1,0 +1,33 @@
+{
+	"Name": "localplayer",
+	
+	"Image": "crate.png",
+	
+	"AffectedByGravity" : {
+		"degree": 100,
+	},
+	
+	"VelocityClamp" : {
+		"upper": 50,
+		"lower": -50
+	},
+	
+	"HasHealth" : {
+		"amount": 100
+	},
+	
+	"ProjectileOnDestroy" : {
+		"type": "explosion",
+		"spread": 0
+	},
+	
+	"ProjectileOnDestroy" : {
+		"type": "scrap",
+		"spread": 60
+	},
+	
+	"Flags": [
+		"HasVelocity",
+		"IsLocalPlayer"
+	]
+}

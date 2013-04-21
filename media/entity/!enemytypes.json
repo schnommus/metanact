@@ -1,0 +1,17 @@
+{
+	"bomber" : {
+		"MinFileSize": 100000000
+	},
+	
+	"grunt" : {
+		"MinFileSize": 1000000
+	},
+	
+	"ticker" : {
+		"MinFileSize": 5000
+	}
+	
+	"scrap" : {
+		"MinFileSize": 0
+	}
+}

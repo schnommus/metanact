@@ -1,0 +1,7 @@
+{
+	"Category": "Weapon",
+	"Name": "BuzzGun",
+	"FireRate": 40.0,
+	"ProjectileType": "b",
+	"Description": "Holy camole. You crazy?"
+}
