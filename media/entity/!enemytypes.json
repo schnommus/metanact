@@ -9,7 +9,7 @@
 	
 	"ticker" : {
 		"MinFileSize": 5000
-	}
+	},
 	
 	"scrap" : {
 		"MinFileSize": 0

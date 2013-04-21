@@ -1,5 +1,4 @@
 #include "PlayerData.h"
-#include "JsonParser.h"
 #include "App2D.h"
 
 #include <fstream>
@@ -46,7 +45,7 @@ void PlayerData::Init() {
 }
 
 void PlayerData::LoadLootTypes() {
-	Json::Value root = app.GetJsonParser().GetRootNode( "../media/entity/loot/!lootindex.json" );
+	Json::Value root = app.GetJsonPool().GetRootNode( "../media/entity/loot/!lootindex.json" );
 
 	for( int i = 0; i != root["LootFileNames"].size(); ++i ) {
 		lootTypes.push_back( root["LootFileNames"][i].asCString() );
@@ -60,7 +59,7 @@ void PlayerData::PopulateLootDetails() {
 }
 
 std::shared_ptr<Loot> PlayerData::LootFromFile( std::string file ) {
-	Json::Value root = app.GetJsonParser().GetRootNode( "../media/entity/loot/" + file );
+	Json::Value root = app.GetJsonPool().GetRootNode( "../media/entity/loot/" + file );
 
 	Loot *theLoot = nullptr; // Will store different children of Loot, i.e WeaponLoot, EngineLoot etc.
 

@@ -40,7 +40,7 @@
     <ClCompile Include="src\jsoncpp\jsoncpp.cpp">
       <Filter>Engine\JsonCpp</Filter>
     </ClCompile>
-    <ClCompile Include="src\JsonParser.cpp">
+    <ClCompile Include="src\JsonPool.cpp">
       <Filter>Engine</Filter>
     </ClCompile>
   </ItemGroup>
@@ -87,7 +87,7 @@
     <ClInclude Include="src\jsoncpp\json\json-forwards.h">
       <Filter>Engine\JsonCpp</Filter>
     </ClInclude>
-    <ClInclude Include="src\JsonParser.h">
+    <ClInclude Include="src\JsonPool.h">
       <Filter>Engine</Filter>
     </ClInclude>
   </ItemGroup>

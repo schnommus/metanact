@@ -17,7 +17,7 @@
     <ClCompile Include="src\DefinedEntity.cpp" />
     <ClCompile Include="src\EventHandler.cpp" />
     <ClCompile Include="src\jsoncpp\jsoncpp.cpp" />
-    <ClCompile Include="src\JsonParser.cpp" />
+    <ClCompile Include="src\JsonPool.cpp" />
     <ClCompile Include="src\MenuSystem.cpp" />
     <ClCompile Include="src\Metanact.cpp" />
     <ClCompile Include="src\PlayerData.cpp" />
@@ -33,7 +33,7 @@
     <ClInclude Include="src\EventHandler.h" />
     <ClInclude Include="src\jsoncpp\json\json-forwards.h" />
     <ClInclude Include="src\jsoncpp\json\json.h" />
-    <ClInclude Include="src\JsonParser.h" />
+    <ClInclude Include="src\JsonPool.h" />
     <ClInclude Include="src\LootData.h" />
     <ClInclude Include="src\MenuSystem.h" />
     <ClInclude Include="src\PlayerData.h" />

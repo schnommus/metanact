@@ -208,8 +208,8 @@ float App2D::GetFrameTime() const {
 	return pastDeltaClock;
 }
 
-JsonParser &App2D::GetJsonParser() {
-	return jsonParser;
+JsonPool &App2D::GetJsonPool() {
+	return jsonPool;
 }
 
 long long App2D::nextId() {
@@ -735,27 +735,25 @@ void App2D::LoadLevel() {
 
 	std::sort( files.begin(), files.end(), SizeCmp() );
 
+	// For every file, if it ain't destroyed, search the database for a suitable enemy
+
 	for( int i = 0; i != files.size(); ++i ) {
-		//std::cout << "File: " << files[i].filename() << " size: " << file_size(files[i]) << std::endl;
+
 		if( CheckFile(files[i].filename().string()) != "destroyed" ) {
-			std::ifstream ifs;
-			ifs.open("../media/entity/!enemytypes.edb", std::ios::in);
 
-			if( !ifs.is_open() ) {
-				throw std::exception("Couldn't open enemy types database for reading");
-			}
-
-			// Read type to spawn from file. Note that the entities MUST be in descending order
-			while( !ifs.eof() ) {
-				long long size; std::string etype;
-				ifs >> size >> etype;
-				if( file_size(files[i]) > size ) {
-					AddEntity( new DefinedEntity( *this, etype, rand()%gameSize-gameSize/2, rand()%gameSize-gameSize/2, sf::Vector2f(), 0, false, files[i].filename().string() ), 10 );
-					break;
+			Json::Value root = jsonPool.GetRootNode("../media/entity/!enemytypes.json");
+			Json::Value::Members enemies = root.getMemberNames();
+			int largestEnemySize = 0;
+			std::string bestEnemyType;
+			for( int j = 0; j != enemies.size(); ++j ) {
+				int mySize = root[enemies[j]]["MinFileSize"].asInt();
+				if( mySize < file_size(files[i]) && mySize >= largestEnemySize) {
+					largestEnemySize = mySize;
+					bestEnemyType = enemies[j];
 				}
 			}
 
-			ifs.close();
+			AddEntity( new DefinedEntity( *this, bestEnemyType, rand()%gameSize-gameSize/2, rand()%gameSize-gameSize/2, sf::Vector2f(), 0, false, files[i].filename().string() ), 10 );
 		}
 	}
 

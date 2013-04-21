@@ -1,8 +1,8 @@
-#include "JsonParser.h"
+#include "JsonPool.h"
 
 #include <fstream>
 
-Json::Value &JsonParser::GetRootNode( std::string filename ) {
+Json::Value &JsonPool::GetRootNode( std::string filename ) {
 	// Only parse a file if it hasn't been parsed before
 	if( cachedFiles.find(filename) == cachedFiles.end() ) {
 		
