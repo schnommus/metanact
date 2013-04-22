@@ -259,10 +259,12 @@ public:
 
 		std::vector< std::string > lootTypes = app.playerData.FoundLootTypes();
 		for( int i = 0; i != lootTypes.size(); ++i ) {
-			attributes.push_back( app.playerData.GetLootOfType( lootTypes[i] ).realName );
-			//Make sure the option starts on player's current weapon
-			if( app.playerData.GetLootOfType( lootTypes[i] ).fileName == app.playerData.CurrentWeaponDetails().fileName )
-				currentAttribute = i;
+			if( app.playerData.GetLootOfType( lootTypes[i] ).category == "Weapon" ) {
+				attributes.push_back( app.playerData.GetLootOfType( lootTypes[i] ).realName );
+				//Make sure the option starts on player's current weapon
+				if( app.playerData.GetLootOfType( lootTypes[i] ).fileName == app.playerData.CurrentWeaponDetails().fileName )
+					currentAttribute = attributes.size()-1;
+			}
 		}
 		this->hoverDescription = app.playerData.CurrentWeaponDetails().description;
 	}
@@ -273,11 +275,35 @@ public:
 	}
 };
 
+class EquippedAntiGrav : public MenuItem {
+public:
+	EquippedAntiGrav( App2D &a, MenuSystem &m ) : MenuItem(a, m) {
+		name = "Equipped AntiGrav";
+
+		std::vector< std::string > lootTypes = app.playerData.FoundLootTypes();
+		for( int i = 0; i != lootTypes.size(); ++i ) {
+			if( app.playerData.GetLootOfType( lootTypes[i] ).category == "AntiGrav" ) {
+				attributes.push_back( app.playerData.GetLootOfType( lootTypes[i] ).realName );
+
+				if( app.playerData.GetLootOfType( lootTypes[i] ).fileName == app.playerData.CurrentAntiGravDetails().fileName )
+					currentAttribute = attributes.size()-1;
+			}
+		}
+		this->hoverDescription = app.playerData.CurrentAntiGravDetails().description;
+	}
+	virtual void Clicked() {
+		if( ++currentAttribute == attributes.size() ) currentAttribute = 0;
+		app.playerData.SetCurrentAntiGrav( app.playerData.GetLootTypeForName(attributes[currentAttribute]) );
+		this->hoverDescription = app.playerData.CurrentAntiGravDetails().description;
+	}
+};
+
 class InventoryMenu : public MenuScreen {
 public:
 	InventoryMenu( App2D &a, MenuSystem &m ) : MenuScreen(a, m) {
 		title = "Inventory";
 		items.push_back( boost::shared_ptr<MenuItem>( new EquippedWeapon(app, ms) ) );
+		items.push_back( boost::shared_ptr<MenuItem>( new EquippedAntiGrav(app, ms) ) );
 		items.push_back( boost::shared_ptr<MenuItem>( new ResumeGame(app, ms) ) );
 	}
 };

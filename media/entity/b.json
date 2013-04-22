@@ -1,0 +1,32 @@
+{
+    "HasVelocity": {},
+    "VelocityInheritance": {
+        "factor": 1.0
+    },
+    "Name": "b",
+    "SoundOnCreate": {
+        "filename": "bsound.wav"
+    },
+    "Image": "b.png",
+    "HurtTypeOnRadius": {
+        "radius": 15.0,
+        "amount": 10.0,
+        "type": "mb"
+    },
+    "InheritedHeadingVelocity": {
+        "amount": 120.0
+    },
+    "IS_PERSISTANT": {},
+    "OVERRIDE_DRAW": {},
+    "VelocityDeterminesHeading": {
+        "deltaScale": 0.1,
+        "startingAlpha": 255.0,
+        "finalAlpha": 30.0,
+        "startingScale": 1.0,
+        "deltaAlpha": 60.0,
+        "finalScale": 0.1
+    },
+    "AffectedByGravity": {
+        "amount": 2400.0
+    }
+}

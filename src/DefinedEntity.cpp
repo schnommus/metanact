@@ -83,6 +83,10 @@ DefinedEntity::DefinedEntity( App2D &app, std::string type, int xpos, int ypos, 
 			float vi;
 			ifs >> vi;
 			tagList.push_back( boost::shared_ptr<Tag>( new VelocityInheritanceTag( *this, vi ) ) );
+		} else if (tag == "INITIAL_VELOCITY") {
+			float iv;
+			ifs >> iv;
+			tagList.push_back( boost::shared_ptr<Tag>( new InitialVelocityTag( *this, iv ) ) );
 		} else if (tag == "INHERITED_HEADING_VELOCITY") {
 			float vi;
 			ifs >> vi;

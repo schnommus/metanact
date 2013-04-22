@@ -1,9 +1,9 @@
 
 {
 	"ControlScheme" : "Global Movement",
-	"InitialDirectory" : "C:\\Windows\\",
+	"InitialDirectory" : "C:\\",
 	"MinimalUI" : "Disabled",
-	"ParticleDensity" : "Sparse",
+	"ParticleDensity" : "Heavy",
 	"PlayerName" : "Fyerk",
-	"UseShaders" : "Disabled"
+	"UseShaders" : "Enabled"
 }

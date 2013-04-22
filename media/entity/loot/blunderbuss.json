@@ -1,0 +1,7 @@
+{
+	"Category": "Weapon",
+	"Name": "Blunder 4000",
+	"FireRate": 2.0,
+	"ProjectileType": "blunder",
+	"Description": "The Blunder specialises in firing multiple roughly-aimed projectiles at targets."
+}
