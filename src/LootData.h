@@ -15,3 +15,7 @@ struct WeaponLoot : public Loot {
 	float fireRate;
 	std::string projectileType;
 };
+
+struct AntiGravLoot : public Loot {
+	float gravityFactor;
+};

@@ -16,6 +16,14 @@ void PlayerData::SetCurrentWeapon( std::string filename ) {
 	currentWeaponFile = filename;
 }
 
+AntiGravLoot &PlayerData::CurrentAntiGravDetails() {
+	return *dynamic_cast<AntiGravLoot*>(lootDetails[currentAntiGravFile].get());
+}
+
+void PlayerData::SetCurrentAntiGrav( std::string filename ) {
+	currentAntiGravFile = filename;
+}
+
 std::vector<std::string> PlayerData::FoundLootTypes() {
 	return foundLootTypes;
 }
@@ -37,8 +45,9 @@ void PlayerData::Init() {
 	LoadLootTypes();
 	PopulateLootDetails();
 
-	// Equip the first loot entry as first weapon
-	currentWeaponFile = lootTypes[0];
+	// Equip some default loot
+	currentWeaponFile = "standardlaser.json";
+	currentAntiGravFile = "stablegrav.json";
 
 	// Just assume we've found everything for now
 	foundLootTypes = lootTypes;
@@ -56,6 +65,7 @@ void PlayerData::PopulateLootDetails() {
 	for( int i = 0; i != lootTypes.size(); ++i ) {
 		lootDetails[ lootTypes[i] ] = LootFromFile(lootTypes[i]);
 	}
+
 }
 
 std::shared_ptr<Loot> PlayerData::LootFromFile( std::string file ) {
@@ -70,6 +80,12 @@ std::shared_ptr<Loot> PlayerData::LootFromFile( std::string file ) {
 		weaponLoot->projectileType = root["ProjectileType"].asString();
 
 		theLoot = weaponLoot;
+	} else if( root["Category"].asString() == "AntiGrav" ) {
+		AntiGravLoot *antigravLoot = new AntiGravLoot;
+
+		antigravLoot->gravityFactor = root["GravityFactor"].asFloat();
+
+		theLoot = antigravLoot;
 	}
 
 	if( theLoot == nullptr ) {

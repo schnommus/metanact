@@ -1,0 +1,6 @@
+{
+	"Category": "AntiGrav",
+	"Name": "Underdriven Core",
+	"GravityFactor": -30,
+	"Description": "An underdriven antigrav core; causes the ship to repel surrounding objects."
+}

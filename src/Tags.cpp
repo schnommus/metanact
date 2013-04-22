@@ -187,6 +187,17 @@ void HasVelocityTag::Destroy() {}
 
 
 
+InitialVelocityTag::InitialVelocityTag( Entity &entityReference, float amount ) : Tag( entityReference), myAmount(amount) { }
+void InitialVelocityTag::Init() { 
+	e.vel.x += myAmount*sin((e.rotation+180)/180*3.14);
+	e.vel.y += myAmount*cos((e.rotation+180)/180*3.14);
+}
+void InitialVelocityTag::Step(float delta) {}
+void InitialVelocityTag::Draw() {}
+void InitialVelocityTag::Destroy() {}
+
+
+
 
 VelocityInheritanceTag::VelocityInheritanceTag( Entity &entityReference, float inheritanceFactor )
 	: Tag( entityReference ), f(inheritanceFactor) { }
@@ -391,19 +402,15 @@ void IsLocalPlayerTag::Step(float delta) {
 		bClock.restart();
 	}
 
-	/*if( e.app.GetInput().IsMouseButtonDown( sf::Mouse::Right ) && bClock2.GetElapsedTime() > 1.0/fireRate2 ) {
-		e.app.AddEntity( new DefinedEntity( e.app, projectileType2,
-					e.x + 40*sin((e.rotation+180)/180*3.14),
-					e.y + 40*cos((e.rotation+180)/180*3.14),
-					e.vel, e.rotation ), 10 );
-		bClock2.Reset();
-	}*/
 
 	if( sClock.getElapsedTime().asSeconds() > 0.1 * e.app.EvaluateOption("ParticleDensity") ) {
 		float spd = sqrt( pow(e.vel.x, 2) + pow(e.vel.y, 2) );
 		e.app.AddEntity( new SmokeParticle(e.app, e.x, e.y, spd*1.5), 10, false );
 		sClock.restart();
 	}
+
+	// Do antigrav stuff
+	e.app.GetEventHandler().NotifyGenericEvent("gravity", GravityData(e.x, e.y, 170, e.app.playerData.CurrentAntiGravDetails().gravityFactor, delta));
 
 	e.app.playerDeathTimer.restart();
 

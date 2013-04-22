@@ -26,6 +26,10 @@ public:
 
 	WeaponLoot &CurrentWeaponDetails();
 
+	void SetCurrentAntiGrav( std::string filename );
+
+	AntiGravLoot &CurrentAntiGravDetails();
+
 private:
 	void LoadLootTypes();
 	void PopulateLootDetails();
@@ -35,6 +39,7 @@ private:
 	App2D &app;
 
 	std::string currentWeaponFile;
+	std::string currentAntiGravFile;
 	
 	std::vector< std::string > foundLootTypes;
 

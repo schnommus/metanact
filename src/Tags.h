@@ -112,6 +112,16 @@ public:
 	virtual void Destroy();
 };
 
+class InitialVelocityTag : public Tag {
+public:
+	InitialVelocityTag( Entity &entityReference, float amount );
+	virtual void Init();
+	virtual void Step(float delta);
+	virtual void Draw();
+	virtual void Destroy();
+	float myAmount;
+};
+
 class VelocityInheritanceTag : public Tag {
 public:
 	VelocityInheritanceTag( Entity &entityReference, float inheritanceFactor );

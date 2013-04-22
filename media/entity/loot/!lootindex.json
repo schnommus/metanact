@@ -2,6 +2,11 @@
 	"LootFileNames": [
 		"duallaser.json",
 		"standardlaser.json",
-		"bzzt.json"
+		"blunderbuss.json",
+		"belator.json",
+		"bzzt.json",
+		"stablegrav.json",
+		"attractgrav.json",
+		"repelgrav.json"
 	]
 }
