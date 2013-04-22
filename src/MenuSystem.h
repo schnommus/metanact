@@ -15,6 +15,7 @@ public:
 	App2D &app;
 	MenuSystem &ms;
 	std::string name;
+	std::string hoverDescription;
 	bool hovering;
 	bool downed;
 	bool disabled;

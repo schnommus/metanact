@@ -12,7 +12,7 @@ class Entity {
 public:
 	/// Must construct this class with an application instance. Do it in your classes' constructor.
 	/// \param a : The application instance.
-	Entity( App2D &a ) : app(a), isEnemy(0), cinematicEntity(false) { }
+	Entity( App2D &a ) : app(a), isEnemy(0), cinematicEntity(false), isBeingDrawn(true) { }
 
 	virtual ~Entity() {}
 	
@@ -50,6 +50,8 @@ public:
 
 	/// True if entity is of enemy type
 	bool isEnemy;
+
+	bool isBeingDrawn;
 
 	/// Entity health (if it has any)
 	int health;

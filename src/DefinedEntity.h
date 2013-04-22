@@ -9,36 +9,6 @@
 #include "Tag.h"
 #include "Tags.h"
 
-// Class to read line-shape definitions
-/*class LineReader {
-public:
-	static std::vector<sf::Shape> Read ( const char *file ) {
-		std::ifstream ifs;
-		ifs.open(file, std::ios::in);
-
-		if( !ifs.is_open() ) {
-			throw std::exception(std::string(std::string("Invalid entity shape definition name: ") + std::string(file)).c_str());
-		}
-
-		std::vector< std::pair< sf::Vector2f, sf::Vector2f > > sDef;
-
-		float cx, cy; // Get object centre
-		ifs >> cx >> cy;
-
-		float r, g, b; // Get object colour
-		ifs >> r >> g >> b;
-
-		std::vector<sf::Shape> shapeVector;
-		while( !ifs.eof() ) {
-			float x1, y1, x2, y2;
-			ifs >> x1 >> y1 >> x2 >> y2;
-			shapeVector.push_back( sf::Shape::Line(x1, y1,
-							 x2, y2, 1, sf::Color(r, g, b) ) );
-			shapeVector[shapeVector.size()-1].SetCenter(cx, cy);
-		}
-		return shapeVector;
-	}
-};*/
 
 class GravityData {
 public:

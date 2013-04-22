@@ -516,35 +516,32 @@ void App2D::SetOption( std::string type, std::string data ) {
 
 void App2D::SaveOptions() {
 	std::ofstream ofs;
-	ofs.open("options.cfg", std::ios::out | std::ios::trunc);
+	ofs.open("options.json", std::ios::out | std::ios::trunc);
 
 	if( !ofs.is_open() ) {
 		throw std::exception("Couldn't open options file for writing!");
 	}
 
+	Json::Value root;
+
 	std::map< std::string, std::string >::iterator it;
 	for( it = gameOptions.begin(); it != gameOptions.end(); ++it ) {
-		ofs << it->first << "=" << it->second << std::endl;
+		root[it->first] = it->second;
 	}
+
+
+	ofs << root;
 
 	ofs.close();
 }
 
 void App2D::LoadOptions() {
-	std::ifstream ifs;
-	ifs.open("options.cfg", std::ios::in);
+	Json::Value root = jsonPool.GetRootNode("options.json");
 
-	if( !ifs.is_open() ) {
-		throw std::exception("Couldn't open options file for reading!");
+	std::vector< std::string > memberNames = root.getMemberNames();
+	for( int i = 0; i != memberNames.size(); ++i ) {
+		SetOption( memberNames[i], root[ memberNames[i] ].asString() );
 	}
-
-	while( !ifs.eof() ) {
-		std::string all; getline(ifs, all);
-		if ( all.find('=') != std::string::npos) // If there's an '='
-			SetOption( all.substr(0, all.find('=')), all.substr(all.find('=')+1, all.size()-1 ) );
-	}
-
-	ifs.close();
 }
 
 void App2D::ReleaseFile( std::string subname, std::string message ) {
@@ -606,22 +603,11 @@ void App2D::WipeCurrentGame() {
 }
 
 void App2D::ReEnterGame() {
-	std::ifstream ifs;
-	ifs.open("saves/!header.sav", std::ios::in);
-	if( ifs.is_open() ) {
-		while( !ifs.eof() ) {
-			std::string all; getline(ifs, all);
-			std::string n, msg;
-			if ( all.find('=') != std::string::npos) // If there's an '='
-				n = all.substr(0, all.find('=')), msg = all.substr(all.find('=')+1, all.size()-1 );
-			if( n == "currentPath") currentPath = msg;
-			if( n == "playerScore") {
-				std::istringstream iss(msg);
-				iss >> currentPlayerScore;
-			}
-			std::cout << "Got current path from file: " << currentPath << std::endl;
-		}
-		ifs.close();
+	Json::Value root = jsonPool.GetRootNode("saves/!header.json");
+	if( IsLastSave() ) {
+		currentPath = root["CurrentPath"].asString();
+		currentPlayerScore = root["PlayerScore"].asInt();
+		std::cout << "Loaded savefile in directory: " << currentPath << std::endl;
 	} else {
 		// Get initial directory
 		currentPath = GetOption("InitialDirectory");
@@ -752,23 +738,24 @@ void App2D::LoadLevel() {
 					bestEnemyType = enemies[j];
 				}
 			}
-
-			AddEntity( new DefinedEntity( *this, bestEnemyType, rand()%gameSize-gameSize/2, rand()%gameSize-gameSize/2, sf::Vector2f(), 0, false, files[i].filename().string() ), 10 );
+			
+			if( bestEnemyType.empty() ) {
+				std::cout << "Couldn't suit file: " << files[i].filename().string() << " at " << file_size(files[i]) << " to enemy." << std::endl;
+			} else {
+				AddEntity( new DefinedEntity( *this, bestEnemyType, rand()%gameSize-gameSize/2, rand()%gameSize-gameSize/2, sf::Vector2f(), 0, false, files[i].filename().string() ), 10 );
+			}
 		}
 	}
 
 
 	AddEntity( new DefinedEntity( *this, "spawner" ), 9 );
 
-	std::ofstream ofs;
-	ofs.open("saves/!header.sav", std::ios::out | std::ios::trunc);
+	Json::Value &root = jsonPool.GetRootNode("saves/!header.json");
 
-	if( !ofs.is_open() ) {
-		throw std::exception("Couldn't open !header file for writing");
-	} else {
-		ofs << "currentPath=" << currentPath << std::endl;
-		ofs << "playerScore=" << currentPlayerScore << std::endl;
-	}
+	root["CurrentPath"] = currentPath;
+	root["PlayerScore"] = currentPlayerScore;
+
+	jsonPool.WriteToFile("saves/!header.json");
 
 	int r = rand()%8;
 	if( r == 0 ) PlayDialogue("lchange1.ogg");
@@ -822,7 +809,7 @@ void App2D::DrawLogMessages() {
 // Does a previous savefile exist?
 bool App2D::IsLastSave() {
 	std::ifstream ifs;
-	ifs.open("saves/!header.sav", std::ios::in);
+	ifs.open("saves/!header.json", std::ios::in);
 	if( ifs.is_open() ) {
 		ifs.close();
 		return true;

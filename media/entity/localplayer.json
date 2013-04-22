@@ -26,8 +26,6 @@
 		"spread": 60
 	},
 	
-	"Flags": [
-		"HasVelocity",
-		"IsLocalPlayer"
-	]
+	"HasVelocity": {},
+	"IsLocalPlayer": {}
 }
