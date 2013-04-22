@@ -264,10 +264,12 @@ public:
 			if( app.playerData.GetLootOfType( lootTypes[i] ).fileName == app.playerData.CurrentWeaponDetails().fileName )
 				currentAttribute = i;
 		}
+		this->hoverDescription = app.playerData.CurrentWeaponDetails().description;
 	}
 	virtual void Clicked() {
 		if( ++currentAttribute == attributes.size() ) currentAttribute = 0;
 		app.playerData.SetCurrentWeapon( app.playerData.GetLootTypeForName(attributes[currentAttribute]) );
+		this->hoverDescription = app.playerData.CurrentWeaponDetails().description;
 	}
 };
 
@@ -291,10 +293,10 @@ public:
 		// Erase all previous .sav files here
 		using namespace boost::filesystem;
 		path cwd( current_path() / "saves" );
-		std::cout << cwd << " GDDF" << std::endl;
+		std::cout << "Deleting savefiles in " << cwd << ":" << std::endl;
 		directory_iterator end;
 		for( directory_iterator di(cwd); di != end; ++di ) {
-			if( di->path().extension() == ".sav") {
+			if( di->path().extension() == ".sav" || di->path().extension() == ".json") {
 				std::cout << di->path() << " deleted" << std::endl;
 				remove(di->path());
 			}
@@ -401,5 +403,15 @@ void MenuSystem::Draw() {
 			mText.setColor( sf::Color(255, 255, 255, 100) );
 
 		app.Draw(mText);
+
+		if( !currentMenu->items[i]->hoverDescription.empty() && currentMenu->items[i]->hovering ) {
+			sf::Text t( currentMenu->items[i]->hoverDescription, app.FindFont("Action_Force.ttf", 16), 16 );
+			t.setPosition( app.GetSize().x/2-t.getLocalBounds().width/2, app.GetSize().y-100 );
+			t.setColor(sf::Color::White);
+			app.Draw(t);
+			t.setString("Description:"); t.move(0, -30);
+			t.setColor( sf::Color(255, 255, 255, 150) );
+			app.Draw(t);
+		}
 	}
 };

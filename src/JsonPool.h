@@ -7,6 +7,7 @@
 class JsonPool {
 public:
 	Json::Value &GetRootNode( std::string filename );
+	void WriteToFile( std::string filename );
 private:
 	// Object that does the parsing
 	Json::Reader jsonReader;

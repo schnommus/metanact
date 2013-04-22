@@ -171,7 +171,7 @@ DefinedEntity::DefinedEntity( App2D &app, std::string type, int xpos, int ypos, 
 bool DefinedEntity::onStep( float delta ) {
 	if( (!onUnlockOnly || app.currentLevelUnlocked) ) {
 		for( int i = 0; i != tagList.size(); ++i ) {
-			if(app.inGame) tagList[i]->Step(delta);
+			if(app.inGame && isBeingDrawn) tagList[i]->Step(delta);
 		}
 	}
 	return true;
@@ -180,19 +180,14 @@ bool DefinedEntity::onStep( float delta ) {
 void DefinedEntity::Draw() {
 	int esize = 50;
 
+	isBeingDrawn = true;
+
 	if ( app.renderWindow.convertCoords( sf::Vector2i(0, 0) ).x-esize < x &&
 		 app.renderWindow.convertCoords( sf::Vector2i(0, 0) ).y-esize < y &&
 		 app.renderWindow.convertCoords( sf::Vector2i(app.GetSize().x, app.GetSize().y ) ).x+esize > x &&
 		 app.renderWindow.convertCoords( sf::Vector2i(app.GetSize().x, app.GetSize().y ) ).y+esize > y &&
 		 (!onUnlockOnly || app.currentLevelUnlocked) && (!app.cinematicEngine.IsCinematicRunning() || cinematicEntity) ) {
-
 		if( !drawOverride ) {
-			/*for( int i = 0; i != sv.size(); ++i ) {
-				sv[i].SetPosition(x, y);
-				sv[i].SetRotation(rotation);
-				sv[i].SetScale(scale, scale);
-				app.Draw(sv[i]);
-			}*/
 			if( !imageDir.empty() ){
 				imageSprite.setPosition(x, y);
 				imageSprite.setRotation(rotation);
@@ -209,6 +204,9 @@ void DefinedEntity::Draw() {
 			int dist = sqrt(pow(x-camPos.x,2) + pow(y-camPos.y,2));
 			int a = app.GetSize().x/3-dist;
 			if( a < 0 ) a = 0; else if (a > 150) a = 150;
+
+			// Just keep names drawn for now. Overrides above
+			a=160;
 
 			// Draw the entity display name
 			sf::Text n( sf::String(displayName), app.FindFont("Temp7c.ttf"), 15 );
