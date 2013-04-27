@@ -18,9 +18,15 @@ public:
 
 	std::vector<std::string> FoundLootTypes();
 
+	std::vector<std::string> AllLootTypes();
+
 	Loot &GetLootOfType(std::string type);
 
 	std::string GetLootTypeForName( std::string name );
+
+	void AddFoundLoot( std::string name );
+
+	void EquipDefaults();
 
 	void SetCurrentWeapon( std::string filename );
 

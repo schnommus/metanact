@@ -28,6 +28,10 @@ std::vector<std::string> PlayerData::FoundLootTypes() {
 	return foundLootTypes;
 }
 
+std::vector<std::string> PlayerData::AllLootTypes() {
+	return lootTypes;
+}
+
 Loot &PlayerData::GetLootOfType(std::string type) {
 	return *lootDetails[type].get();
 }
@@ -46,11 +50,26 @@ void PlayerData::Init() {
 	PopulateLootDetails();
 
 	// Equip some default loot
-	currentWeaponFile = "standardlaser.json";
-	currentAntiGravFile = "stablegrav.json";
+	EquipDefaults();
 
-	// Just assume we've found everything for now
-	foundLootTypes = lootTypes;
+	// To assume we've found everything
+	// foundLootTypes = lootTypes;
+}
+
+void PlayerData::EquipDefaults() {
+	foundLootTypes.resize(0);
+
+	AddFoundLoot( "standardlaser.json" );
+	AddFoundLoot( "stablegrav.json" );
+
+	SetCurrentWeapon( "standardlaser.json" );
+	SetCurrentAntiGrav( "stablegrav.json" );
+}
+
+void PlayerData::AddFoundLoot( std::string name ) {
+	if( std::find( foundLootTypes.begin(), foundLootTypes.end(), name ) == foundLootTypes.end() ) {
+		foundLootTypes.push_back( name );
+	}
 }
 
 void PlayerData::LoadLootTypes() {
