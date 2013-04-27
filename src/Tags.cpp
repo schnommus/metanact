@@ -504,7 +504,13 @@ void ProjectileOnDestroyTag::Destroy() {
 IncreaseScoreItemTag::IncreaseScoreItemTag ( Entity &entityReference, int amountToIncrease, int radius)
 	: Tag(entityReference), amt(amountToIncrease), r(radius) { }
 
-void IncreaseScoreItemTag::Init() {}
+void IncreaseScoreItemTag::Init() {
+	std::vector<std::string> lTypes = e.app.playerData.AllLootTypes();
+	int index = rand()%lTypes.size();
+	lName = lTypes[index];
+
+	e.displayName = e.app.playerData.GetLootOfType( lName ).realName;
+}
 void IncreaseScoreItemTag::Step(float delta) {
 	for( App2D::EntityMap::iterator it = e.app.entities.begin();
 			it != e.app.entities.end();
@@ -518,10 +524,14 @@ void IncreaseScoreItemTag::Step(float delta) {
 					" found use for some space-junk",
 					" used a cargo-bay to great effect"
 				};
+
 				std::ostringstream oss;
 				oss << e.app.playerName
-					<< scoreSayings[rand()%4];
+					<< scoreSayings[rand()%4] << ": " << e.app.playerData.GetLootOfType( lName ).realName;
+				e.app.playerData.AddFoundLoot(lName);
+
 				e.app.DisplayMessage( oss.str() );
+
 				e.app.DisplayBigMessage( oss.str() );
 				e.app.PlaySound("junksound.wav");
 				e.app.currentPlayerScore += 10000;

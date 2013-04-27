@@ -246,7 +246,7 @@ public:
 	virtual void Step(float delta);
 	virtual void Draw();
 	virtual void Destroy();
-	int amt, r;
+	int amt, r; std::string lName;
 };
 
 class SoundOnCreateTag : public Tag {
