@@ -127,13 +127,13 @@ DefinedEntity::DefinedEntity( App2D &app, std::string type, int xpos, int ypos, 
 			ifs >> tp >> at >> r;
 			tagList.push_back( boost::shared_ptr<Tag>( new HurtTypeOnRadiusTag( *this, tp, at, r ) ) );
 		} else if (tag == "PROJECTILE_ON_DESTROY") {
-			std::string tp; int s;
-			ifs >> tp >> s;
-			tagList.push_back( boost::shared_ptr<Tag>( new ProjectileOnDestroyTag( *this, tp, s ) ) );
+			std::string tp; int s; float ch;
+			ifs >> tp >> s >> ch;
+			tagList.push_back( boost::shared_ptr<Tag>( new ProjectileOnDestroyTag( *this, tp, s, ch ) ) );
 		} else if (tag == "INCREASE_SCORE_ITEM") {
-			int amt, r;
-			ifs >> amt >> r;
-			tagList.push_back( boost::shared_ptr<Tag>( new IncreaseScoreItemTag( *this, amt, r ) ) );
+			int amt, r, loot; 
+			ifs >> amt >> r >> loot;
+			tagList.push_back( boost::shared_ptr<Tag>( new IncreaseScoreItemTag( *this, amt, r, loot ) ) );
 		} else if (tag == "SOUND_ON_CREATE") {
 			std::string fn;
 			ifs >> fn;

@@ -8,16 +8,43 @@
         "filename": "bsound.wav"
     },
     "Image": "b.png",
-    "HurtTypeOnRadius": {
-        "radius": 15.0,
-        "amount": 10.0,
-        "type": "mb"
-    },
+    "IsPersistant": {},
+    "HurtTypeOnRadius": [
+        {
+            "radius": 30.0,
+            "amount": 15.0,
+            "type": "localplayer"
+        },
+        {
+            "radius": 40.0,
+            "amount": 15.0,
+            "type": "grunt"
+        },
+        {
+            "radius": 40.0,
+            "amount": 15.0,
+            "type": "ticker"
+        },
+        {
+            "radius": 40.0,
+            "amount": 15.0,
+            "type": "bomber"
+        },
+        {
+            "radius": 30.0,
+            "amount": 15.0,
+            "type": "remoteplayer"
+        },
+        {
+            "radius": 15.0,
+            "amount": 10.0,
+            "type": "mb"
+        }
+    ],
     "InheritedHeadingVelocity": {
         "amount": 120.0
     },
-    "IS_PERSISTANT": {},
-    "OVERRIDE_DRAW": {},
+    "OverrideDraw": {},
     "VelocityDeterminesHeading": {
         "deltaScale": 0.1,
         "startingAlpha": 255.0,

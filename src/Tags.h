@@ -231,22 +231,22 @@ public:
 
 class ProjectileOnDestroyTag : public Tag {
 public:
-	ProjectileOnDestroyTag ( Entity &entityReference, std::string typeOfProjectile, int spread );
+	ProjectileOnDestroyTag ( Entity &entityReference, std::string typeOfProjectile, int spread, float chancev );
 	virtual void Init();
 	virtual void Step(float delta);
 	virtual void Draw();
 	virtual void Destroy();
-	std::string tp; int s;
+	std::string tp; int s; float chance;
 };
 
 class IncreaseScoreItemTag : public Tag {
 public:
-	IncreaseScoreItemTag ( Entity &entityReference, int amountToIncrease, int radius);
+	IncreaseScoreItemTag ( Entity &entityReference, int amountToIncrease, int radius, bool loot);
 	virtual void Init();
 	virtual void Step(float delta);
 	virtual void Draw();
 	virtual void Destroy();
-	int amt, r; std::string lName;
+	int amt, r; std::string lName; bool isLoot;
 };
 
 class SoundOnCreateTag : public Tag {
