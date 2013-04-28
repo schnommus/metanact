@@ -121,13 +121,28 @@ void App2D::Run() {
 			// Draw the game field
 			if( CountEntityOfType("warper") > 0 && !cinematicEngine.IsCinematicRunning() ) DrawGameField();
 
+			bool upToUI = false;
+
 			// Call all normal draw functions, internally ordered by layer
 			for( EntityMap::iterator it = entities.begin();
 				 it != entities.end();
 				 ++it) {
-				if(it->first > 1000) { // Are we up to the UI?
+				if(it->first > 1000 && !upToUI) { // Are we up to the UI?
+					upToUI = true;
+					DrawPostProcessingEffects();
+
+					if( !inGame && !cinematicEngine.IsCinematicRunning() ) {
+						sf::RectangleShape rs(sf::Vector2f( GetSize().x, GetSize().y) );
+						rs.setPosition(gameView.getCenter().x-GetSize().x/2, gameView.getCenter().y-GetSize().y/2);
+						rs.setFillColor(sf::Color(0, 0, 0, 140));
+						Draw(rs);
+					}
+				}
+
+				if( upToUI ) {
 					renderWindow.setView(renderWindow.getDefaultView());
 				}
+
 				// Only draw if it's relevent to a cinematic (assuming one's up)
 				if (!cinematicEngine.IsCinematicRunning() || it->second->cinematicEntity)
 					it->second->Draw();
@@ -161,8 +176,6 @@ void App2D::Run() {
 			}
 
 			renderWindow.setView(gameView); // Back to the normal view
-
-			DrawPostProcessingEffects();
 
 			renderWindow.display();
 
@@ -733,7 +746,7 @@ void App2D::LoadLevel() {
 			std::string bestEnemyType;
 			for( int j = 0; j != enemies.size(); ++j ) {
 				int mySize = root[enemies[j]]["MinFileSize"].asInt();
-				if( mySize < file_size(files[i]) && mySize >= largestEnemySize) {
+				if( mySize <= file_size(files[i]) && mySize >= largestEnemySize) {
 					largestEnemySize = mySize;
 					bestEnemyType = enemies[j];
 				}

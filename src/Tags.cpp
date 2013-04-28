@@ -135,6 +135,7 @@ DecaysTag::DecaysTag( Entity &entityReference, float startingAlpha, float starti
 void DecaysTag::Init() {}
 
 void DecaysTag::Step(float delta) {
+	e.displayName = "";
 	sAlpha -= dAlpha*delta;
 	sScale -= dScale*delta;
 	if( !alphaUp ) { if( sAlpha < fAlpha ) { e.app.RemoveEntity( e.id ); } }
@@ -487,29 +488,33 @@ void HurtTypeOnRadiusTag::Draw() { }
 void HurtTypeOnRadiusTag::Destroy() { }
 
 
-ProjectileOnDestroyTag::ProjectileOnDestroyTag ( Entity &entityReference, std::string typeOfProjectile, int spread )
-	: Tag(entityReference), tp(typeOfProjectile), s(spread) { }
+ProjectileOnDestroyTag::ProjectileOnDestroyTag ( Entity &entityReference, std::string typeOfProjectile, int spread, float chancev )
+	: Tag(entityReference), tp(typeOfProjectile), s(spread), chance(chancev) { }
 void ProjectileOnDestroyTag::Init() {}
 void ProjectileOnDestroyTag::Step(float delta) {}
 void ProjectileOnDestroyTag::Draw() {}
 void ProjectileOnDestroyTag::Destroy() {
-	if( s==0 ) s = 1; // Avoid division by zero
+	if( s==0 ) s = 1; // Avoid division by zero for range
 	// Avoid creation on level change
-	if( !e.app.LevelChanged() ) e.app.AddEntity( new DefinedEntity( e.app, tp, e.x+((rand()%s)*2)-s, e.y+((rand()%s)*2)-s, e.vel, e.rotation ), 10 );
+	if( !e.app.LevelChanged() && (float(rand()%10000)/10000.0) <= chance ) e.app.AddEntity( new DefinedEntity( e.app, tp, e.x+((rand()%s)*2)-s, e.y+((rand()%s)*2)-s, e.vel, e.rotation, false, e.displayName ), 10 );
 }
 
 
 
 
-IncreaseScoreItemTag::IncreaseScoreItemTag ( Entity &entityReference, int amountToIncrease, int radius)
-	: Tag(entityReference), amt(amountToIncrease), r(radius) { }
+IncreaseScoreItemTag::IncreaseScoreItemTag ( Entity &entityReference, int amountToIncrease, int radius, bool loot)
+	: Tag(entityReference), amt(amountToIncrease), r(radius), isLoot(loot) { }
 
 void IncreaseScoreItemTag::Init() {
-	std::vector<std::string> lTypes = e.app.playerData.AllLootTypes();
-	int index = rand()%lTypes.size();
-	lName = lTypes[index];
+	if( isLoot ) {
+		std::vector<std::string> lTypes = e.app.playerData.AllLootTypes();
+		int index = rand()%lTypes.size();
+		lName = lTypes[index];
 
-	e.displayName = e.app.playerData.GetLootOfType( lName ).realName;
+		e.displayName = e.app.playerData.GetLootOfType( lName ).realName;
+	} else {
+		e.displayName = "Remnants of " + e.displayName;
+	}
 }
 void IncreaseScoreItemTag::Step(float delta) {
 	for( App2D::EntityMap::iterator it = e.app.entities.begin();
@@ -526,15 +531,21 @@ void IncreaseScoreItemTag::Step(float delta) {
 				};
 
 				std::ostringstream oss;
-				oss << e.app.playerName
-					<< scoreSayings[rand()%4] << ": " << e.app.playerData.GetLootOfType( lName ).realName;
-				e.app.playerData.AddFoundLoot(lName);
 
-				e.app.DisplayMessage( oss.str() );
+				if( isLoot ) {
+					oss << e.app.playerName
+						<< scoreSayings[rand()%4] << ": " << e.app.playerData.GetLootOfType( lName ).realName;
+					e.app.playerData.AddFoundLoot(lName);
+
+					e.app.DisplayMessage( oss.str() );
+					e.app.PlaySound("loot.wav");
+				} else {
+					oss << "+10,000 qB";
+					e.app.currentPlayerScore += 10000;
+					e.app.PlaySound("junksound.wav");
+				}
 
 				e.app.DisplayBigMessage( oss.str() );
-				e.app.PlaySound("junksound.wav");
-				e.app.currentPlayerScore += 10000;
 				e.app.RemoveEntity(e.id);
 			}
 		}
