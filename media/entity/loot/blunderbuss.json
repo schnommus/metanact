@@ -3,5 +3,8 @@
 	"Name": "Blunder 4000",
 	"FireRate": 2.0,
 	"ProjectileType": "blunder",
+	"ProjectionDistance": 40,
+	"NumRailProjectiles": 1,
+	"DoesCharge": false,
 	"Description": "The Blunder specialises in firing multiple roughly-aimed projectiles at targets."
 }

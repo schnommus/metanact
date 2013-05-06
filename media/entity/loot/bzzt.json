@@ -3,5 +3,8 @@
 	"Name": "BuzzGun",
 	"FireRate": 40.0,
 	"ProjectileType": "b",
+	"ProjectionDistance": 40,
+	"NumRailProjectiles": 1,
+	"DoesCharge": false,
 	"Description": "Holy camole. You crazy?"
 }

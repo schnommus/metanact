@@ -8,6 +8,8 @@
 		"stablegrav.json",
 		"attractgrav.json",
 		"repelgrav.json",
-		"megagrav.json"
+		"megagrav.json",
+		"railgun.json",
+		"bigmissile.json"
 	]
 }

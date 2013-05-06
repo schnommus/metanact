@@ -347,6 +347,7 @@ void IsLocalPlayerTag::Init() {
 	fireRate = 5; projectileType = "b";
 	fireRate2 = 0.25; projectileType2 = "mb";
 	lHealth = e.health;
+	fullyCharged = false;
 }
 
 void IsLocalPlayerTag::Step(float delta) {
@@ -395,11 +396,46 @@ void IsLocalPlayerTag::Step(float delta) {
 	projectileType = e.app.playerData.CurrentWeaponDetails().projectileType;
 	fireRate = e.app.playerData.CurrentWeaponDetails().fireRate;
 
-	if( sf::Mouse::isButtonPressed( sf::Mouse::Left ) && bClock.getElapsedTime().asSeconds() > 1.0/fireRate ) {
-		e.app.AddEntity( new DefinedEntity( e.app, projectileType,
-					e.x + 40*sin((-e.rotation+180)/180*3.14),
-					e.y + 40*cos((-e.rotation+180)/180*3.14),
+	float projectionDistance = e.app.playerData.CurrentWeaponDetails().projectionDistance;
+	int numRailProjectiles = e.app.playerData.CurrentWeaponDetails().numRailProjectiles;
+
+	bool doesCharge = e.app.playerData.CurrentWeaponDetails().doesCharge;
+
+	if( doesCharge && !sf::Mouse::isButtonPressed( sf::Mouse::Left ) ) {
+		if( bClock.getElapsedTime().asSeconds() > 1.0/fireRate ) {
+			for( int i = 1; i <= numRailProjectiles; ++ i) {
+				e.app.AddEntity( new DefinedEntity( e.app, projectileType,
+					e.x + i*projectionDistance*sin((-e.rotation+180)/180*3.14),
+					e.y + i*projectionDistance*cos((-e.rotation+180)/180*3.14),
 					e.vel, e.rotation ), 10 );
+			}
+		}
+		fullyCharged = false;
+		bClock.restart();
+	}
+
+	if( doesCharge ) {
+		e.scale = 1+(bClock.getElapsedTime().asSeconds() / (1.0/fireRate))*0.2;
+		if( e.scale > 1.2 ) e.scale = 1.2;
+
+		if( sf::Mouse::isButtonPressed( sf::Mouse::Left ) ) {
+			if( bClock.getElapsedTime().asSeconds() < delta*2 ) {
+				e.app.PlaySound("charging.ogg");
+			}
+			if( !fullyCharged && bClock.getElapsedTime().asSeconds() > 1.0/fireRate ) {
+				fullyCharged = true;
+				e.app.PlaySound("charged.ogg");
+			}
+		}
+	}
+
+	if( !doesCharge && sf::Mouse::isButtonPressed( sf::Mouse::Left ) && bClock.getElapsedTime().asSeconds() > 1.0/fireRate ) {
+		for( int i = 1; i <= numRailProjectiles; ++ i) {
+			e.app.AddEntity( new DefinedEntity( e.app, projectileType,
+						e.x + i*projectionDistance*sin((-e.rotation+180)/180*3.14),
+						e.y + i*projectionDistance*cos((-e.rotation+180)/180*3.14),
+						e.vel, e.rotation ), 10 );
+		}
 		bClock.restart();
 	}
 
@@ -539,13 +575,14 @@ void IncreaseScoreItemTag::Step(float delta) {
 
 					e.app.DisplayMessage( oss.str() );
 					e.app.PlaySound("loot.wav");
+
+					e.app.DisplayBigMessage( oss.str() );
 				} else {
 					oss << "+10,000 qB";
 					e.app.currentPlayerScore += 10000;
 					e.app.PlaySound("junksound.wav");
 				}
 
-				e.app.DisplayBigMessage( oss.str() );
 				e.app.RemoveEntity(e.id);
 			}
 		}
@@ -683,3 +720,19 @@ void HasShaderTag::Draw() {
 	}
 }
 void HasShaderTag::Destroy() {}
+
+
+EmplaceEntityTag::EmplaceEntityTag( Entity &entityReference, float x, float y, std::string type ) : Tag(entityReference), xoffset(x), yoffset(y), theType(type) { }
+void EmplaceEntityTag::Init() {
+	childEntity = e.app.AddEntity( new DefinedEntity(e.app, theType), 12 );
+}
+void EmplaceEntityTag::Step(float delta) {
+	Entity *childpt = e.app.GetEntityWithId(childEntity);
+	childpt->x = e.x;
+	childpt->y = e.y;
+}
+
+void EmplaceEntityTag::Draw() {}
+void EmplaceEntityTag::Destroy() {
+	e.app.RemoveEntity(childEntity);
+}

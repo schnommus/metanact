@@ -1,14 +1,18 @@
 {
 	"bomber" : {
-		"MinFileSize": 100000000
+		"MinFileSize": 2500000
 	},
 	
 	"grunt" : {
-		"MinFileSize": 1000000
+		"MinFileSize": 13193
 	},
 	
 	"ticker" : {
-		"MinFileSize": 5000
+		"MinFileSize": 2332
+	},
+	
+	"suicider" : {
+		"MinFileSize": 772
 	},
 	
 	"scrap" : {

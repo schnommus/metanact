@@ -194,6 +194,9 @@ public:
 	std::vector<std::string> messageList;
 	int maxMessages;
 
+	std::deque<std::string> bigMessages;
+	sf::Clock bigMessageTimer;
+
 	// For camera following
 	bool following;
 	Entity *toFollow;

@@ -130,7 +130,6 @@ void App2D::Run() {
 				if(it->first > 1000 && !upToUI) { // Are we up to the UI?
 					upToUI = true;
 					DrawPostProcessingEffects();
-
 					if( !inGame && !cinematicEngine.IsCinematicRunning() ) {
 						sf::RectangleShape rs(sf::Vector2f( GetSize().x, GetSize().y) );
 						rs.setPosition(gameView.getCenter().x-GetSize().x/2, gameView.getCenter().y-GetSize().y/2);
@@ -152,9 +151,16 @@ void App2D::Run() {
 
 			if(GetOption("MinimalUI") == "Disabled") DrawLogMessages();
 
+			// Big messages [MOVE TO METHOD]
+			if( bigMessages.size() > 0 && bigMessageTimer.getElapsedTime().asSeconds() > 1.0 ) {
+				AddEntity( new BigMessage(*this, bigMessages[0]), 1001, true );
+				bigMessages.pop_front();
+				bigMessageTimer.restart();
+			}
+
 			DrawSubtitles();
 
-			// Draw score
+			// Draw score [MOVE TO METHOD]
 			std::ostringstream outs;
 			outs.imbue(std::locale("")); // For commas
 			outs << std::fixed << currentPlayerScore << " qB";
@@ -313,7 +319,7 @@ void App2D::DrawSubtitles()
 }
 
 void App2D::DisplayBigMessage(std::string message) {
-	AddEntity( new BigMessage(*this, message), 1001, true );
+	bigMessages.push_back(message);
 }
 
 void App2D::CreateParticles() 

@@ -3,5 +3,8 @@
 	"Name": "Dual Laser",
 	"FireRate": 4.0,
 	"ProjectileType": "dualbullet",
+	"ProjectionDistance": 40,
+	"NumRailProjectiles": 1,
+	"DoesCharge": false,
 	"Description": "A little more oomph than the standard laser"
 }

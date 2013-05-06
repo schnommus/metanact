@@ -1,7 +1,7 @@
 
 {
 	"ControlScheme" : "Global Movement",
-	"InitialDirectory" : "C:\\Windows\\",
+	"InitialDirectory" : "C:\\",
 	"MinimalUI" : "Disabled",
 	"ParticleDensity" : "Heavy",
 	"PlayerName" : "Schnommus",

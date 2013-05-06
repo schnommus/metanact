@@ -3,5 +3,8 @@
 	"Name": "Energy Belator",
 	"FireRate": 2.5,
 	"ProjectileType": "belator",
+	"ProjectionDistance": 40,
+	"NumRailProjectiles": 1,
+	"DoesCharge": false,
 	"Description": "Similar to an ancient fragmentation grenade, Belator projectiles travel before detonating."
 }
