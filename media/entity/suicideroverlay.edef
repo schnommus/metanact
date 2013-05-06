@@ -1,0 +1,5 @@
+NAME suicideroverlay
+SCALE 0.45
+IMAGE suicider2.png
+WOBBLES 0.05 10
+ROTATES -60

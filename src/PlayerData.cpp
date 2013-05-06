@@ -53,7 +53,7 @@ void PlayerData::Init() {
 	EquipDefaults();
 
 	// To assume we've found everything
-	// foundLootTypes = lootTypes;
+	foundLootTypes = lootTypes;
 }
 
 void PlayerData::EquipDefaults() {
@@ -97,6 +97,9 @@ std::shared_ptr<Loot> PlayerData::LootFromFile( std::string file ) {
 
 		weaponLoot->fireRate = root["FireRate"].asFloat();
 		weaponLoot->projectileType = root["ProjectileType"].asString();
+		weaponLoot->projectionDistance = root["ProjectionDistance"].asFloat();
+		weaponLoot->numRailProjectiles = root["NumRailProjectiles"].asFloat();
+		weaponLoot->doesCharge = root["DoesCharge"].asBool();
 
 		theLoot = weaponLoot;
 	} else if( root["Category"].asString() == "AntiGrav" ) {

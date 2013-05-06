@@ -12,7 +12,8 @@ struct Loot {
 };
 
 struct WeaponLoot : public Loot {
-	float fireRate;
+	float fireRate, projectionDistance, numRailProjectiles;
+	bool doesCharge;
 	std::string projectileType;
 };
 

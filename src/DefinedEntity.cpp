@@ -160,6 +160,10 @@ DefinedEntity::DefinedEntity( App2D &app, std::string type, int xpos, int ypos, 
 			std::string sn;
 			ifs >> sn;
 			tagList.push_back( boost::shared_ptr<Tag>( new HasShaderTag( *this, sn ) ) );
+		} else if (tag == "EMPLACE_ENTITY") {
+			std::string en; float px, py;
+			ifs >> px >> py >> en;
+			tagList.push_back( boost::shared_ptr<Tag>( new EmplaceEntityTag( *this, px, py, en ) ) );
 		} else if (tag == "IS_PERSISTANT") {
 			isPersistant = true;
 		}
@@ -170,6 +174,23 @@ DefinedEntity::DefinedEntity( App2D &app, std::string type, int xpos, int ypos, 
 	for( int i = 0; i != tagList.size(); ++i ) {
 		tagList[i]->Init();
 	}
+
+	// Override image if extension is recognised
+	/*std::string myFileName = displayName;
+	if( !myFileName.empty() && isEnemy ) {
+		std::string possible[59] = { "aac", "ai", "aiff", "avi", "bmp", "c", "cpp", "css", "dat", "dmg", "doc", "dotx", "dwg", "dxf", "eps", "exe", "flv", "gif", "h", "hpp", "html", "ics", "iso", "java", "jpg", "key", "mid", "mp3", "mp4", "mpg", "odf", "ods", "odt", "otp", "ots", "ott", "pdf", "php", "png", "ppt", "psd", "py", "qt", "rar", "rb", "rtf", "sql", "tga", "tgz", "tiff", "txt", "wav", "xls", "xlsx", "xml", "yml", "zip", "_blank", "_page" };
+		std::string myExtension = myFileName.substr( myFileName.find_last_of(".") + 1 );
+		std::transform(myExtension.begin(), myExtension.end(), myExtension.begin(), ::tolower);
+		for( int i = 0; i != 59; ++i ) {
+			if( myExtension == possible[i] ) {
+				imageDir = "/fileicons/" + myExtension + ".png";
+				imageSprite.setTexture( app.FindTexture(imageDir) );
+				imageSprite.setOrigin( imageSprite.getLocalBounds().width/2, imageSprite.getLocalBounds().height/2 );
+
+				break;
+			}
+		}
+	}*/
 }
 
 bool DefinedEntity::onStep( float delta ) {

@@ -206,6 +206,7 @@ public:
 	float agility, fireRate, fireRate2;
 	std::string projectileType, projectileType2;
 	int lHealth, lScore;
+	bool fullyCharged;
 };
 
 class HasHealthTag : public Tag {
@@ -319,6 +320,17 @@ public:
 	virtual void Draw();
 	virtual void Destroy();
 	std::string shaderName;
+};
+
+class EmplaceEntityTag : public Tag {
+public:
+	EmplaceEntityTag( Entity &entityReference, float x, float y, std::string type );
+	virtual void Init();
+	virtual void Step(float delta);
+	virtual void Draw();
+	virtual void Destroy();
+	std::string theType; float xoffset, yoffset;
+	long long childEntity;
 };
 
 #endif

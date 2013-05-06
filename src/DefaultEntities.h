@@ -145,16 +145,21 @@ private:
 
 class BigMessage : public Entity {
 public:
-	BigMessage( App2D &a, std::string message ) : Entity(a) {
+	BigMessage( App2D &a, std::string message ) : Entity(a), msg(message) {
 		// Register events
 		hStepEvent = app.GetEventHandler().stepEvent.attach(this, &BigMessage::onStep);
-		alpha = 255;
-		y = 80;
+		alpha = 0;
+		y = 150;
+		down = false;
+
+		std::cout << "Big message: " << msg << std::endl;
 
 		s.setFont(app.FindFont("Action_Force.ttf"));
 		s.setCharacterSize(30);
-		s.setString(message.c_str());
+		s.setString(msg.c_str());
 		x = app.GetSize().x/2 - s.getLocalBounds().width/2;
+
+		app.PlaySound("message.ogg");
 	}
 
 	~BigMessage() {
@@ -163,12 +168,20 @@ public:
 	}
 
 	bool onStep(float delta) {
-		y -= 30*delta;
-		alpha -= 100*delta;
+
+		y -= 20*delta;
+		y = 150;
+		x = app.GetSize().x/2 - s.getLocalBounds().width/2;
+		if(down)
+			alpha -= 100*delta;
+		else
+			alpha += 200*delta;
+
+		if( !down && alpha > 200 ) down = true;
+
 		if(alpha < 1) app.RemoveEntity(this->id);
 		s.setColor( sf::Color(255, 255, 255, alpha ) );
 		s.setPosition(x, y);
-		x = app.GetSize().x/2 - s.getLocalBounds().width/2;
 		return true;
 	}
 
@@ -179,7 +192,7 @@ public:
 
 private:
 	CppEventHandler hStepEvent;
-	sf::Text s; float alpha;
+	sf::Text s; float alpha; bool down; std::string msg;
 };
 
 class SmokeParticle : public Entity {
