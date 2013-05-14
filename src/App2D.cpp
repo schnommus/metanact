@@ -152,7 +152,7 @@ void App2D::Run() {
 			if(GetOption("MinimalUI") == "Disabled") DrawLogMessages();
 
 			// Big messages [MOVE TO METHOD]
-			if( bigMessages.size() > 0 && bigMessageTimer.getElapsedTime().asSeconds() > 1.0 ) {
+			if( bigMessages.size() > 0 && bigMessageTimer.getElapsedTime().asSeconds() > 1.5 ) {
 				AddEntity( new BigMessage(*this, bigMessages[0]), 1001, true );
 				bigMessages.pop_front();
 				bigMessageTimer.restart();
@@ -236,7 +236,7 @@ long long App2D::nextId() {
 }
 
 long long App2D::nextViewId() {
-	return 1e6 + ++currentViewId;
+	return nextId();//return 1e9 + ++currentViewId;
 }
 
 int App2D::GetObjectCount() {

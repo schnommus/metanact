@@ -168,24 +168,23 @@ public:
 	}
 
 	bool onStep(float delta) {
-
-		y -= 20*delta;
-		y = 150;
-		x = app.GetSize().x/2 - s.getLocalBounds().width/2;
-		if(down)
-			alpha -= 100*delta;
-		else
-			alpha += 200*delta;
-
-		if( !down && alpha > 200 ) down = true;
-
-		if(alpha < 1) app.RemoveEntity(this->id);
-		s.setColor( sf::Color(255, 255, 255, alpha ) );
-		s.setPosition(x, y);
 		return true;
 	}
 
 	virtual void Draw() {
+		y -= 20*app.GetFrameTime();
+		x = app.GetSize().x/2 - s.getLocalBounds().width/2;
+		if(down) {
+			alpha -= 100*app.GetFrameTime();
+			if(alpha < 1) app.RemoveEntity(this->id);
+		} else
+			alpha += 200*app.GetFrameTime();
+
+		if( !down && alpha > 200 ) down = true;
+
+		s.setColor( sf::Color(255, 255, 255, alpha ) );
+		s.setPosition(x, y);
+
 		// Draw the text
 		app.Draw(s);
 	};
