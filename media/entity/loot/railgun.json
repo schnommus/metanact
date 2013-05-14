@@ -1,0 +1,10 @@
+{
+	"Category": "Weapon",
+	"Name": "Railgun",
+	"FireRate": 2.0,
+	"ProjectileType": "rail",
+	"ProjectionDistance":101,
+	"NumRailProjectiles": 9,
+	"DoesCharge": true,
+	"Description": "Good for taking out multiple targets in a line"
+}

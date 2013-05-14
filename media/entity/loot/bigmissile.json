@@ -1,0 +1,10 @@
+{
+	"Category": "Weapon",
+	"Name": "Subspace Missile",
+	"FireRate": 1,
+	"ProjectileType": "mb",
+	"ProjectionDistance": 70,
+	"NumRailProjectiles": 2,
+	"DoesCharge": true,
+	"Description": "Although a slow firing weapon, the Subspace Missile does immense damage."
+}
