@@ -50,6 +50,8 @@ App2D::App2D( bool useVSync,
 	persistanceTarget.clear(sf::Color(0, 0, 0, 0));
 
 	currentPlayerScore = 0;
+	currentPlayerScoreScale = 35;
+	currentHostilityTier = 0;
 
 	// Initialise the message scroller
 	for( int i = 0; i != maxMessages; ++i ) {
@@ -161,13 +163,24 @@ void App2D::Run() {
 			DrawSubtitles();
 
 			// Draw score [MOVE TO METHOD]
+			if( currentPlayerScoreScale > 35 ) currentPlayerScoreScale -= 30*GetFrameTime();
 			std::ostringstream outs;
 			outs.imbue(std::locale("")); // For commas
 			outs << std::fixed << currentPlayerScore << " qB";
-			sf::Text n( outs.str(), FindFont("Action_Force.ttf", 35), 35 );
+			sf::Text n( outs.str(), FindFont("Action_Force.ttf", 35), currentPlayerScoreScale );
 			n.setPosition( GetSize().x/2-n.getLocalBounds().width/2, 0 );
 			n.setColor( sf::Color(255, 255, 255, 200) );
 			if(inGame && !cinematicEngine.IsCinematicRunning() ) Draw(n);
+
+			// Tier [MOVE TO METHOD]
+			outs.str("");
+			currentHostilityTier = currentPlayerScore/100000;
+			int percent = ((currentPlayerScore-(currentHostilityTier*100000))*100)/100000;
+			outs << "Tier " << currentHostilityTier << " hostility (" << percent << "% to Tier " << currentHostilityTier+1<<  ")";
+			sf::Text n2( outs.str(), FindFont("Action_Force.ttf", 20), 20 );
+			n2.setPosition( GetSize().x/2-n2.getLocalBounds().width/2, 40 );
+			n2.setColor( sf::Color(255, 255, 255, 130) );
+			if(inGame && !cinematicEngine.IsCinematicRunning() ) Draw(n2);
 
 
 			// Draw minimap
@@ -698,7 +711,7 @@ void App2D::LoadLevel() {
 		dirs.resize(60);
 
 
-	int gameSize = 500 + 50*files.size() + 150*dirs.size();
+	int gameSize = 500 + 150*files.size() + 100*dirs.size();
 	std::ostringstream s;
 	s << gameSize/1000 + 1;
 	DisplayMessage(std::string("Entered ") + currentPath + " -- Approximate size: " + s.str() + " ByteParsec(s)");
@@ -752,7 +765,7 @@ void App2D::LoadLevel() {
 			std::string bestEnemyType;
 			for( int j = 0; j != enemies.size(); ++j ) {
 				int mySize = root[enemies[j]]["MinFileSize"].asInt();
-				if( mySize <= file_size(files[i]) && mySize >= largestEnemySize) {
+				if( mySize <= (currentHostilityTier*file_size(files[i]))/5 && mySize >= largestEnemySize) {
 					largestEnemySize = mySize;
 					bestEnemyType = enemies[j];
 				}

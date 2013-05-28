@@ -190,6 +190,8 @@ public:
 	std::string playerName;
 
 	int currentPlayerScore;
+	float currentPlayerScoreScale;
+	int currentHostilityTier;
 
 	std::vector<std::string> messageList;
 	int maxMessages;
