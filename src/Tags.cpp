@@ -560,26 +560,30 @@ void IncreaseScoreItemTag::Step(float delta) {
 			float dist = sqrt(powf(e.x-it->second->x, 2) + powf(e.y-it->second->y, 2));
 			if( dist < r ) {
 				std::string scoreSayings[4] = {
-					" got lucky with some scrap",
-					" has found something",
-					" found use for some space-junk",
-					" used a cargo-bay to great effect"
+					"Found the ",
+					"Obtained the ",
+					"Recovered the ",
+					"Discovered the "
 				};
 
 				std::ostringstream oss;
 
 				if( isLoot ) {
-					oss << e.app.playerName
-						<< scoreSayings[rand()%4] << ": " << e.app.playerData.GetLootOfType( lName ).realName;
+					/*oss << e.app.playerName
+						<< scoreSayings[rand()%4] << ": " << e.app.playerData.GetLootOfType( lName ).realName;*/
+					oss << scoreSayings[rand()%4] << e.app.playerData.GetLootOfType( lName ).realName;
 					e.app.playerData.AddFoundLoot(lName);
 
 					e.app.DisplayMessage( oss.str() );
 					e.app.PlaySound("loot.wav");
 
+					//e.app.cinematicEngine.RunCinematic("cin1.cnm");
+
 					e.app.DisplayBigMessage( oss.str() );
 				} else {
 					oss << "+10,000 qB";
 					e.app.currentPlayerScore += 10000;
+					e.app.currentPlayerScoreScale = 45;
 					e.app.PlaySound("junksound.wav");
 				}
 
