@@ -339,7 +339,12 @@ void App2D::CreateParticles()
 {
 	// Make binary particles for effect
 	if(binaryReplaceTimer.getElapsedTime().asSeconds() > 0.05f  * EvaluateOption("ParticleDensity"))	 {
-		AddEntity( new BinaryParticle(*this), 1 );
+		if( GetOption("ParticleType") == "Binary")
+			AddEntity( new BinaryParticle(*this), 1 );
+		else if ( GetOption("ParticleType") == "Stars")
+			AddEntity( new ImageParticle(*this, "star.png", 1, 1), 1 );
+		else if ( GetOption("ParticleType") == "WarpLines")
+			AddEntity( new ImageParticle(*this, "warpline.png", 150, 1.5, 11), 1 );
 		binaryReplaceTimer.restart();
 	}
 }
