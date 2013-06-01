@@ -143,6 +143,53 @@ private:
 	sf::Text s; float alpha, fScale; bool gd;
 };
 
+class ImageParticle : public Entity {
+public:
+	ImageParticle( App2D &a, std::string imageName, int discolouration = 1, float scale = 1, float movementScale = 1 ) : Entity(a), mScale(movementScale) {
+		// Register events
+		hStepEvent = app.GetEventHandler().stepEvent.attach(this, &ImageParticle::onStep);
+		alpha = 2; gd = false;
+		int sDelta = 1000;
+		sf::Vector2f v = app.renderWindow.convertCoords(sf::Vector2i( (rand()%(app.GetSize().x+sDelta))-sDelta/2, (rand()%(app.GetSize().y+sDelta))-sDelta/2) );
+		x = v.x;
+		y = v.y;
+		fScale = scale/float(rand()%3+1);
+		s.setTexture( app.FindTexture(imageName) );
+		s.setScale( fScale, fScale );
+		s.setColor( sf::Color(255-rand()%discolouration, 255-rand()%discolouration, 255-rand()%discolouration, 255 ) );
+		cinematicEntity = true;
+	}
+
+	~ImageParticle() {
+		// Detach events
+		app.GetEventHandler().stepEvent.detach( hStepEvent );
+	}
+
+	bool onStep(float delta) {
+		x += mScale*(app.cdelta.x*delta)/fScale;
+		y += mScale*(app.cdelta.y*delta)/fScale;
+
+		if( !gd ) alpha += 100*delta;
+		else alpha -= 100*delta;
+		if( alpha > 230 ) gd = true;
+		if(alpha < 1) app.RemoveEntity(this->id);
+		sf::Color myColour = s.getColor(); myColour.a = alpha;
+		s.setColor( myColour );
+		s.setPosition(x, y);
+		return true;
+	}
+
+	virtual void Draw() {
+		// Draw the text
+		app.Draw(s);
+	};
+
+private:
+	CppEventHandler hStepEvent;
+	sf::Sprite s; float alpha, fScale, mScale; bool gd;
+};
+
+
 class BigMessage : public Entity {
 public:
 	BigMessage( App2D &a, std::string message ) : Entity(a), msg(message) {

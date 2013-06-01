@@ -175,6 +175,21 @@ public:
 	}
 };
 
+class ParticleType : public MenuItem {
+public:
+	ParticleType( App2D &a, MenuSystem &m ) : MenuItem(a, m) {
+		name = "Particle Type";
+		attributes.push_back("Binary");
+		attributes.push_back("Stars");
+		attributes.push_back("WarpLines");
+
+		InitializeToCurrent(attributes, currentAttribute, "ParticleType", app);
+	}
+	virtual void Clicked() {
+		CycleOptions(attributes, currentAttribute, "ParticleType", app);
+	}
+};
+
 class Directory : public MenuItem {
 public:
 	Directory( App2D &a, MenuSystem &m ) : MenuItem(a, m) {
@@ -243,6 +258,7 @@ public:
 		items.push_back( boost::shared_ptr<MenuItem>( new PlayerName(app, ms) ) );
 		items.push_back( boost::shared_ptr<MenuItem>( new ControlScheme(app, ms) ) );
 		items.push_back( boost::shared_ptr<MenuItem>( new ParticleDensity(app, ms) ) );
+		items.push_back( boost::shared_ptr<MenuItem>( new ParticleType(app, ms) ) );
 		items.push_back( boost::shared_ptr<MenuItem>( new MinimalUI(app, ms) ) );
 		items.push_back( boost::shared_ptr<MenuItem>( new UseShaders(app, ms) ) );
 		items.push_back( boost::shared_ptr<MenuItem>( new Directory(app, ms) ) );
