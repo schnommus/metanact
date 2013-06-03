@@ -196,7 +196,7 @@ DefinedEntity::DefinedEntity( App2D &app, std::string type, int xpos, int ypos, 
 bool DefinedEntity::onStep( float delta ) {
 	if( (!onUnlockOnly || app.currentLevelUnlocked) ) {
 		for( int i = 0; i != tagList.size(); ++i ) {
-			if(app.inGame && isBeingDrawn) tagList[i]->Step(delta);
+			if(app.inGame && isBeingDrawn && (!app.cinematicEngine.IsCinematicRunning() || cinematicEntity)) tagList[i]->Step(delta);
 		}
 	}
 	return true;

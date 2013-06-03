@@ -2,8 +2,8 @@
 {
 	"ControlScheme" : "Global Movement",
 	"InitialDirectory" : "C:\\",
-	"MinimalUI" : "Disabled",
-	"ParticleDensity" : "Heavy",
+	"MinimalUI" : "Enabled",
+	"ParticleDensity" : "MELT!",
 	"ParticleType" : "Binary",
 	"PlayerName" : "Schnommus",
 	"UseShaders" : "Enabled"

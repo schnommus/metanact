@@ -126,6 +126,9 @@ void CinematicEngine::UpdateCinematic() {
 					std::string etype, ename; iss >> etype >> ename;
 					long long id = app.AddEntity( new DefinedEntity( app, etype ), 10 );
 					namedEntityMap.insert(make_pair(ename, id));
+				} else if (s == "SET_PARTICLETYPE") {
+					std::string ptype; iss >> ptype;
+					app.SetOption("ParticleType", ptype);
 				} else if (s == "SET_POSITION") {
 					std::string ename; float x, y; iss >> ename >> x >> y;
 					Entity *e = app.GetEntityWithId( namedEntityMap.at(ename) );
@@ -154,4 +157,30 @@ void CinematicEngine::UpdateCinematic() {
 			}
 		}
 	}
+}
+
+void CinematicEngine::DrawCinematicView() {
+
+	// Cinematic 'Bar Lines'
+	sf::RectangleShape box( sf::Vector2f(app.GetSize().x, 140) );
+	box.setFillColor( sf::Color(0, 0, 0, 255) );
+
+	box.setPosition(0, 0);
+	app.Draw(box);
+	box.setPosition(0, app.GetSize().y-140);
+	app.Draw(box);
+
+	// Drawing the cinematic title for a few seconds
+	sf::Text n( sf::String(std::string("\'") + longName + "\'"), app.FindFont("Temp7c.ttf", 21), 21 );
+	n.setPosition( 30, 100 );
+
+	n.setColor( sf::Color(255, 255, 255, 0) );
+
+	if( masterClock.getElapsedTime().asSeconds() < 6.0f ) {
+		int alpha = 255-abs(((3-masterClock.getElapsedTime().asSeconds())/3)*255);
+		n.setColor( sf::Color(255, 255, 255, alpha) );
+	}
+
+	
+	app.Draw(n);
 }

@@ -142,6 +142,7 @@ void App2D::Run() {
 
 				if( upToUI ) {
 					renderWindow.setView(renderWindow.getDefaultView());
+					if( cinematicEngine.IsCinematicRunning() ) cinematicEngine.DrawCinematicView();
 				}
 
 				// Only draw if it's relevent to a cinematic (assuming one's up)
@@ -337,14 +338,14 @@ void App2D::DisplayBigMessage(std::string message) {
 
 void App2D::CreateParticles() 
 {
-	// Make binary particles for effect
+	// Spawn particles for effect
 	if(binaryReplaceTimer.getElapsedTime().asSeconds() > 0.05f  * EvaluateOption("ParticleDensity"))	 {
 		if( GetOption("ParticleType") == "Binary")
 			AddEntity( new BinaryParticle(*this), 1 );
 		else if ( GetOption("ParticleType") == "Stars")
 			AddEntity( new ImageParticle(*this, "star.png", 1, 1), 1 );
 		else if ( GetOption("ParticleType") == "WarpLines")
-			AddEntity( new ImageParticle(*this, "warpline.png", 150, 1.5, 11), 1 );
+			AddEntity( new ImageParticle(*this, "warpline.png", 150, 1.5, -11), 1 );
 		binaryReplaceTimer.restart();
 	}
 }
@@ -375,7 +376,7 @@ sf::Texture &App2D::FindTexture( std::string dir ) {
 
 
 // MEMORY LEAK HERE
-// Shaders are never deleted. Not that it really matters (there's only 2) but should probably get around to it
+// Shaders are never deleted. Not that it really matters (there's only 2; survive for the lifetime of program) but should probably get around to it
 sf::Shader &App2D::FindShader( std::string dir ) {
 	dir = "../media/shader/" + dir;
 	if( shaderMap.find(dir) == shaderMap.end() ) {
@@ -799,6 +800,8 @@ void App2D::LoadLevel() {
 	if( r == 1 ) PlayDialogue("lchange2.ogg");
 	if( r == 2 ) PlayDialogue("lchange3.ogg");
 	if( r == 3 ) PlayDialogue("lchange4.ogg");
+
+	cinematicEngine.RunCinematic("cin1.cnm");
 }
 
 void App2D::RespawnPlayerIfDead() {
@@ -806,6 +809,12 @@ void App2D::RespawnPlayerIfDead() {
 	if( playerDeathTimer.getElapsedTime().asSeconds() > 3.0f && CountEntityOfType("localplayer") == 0) {
 		playerName = GetOption("PlayerName");
 		AddEntity( new DefinedEntity( *this, "localplayer", 150, 150, sf::Vector2f(), 0, true, playerName ), 10 );
+	}
+
+	// Make sure camera is folling the player too (exists because of cinematics)
+	for ( EntityMap::iterator it = entities.begin(); it != entities.end(); ++it ) {
+		if( it->second->type == "localplayer" )
+			FollowEntity( *it->second );
 	}
 }
 
