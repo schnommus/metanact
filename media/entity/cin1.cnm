@@ -11,9 +11,10 @@ Twelve Warp Incoming
 0.01:MOVE_SINE derp3 2400 90 13
 0.01:SET_PARTICLETYPE Stars
 0.05:DIALOGUE navigation1.ogg
-7.2:DIALOGUE captain1.ogg
+7.27:DIALOGUE captain1.ogg
 10:DIALOGUE navigation2.ogg
 14.3:DIALOGUE captain2.ogg
+17.0:PLAY_MUSIC byteparsec.ogg
 17.2:DIALOGUE captain3.ogg
 20.4:DIALOGUE navigation3.ogg
 23.6:DIALOGUE captain4.ogg
@@ -22,6 +23,7 @@ Twelve Warp Incoming
 44.7:DIALOGUE ai2.ogg
 58.2:DIALOGUE captain6.ogg
 60.3:DIALOGUE ai3.ogg
+61.3:PLAY_MUSIC bigboss.ogg
 62.9:DIALOGUE captain7.ogg
 63.4:DIALOGUE ai4.ogg
 68.2:DIALOGUE captain8.ogg
@@ -36,6 +38,8 @@ Twelve Warp Incoming
 118.8:DIALOGUE mining3.ogg
 123.3:DIALOGUE captain13.ogg
 126.2:DIALOGUE ai5.ogg
+130.7:DIALOGUE captain14.ogg
+132.3:DIALOGUE navigation6.ogg
 14.3:SET_PARTICLETYPE WarpLines
 129:DELETE derp1
 9.65:DELETE derp2
