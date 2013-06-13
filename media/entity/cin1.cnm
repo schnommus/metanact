@@ -1,5 +1,4 @@
 Twelve Warp Incoming
-0.01:PLAY_MUSIC fp-cin.ogg
 0.01:NAMED_ENTITY cgrunt derp1
 0.01:NAMED_ENTITY cgrunt derp2
 0.01:NAMED_ENTITY cgrunt derp3
@@ -7,14 +6,40 @@ Twelve Warp Incoming
 0.01:SET_POSITION derp1 0 0
 0.01:SET_POSITION derp2 40 200
 0.01:SET_POSITION derp3 -90 -150
-0.01:MOVE_LINEAR derp1 1800 0 10
+0.01:MOVE_LINEAR derp1 18000 0 140
 0.01:MOVE_SINE derp2 3200 -55 16
 0.01:MOVE_SINE derp3 2400 90 13
 0.01:SET_PARTICLETYPE Stars
-4.8:SET_PARTICLETYPE WarpLines
-9.65:DELETE derp1
+0.05:DIALOGUE navigation1.ogg
+7.2:DIALOGUE captain1.ogg
+10:DIALOGUE navigation2.ogg
+14.3:DIALOGUE captain2.ogg
+17.2:DIALOGUE captain3.ogg
+20.4:DIALOGUE navigation3.ogg
+23.6:DIALOGUE captain4.ogg
+30.7:DIALOGUE ai1.ogg
+38.6:DIALOGUE captain5.ogg
+44.7:DIALOGUE ai2.ogg
+58.2:DIALOGUE captain6.ogg
+60.3:DIALOGUE ai3.ogg
+62.9:DIALOGUE captain7.ogg
+63.4:DIALOGUE ai4.ogg
+68.2:DIALOGUE captain8.ogg
+71.5:DIALOGUE navigation4.ogg
+82.6:DIALOGUE captain9.ogg
+90.5:DIALOGUE navigation5.ogg
+99.6:DIALOGUE captain10.ogg
+102.6:DIALOGUE mining1.ogg
+106.3:DIALOGUE captain11.ogg
+108.1:DIALOGUE mining2.ogg
+117.5:DIALOGUE captain12.ogg
+118.8:DIALOGUE mining3.ogg
+123.3:DIALOGUE captain13.ogg
+126.2:DIALOGUE ai5.ogg
+14.3:SET_PARTICLETYPE WarpLines
+129:DELETE derp1
 9.65:DELETE derp2
 9.65:DELETE derp3
-10.0:PLAY_MUSIC ambience.ogg
-10.0:SET_PARTICLETYPE Binary
-10.1:END_CINEMATIC
+130.0:PLAY_MUSIC ambience.ogg
+130.0:SET_PARTICLETYPE Binary
+130.1:END_CINEMATIC
