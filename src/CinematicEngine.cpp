@@ -91,6 +91,8 @@ struct SineMovement : public Movement {
 
 void CinematicEngine::UpdateCinematic() {
 	if( cinematicRunning ) {
+		if( sf::Keyboard::isKeyPressed( sf::Keyboard::Escape ) ) cinematicRunning = false;
+
 		app.CreateParticles();
 
 		// Take care of movement

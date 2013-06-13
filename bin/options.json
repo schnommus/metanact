@@ -6,5 +6,5 @@
 	"ParticleDensity" : "Heavy",
 	"ParticleType" : "Stars",
 	"PlayerName" : "Schnommus",
-	"UseShaders" : "Disabled"
+	"UseShaders" : "Enabled"
 }

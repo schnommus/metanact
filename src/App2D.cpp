@@ -73,6 +73,9 @@ void App2D::Run() {
 
 		SetMusic("metmain.ogg");
 
+		PreloadSound("byteparsec.ogg");
+		PreloadSound("bigboss.ogg");
+
 		LoadOptions();
 
 		playerData.Init();
@@ -390,7 +393,14 @@ sf::Shader &App2D::FindShader( std::string dir ) {
 	return *shaderMap.find(dir)->second;
 }
 
-
+void App2D::PreloadSound( std::string sound ) {
+	sound = "../media/sound/" + sound;
+	if( soundMap.find(sound) == soundMap.end() ) {
+		if(!soundMap[sound].loadFromFile(sound)) {
+			throw std::exception(std::string(sound + " could not be loaded").c_str());
+		}
+	}
+}
 
 sf::Sound *App2D::PlaySound( std::string sound, bool loop, bool useDist, int x, int y, int vol ) {
 	sound = "../media/sound/" + sound;
@@ -436,7 +446,7 @@ void App2D::SetMusic(std::string music) {
 	static std::string lastMusic;
 	if( lastMusic != music ) {
 		if( currentMusic ) currentMusic->stop();
-		currentMusic = PlaySound(music, true);
+		currentMusic = PlaySound(music, true, false, 0, 0, 70);
 	}
 	lastMusic = music;
 }

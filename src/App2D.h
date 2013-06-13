@@ -86,6 +86,7 @@ public:
 	bool InField( Entity *e );
 
 	sf::Sound *PlaySound( std::string sound, bool loop = false, bool useDist = false, int x=0, int y=0, int vol=100 );
+	void PreloadSound( std::string sound );
 
 	void SetMusic(std::string music);
 
