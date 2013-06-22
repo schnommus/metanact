@@ -1,0 +1,7 @@
+NAME cprewarpship
+IMAGE prewarpship.png
+HAS_VELOCITY
+PROJECTILE_ON_DESTROY explosion 0 1
+EMPLACE_ENTITY -233 -67 cshipflame
+EMPLACE_ENTITY -233 55 cshipflame
+IS_CINEMATIC_ENTITY

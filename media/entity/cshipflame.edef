@@ -1,0 +1,5 @@
+NAME cshipflame
+SCALE 1.5
+IMAGE flame.png
+WOBBLES 0.08 10
+IS_CINEMATIC_ENTITY
