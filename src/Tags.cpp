@@ -732,8 +732,8 @@ void EmplaceEntityTag::Init() {
 }
 void EmplaceEntityTag::Step(float delta) {
 	Entity *childpt = e.app.GetEntityWithId(childEntity);
-	childpt->x = e.x;
-	childpt->y = e.y;
+	childpt->x = e.x+xoffset;
+	childpt->y = e.y+yoffset;
 }
 
 void EmplaceEntityTag::Draw() {}

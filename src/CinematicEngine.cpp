@@ -139,6 +139,12 @@ void CinematicEngine::UpdateCinematic() {
 					Entity *e = app.GetEntityWithId( namedEntityMap.at(ename) );
 					e->x = x;
 					e->y = y;
+				} else if (s == "COPY_POSITION") {
+					std::string ename1, ename2; iss >> ename1 >> ename2;
+					Entity *e1 = app.GetEntityWithId( namedEntityMap.at(ename1) );
+					Entity *e2 = app.GetEntityWithId( namedEntityMap.at(ename2) );
+					e2->x = e1->x;
+					e2->y = e1->y;
 				} else if (s == "DELETE") {
 					std::string ename; iss >> ename;
 					app.RemoveEntity( namedEntityMap.at(ename) );
@@ -160,6 +166,16 @@ void CinematicEngine::UpdateCinematic() {
 				eventMap.erase(e);
 				break;
 			}
+		}
+
+		if (!cinematicRunning) { // Need to do some cleanup
+			// Remove all named entities
+			for( std::map< std::string, long long >::iterator it = namedEntityMap.begin(); it != namedEntityMap.end(); ++it ) {
+				app.RemoveEntity( it->second );
+			}
+
+			// Stop all dialogue
+			app.PlayDialogue("silence.ogg");
 		}
 	}
 }

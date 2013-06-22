@@ -4,7 +4,7 @@
 	"InitialDirectory" : "C:\\",
 	"MinimalUI" : "Enabled",
 	"ParticleDensity" : "Heavy",
-	"ParticleType" : "Stars",
+	"ParticleType" : "Binary",
 	"PlayerName" : "Schnommus",
-	"UseShaders" : "Enabled"
+	"UseShaders" : "Disabled"
 }
