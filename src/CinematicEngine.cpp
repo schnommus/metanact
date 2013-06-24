@@ -124,6 +124,9 @@ void CinematicEngine::UpdateCinematic() {
 				} else if (s == "PLAY_MUSIC") {
 					std::string fname; iss >> fname;
 					app.SetMusic(fname);
+				} else if (s == "PLAY_SOUND") {
+					std::string fname; iss >> fname;
+					app.PlaySound(fname);
 				} else if (s == "DIALOGUE") {
 					std::string fname; iss >> fname;
 					app.PlayDialogue(fname);
@@ -176,6 +179,8 @@ void CinematicEngine::UpdateCinematic() {
 
 			// Stop all dialogue
 			app.PlayDialogue("silence.ogg");
+
+			app.SetOption("ParticleType", "Binary");
 		}
 	}
 }
