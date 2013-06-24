@@ -1,0 +1,5 @@
+NAME cstructurebase
+IMAGE structure_outside.png
+EMPLACE_ENTITY 0 0 cstructureinner
+EMPLACE_ENTITY 0 0 cstructureouter
+IS_CINEMATIC_ENTITY

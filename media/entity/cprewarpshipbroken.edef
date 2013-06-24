@@ -1,5 +1,5 @@
-NAME cprewarpship
-IMAGE prewarpship.png
+NAME cprewarpshipbroken
+IMAGE prewarpshipbroken.png
 HAS_VELOCITY
 EMPLACE_ENTITY -233 -67 cshipflame
 EMPLACE_ENTITY -233 55 cshipflame
