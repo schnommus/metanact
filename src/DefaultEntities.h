@@ -241,6 +241,60 @@ private:
 	sf::Text s; float alpha; bool down; std::string msg;
 };
 
+class CreditMessage : public Entity {
+public:
+	CreditMessage( App2D &a, std::string message ) : Entity(a), msg(message) {
+		// Register events
+		hStepEvent = app.GetEventHandler().stepEvent.attach(this, &CreditMessage::onStep);
+		alpha = 0;
+		y = 20;
+		cinematicEntity = true;
+		down = false;
+
+		std::cout << "Credits: " << msg << std::endl;
+
+		s.setFont(app.FindFont("oAction_Force.ttf"));
+		s.setCharacterSize(40);
+		s.setString(msg.c_str());
+		x = 2550;
+	}
+
+	~CreditMessage() {
+		// Detach events
+		app.GetEventHandler().stepEvent.detach( hStepEvent );
+	}
+
+	bool onStep(float delta) {
+		return true;
+	}
+
+	virtual void Draw() {
+		//y -= 20*app.GetFrameTime();
+		if(!down) 
+			x -= 1200*app.GetFrameTime();
+		else
+			x -= 70*app.GetFrameTime();
+		if(down) {
+			alpha -= 50*app.GetFrameTime();
+			if(alpha < 1) app.RemoveEntity(this->id);
+		} else
+			alpha += 100*app.GetFrameTime();
+
+		if( !down && alpha > 200 ) down = true;
+
+		s.setColor( sf::Color(255, 255, 255, alpha ) );
+		s.setPosition(x, y);
+
+		// Draw the text
+		app.Draw(s);
+	};
+
+private:
+	CppEventHandler hStepEvent;
+	sf::Text s; float alpha; bool down; std::string msg;
+};
+
+
 class SmokeParticle : public Entity {
 public:
 	SmokeParticle( App2D &a, int px, int py, float strength_v ) : Entity(a) {

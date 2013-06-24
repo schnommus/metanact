@@ -130,6 +130,9 @@ void CinematicEngine::UpdateCinematic() {
 				} else if (s == "DIALOGUE") {
 					std::string fname; iss >> fname;
 					app.PlayDialogue(fname);
+				}  else if (s == "CREDIT") {
+					std::string message; std::getline(iss, message);
+					app.AddEntity( new CreditMessage(app, message), 1001, true );
 				} else if (s == "NAMED_ENTITY") {
 					std::string etype, ename; iss >> etype >> ename;
 					long long id = app.AddEntity( new DefinedEntity( app, etype ), 10 );
