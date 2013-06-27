@@ -53,7 +53,7 @@ void PlayerData::Init() {
 	EquipDefaults();
 
 	// To assume we've found everything
-	foundLootTypes = lootTypes;
+	//foundLootTypes = lootTypes;
 }
 
 void PlayerData::EquipDefaults() {
@@ -70,9 +70,6 @@ void PlayerData::AddFoundLoot( std::string name ) {
 	if( std::find( foundLootTypes.begin(), foundLootTypes.end(), name ) == foundLootTypes.end() ) {
 		foundLootTypes.push_back( name );
 	}
-
-	/*for( int i = 0; i != foundLootTypes.size(); ++i )
-		app.GetJsonPool().GetRootNode("/saves/!header.json")["FoundLoot"].append(foundLootTypes[i]);*/
 }
 
 void PlayerData::LoadLootTypes() {

@@ -6,6 +6,7 @@
 
 #include "Entity.h"
 #include "LootData.h"
+#include "JsonPool.h"
 
 
 class App2D;
@@ -36,6 +37,8 @@ public:
 
 	AntiGravLoot &CurrentAntiGravDetails();
 
+	std::vector< std::string > foundLootTypes;
+
 private:
 	void LoadLootTypes();
 	void PopulateLootDetails();
@@ -46,8 +49,6 @@ private:
 
 	std::string currentWeaponFile;
 	std::string currentAntiGravFile;
-	
-	std::vector< std::string > foundLootTypes;
 
 	std::vector< std::string > lootTypes;
 

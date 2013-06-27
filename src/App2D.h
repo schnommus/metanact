@@ -111,6 +111,7 @@ public:
 
 	void WipeCurrentGame();
 	void ReEnterGame();
+	void SaveCurrentGame();
 
 	// Display a message in the message scroller
 	void DisplayMessage(std::string message);
@@ -229,6 +230,8 @@ public:
 	bool inGame;
 
 	bool currentLevelUnlocked;
+
+	int currentLevelCinematic;
 
 	sf::Clock playerDeathTimer;
 	sf::Clock binaryReplaceTimer;
