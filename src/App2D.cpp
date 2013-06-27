@@ -49,6 +49,7 @@ App2D::App2D( bool useVSync,
 	persistanceTarget.create(GetSize().x, GetSize().y);
 	persistanceTarget.clear(sf::Color(0, 0, 0, 0));
 
+	currentLevelCinematic = 0;
 	currentPlayerScore = 0;
 	currentPlayerScoreScale = 35;
 	currentHostilityTier = 0;
@@ -650,11 +651,35 @@ void App2D::WipeCurrentGame() {
 	currentPath = GetOption("InitialDirectory");
 }
 
+void App2D::SaveCurrentGame() {
+	Json::Value &root = jsonPool.GetRootNode("saves/!header.json");
+
+	root["CurrentPath"] = currentPath;
+	root["PlayerScore"] = currentPlayerScore;
+	root["CurrentWeapon"] = playerData.CurrentWeaponDetails().fileName;
+	root["CurrentAntiGrav"] = playerData.CurrentAntiGravDetails().fileName;
+
+	root["FoundLoot"] = Json::Value( Json::arrayValue );
+
+	for( int i = 0; i != playerData.FoundLootTypes().size(); ++i )
+		root["FoundLoot"].append( playerData.FoundLootTypes()[i] );
+
+	jsonPool.WriteToFile("saves/!header.json");
+}
+
 void App2D::ReEnterGame() {
 	Json::Value root = jsonPool.GetRootNode("saves/!header.json");
 	if( IsLastSave() ) {
 		currentPath = root["CurrentPath"].asString();
+		playerData.EquipDefaults();
+		for( Json::Value::iterator it = root["FoundLoot"].begin(); it != root["FoundLoot"].end(); ++it ) {
+			playerData.AddFoundLoot((*it).asCString());
+		}
 		currentPlayerScore = root["PlayerScore"].asInt();
+
+		playerData.SetCurrentWeapon(root["CurrentWeapon"].asCString());
+		playerData.SetCurrentAntiGrav(root["CurrentAntiGrav"].asCString());
+
 		std::cout << "Loaded savefile in directory: " << currentPath << std::endl;
 	} else {
 		// Get initial directory
@@ -798,12 +823,7 @@ void App2D::LoadLevel() {
 
 	AddEntity( new DefinedEntity( *this, "spawner" ), 9 );
 
-	Json::Value &root = jsonPool.GetRootNode("saves/!header.json");
-
-	root["CurrentPath"] = currentPath;
-	root["PlayerScore"] = currentPlayerScore;
-
-	jsonPool.WriteToFile("saves/!header.json");
+	SaveCurrentGame();
 
 	int r = rand()%8;
 	if( r == 0 ) PlayDialogue("lchange1.ogg");
@@ -811,7 +831,9 @@ void App2D::LoadLevel() {
 	if( r == 2 ) PlayDialogue("lchange3.ogg");
 	if( r == 3 ) PlayDialogue("lchange4.ogg");
 
-	cinematicEngine.RunCinematic("cin1.cnm");
+	if( currentLevelCinematic == 0) cinematicEngine.RunCinematic("cin1.cnm");
+
+	++currentLevelCinematic;
 }
 
 void App2D::RespawnPlayerIfDead() {

@@ -79,6 +79,7 @@ public:
 		name = "Resume Game";
 	}
 	virtual void Clicked() {
+		app.SaveCurrentGame();
 		ms.EnterGame();
 	}
 };
