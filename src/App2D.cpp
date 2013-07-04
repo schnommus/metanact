@@ -649,6 +649,7 @@ void App2D::WipeCurrentGame() {
 	currentPlayerScore = 0;
 	ExecuteDeletionQueue();
 	currentPath = GetOption("InitialDirectory");
+	currentLevelCinematic = 0;
 }
 
 void App2D::SaveCurrentGame() {
@@ -663,6 +664,8 @@ void App2D::SaveCurrentGame() {
 
 	for( int i = 0; i != playerData.FoundLootTypes().size(); ++i )
 		root["FoundLoot"].append( playerData.FoundLootTypes()[i] );
+
+	root["CinematicLevel"] = currentLevelCinematic;
 
 	jsonPool.WriteToFile("saves/!header.json");
 }
@@ -679,6 +682,8 @@ void App2D::ReEnterGame() {
 
 		playerData.SetCurrentWeapon(root["CurrentWeapon"].asCString());
 		playerData.SetCurrentAntiGrav(root["CurrentAntiGrav"].asCString());
+
+		currentLevelCinematic = root["CinematicLevel"].asInt();
 
 		std::cout << "Loaded savefile in directory: " << currentPath << std::endl;
 	} else {

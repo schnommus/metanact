@@ -544,9 +544,15 @@ IncreaseScoreItemTag::IncreaseScoreItemTag ( Entity &entityReference, int amount
 void IncreaseScoreItemTag::Init() {
 	if( isLoot ) {
 		std::vector<std::string> lTypes = e.app.playerData.AllLootTypes();
-		int index = rand()%lTypes.size();
+		std::vector<std::string> fTypes = e.app.playerData.FoundLootTypes();
+		int index = 0;
+		for( int i = 0; i <= 100; ++i ) {
+			index = rand()%lTypes.size();
+			if( std::find( fTypes.begin(), fTypes.end(), lTypes[index] ) == fTypes.end() ) {
+				break;
+			}
+		}
 		lName = lTypes[index];
-
 		e.displayName = e.app.playerData.GetLootOfType( lName ).realName;
 	} else {
 		e.displayName = "Remnants of " + e.displayName;
@@ -585,6 +591,8 @@ void IncreaseScoreItemTag::Step(float delta) {
 					e.app.currentPlayerScore += 10000;
 					e.app.currentPlayerScoreScale = 45;
 					e.app.PlaySound("junksound.wav");
+
+
 				}
 
 				e.app.RemoveEntity(e.id);

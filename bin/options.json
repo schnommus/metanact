@@ -2,7 +2,7 @@
 {
 	"ControlScheme" : "Global Movement",
 	"InitialDirectory" : "C:\\",
-	"MinimalUI" : "Disabled",
+	"MinimalUI" : "Enabled",
 	"ParticleDensity" : "Heavy",
 	"ParticleType" : "Binary",
 	"PlayerName" : "Schnommus",
