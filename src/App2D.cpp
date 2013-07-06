@@ -367,8 +367,9 @@ sf::Font &App2D::FindFont( std::string dir, int size ) {
 	return fontMap.find(dir)->second;
 }
 
-sf::Texture &App2D::FindTexture( std::string dir ) {
-	dir = "../media/image/" + dir;
+sf::Texture &App2D::FindTexture( std::string dir, bool overridePath ) {
+	if(!overridePath)
+		dir = "../media/image/" + dir;
 	if( textureMap.find(dir) == textureMap.end() ) {
 		std::cout << "New image: " << dir << std::endl;
 		if(!textureMap[dir].loadFromFile(dir)) {
@@ -706,6 +707,13 @@ struct SizeCmp {
 	}
 };
 
+inline int StayAwayFromZero( int value ) {
+	/*if( std::abs(value) < 205 ) {
+		return 205;
+	}*/
+	return value;
+}
+
 void App2D::LoadLevel() {
 	currentLevelUnlocked = false;
 
@@ -789,13 +797,13 @@ void App2D::LoadLevel() {
 		}
 		if( !crashed ) {
 			float scale = (0.7+float(countFiles+countDirs)/90);
-			AddEntity( new DefinedEntity( *this, "warper", rand()%gameSize-gameSize/2, rand()%gameSize-gameSize/2, sf::Vector2f(), 0, false, dirs[i].filename().string(), scale ), 11 );
+			AddEntity( new DefinedEntity( *this, "warper", StayAwayFromZero(rand()%gameSize-gameSize/2), rand()%gameSize-gameSize/2, sf::Vector2f(), 0, false, dirs[i].filename().string(), scale ), 11 );
 		} else {
 			DisplayMessage("\'" + dirs[i].filename().string() + "\' is an innaccessible subdirectory - not spawning wormhole.");
 		}
 	}
 	// Add a warper that allows the player to go up a directory
-	AddEntity( new DefinedEntity( *this, "warper", rand()%gameSize-gameSize/2, rand()%gameSize-gameSize/2, sf::Vector2f(), 0, false, ".." ), 10 );
+	AddEntity( new DefinedEntity( *this, "warper", StayAwayFromZero(rand()%gameSize-gameSize/2), rand()%gameSize-gameSize/2, sf::Vector2f(), 0, false, ".." ), 10 );
 
 	std::sort( files.begin(), files.end(), SizeCmp() );
 
@@ -823,10 +831,28 @@ void App2D::LoadLevel() {
 				AddEntity( new DefinedEntity( *this, bestEnemyType, rand()%gameSize-gameSize/2, rand()%gameSize-gameSize/2, sf::Vector2f(), 0, false, files[i].filename().string() ), 10 );
 			}
 		}
+
+		std::string myExtension = files[i].filename().string().substr( files[i].filename().string().find_last_of(".") + 1 );
+		std::transform(myExtension.begin(), myExtension.end(), myExtension.begin(), ::tolower);
+
+		if( myExtension == "png" || myExtension == "jpg" || myExtension == "bmp" ) {
+			AddEntity( new ImageParticle(*this, currentPath + "\\" + files[i].filename().string(), 1, 1, 1, true, true), -10 );
+		}
 	}
 
 
 	AddEntity( new DefinedEntity( *this, "spawner" ), 9 );
+
+
+	std::string backgroundImages[4] = {
+		"circuitboard.png",
+		"doodad1.png",
+		"onezero.png",
+		"target.png",
+	};
+	for( int i = 0; i != gameSize/500; ++i ) {
+		AddEntity( new ImageParticle(*this, backgroundImages[rand()%4], 1, 1, 1, true), -10 );
+	}
 
 	SaveCurrentGame();
 
