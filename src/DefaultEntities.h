@@ -145,7 +145,8 @@ private:
 
 class ImageParticle : public Entity {
 public:
-	ImageParticle( App2D &a, std::string imageName, int discolouration = 1, float scale = 1, float movementScale = 1 ) : Entity(a), mScale(movementScale) {
+	ImageParticle( App2D &a, std::string imageName, int discolouration = 1, float scale = 1, float movementScale = 1, bool forever = false, bool overridePath = false )
+		: Entity(a), mScale(movementScale), isForever(forever) {
 		// Register events
 		hStepEvent = app.GetEventHandler().stepEvent.attach(this, &ImageParticle::onStep);
 		alpha = 2; gd = false;
@@ -153,11 +154,21 @@ public:
 		sf::Vector2f v = app.renderWindow.convertCoords(sf::Vector2i( (rand()%(app.GetSize().x+sDelta))-sDelta/2, (rand()%(app.GetSize().y+sDelta))-sDelta/2) );
 		x = v.x;
 		y = v.y;
+		cinematicEntity = true;
+		if( isForever ) {
+			alpha = 100;
+			int gameSize = app.field.tright.x*2;
+			x = rand()%gameSize-gameSize/2;
+			y = rand()%gameSize-gameSize/2;
+			s.setRotation(rand()%360);
+			cinematicEntity = false;
+		}
+
 		fScale = scale/float(rand()%3+1);
-		s.setTexture( app.FindTexture(imageName) );
+		s.setTexture( app.FindTexture(imageName, overridePath) );
 		s.setScale( fScale, fScale );
 		s.setColor( sf::Color(255-rand()%discolouration, 255-rand()%discolouration, 255-rand()%discolouration, 255 ) );
-		cinematicEntity = true;
+		
 	}
 
 	~ImageParticle() {
@@ -169,10 +180,13 @@ public:
 		x += mScale*(app.cdelta.x*delta)/fScale;
 		y += mScale*(app.cdelta.y*delta)/fScale;
 
-		if( !gd ) alpha += 100*delta;
-		else alpha -= 100*delta;
-		if( alpha > 230 ) gd = true;
-		if(alpha < 1) app.RemoveEntity(this->id);
+		if( !isForever ) {
+			if( !gd ) alpha += 100*delta;
+			else alpha -= 100*delta;
+			if( alpha > 230 ) gd = true;
+			if(alpha < 1) app.RemoveEntity(this->id);
+		}
+
 		sf::Color myColour = s.getColor(); myColour.a = alpha;
 		s.setColor( myColour );
 		s.setPosition(x, y);
@@ -186,7 +200,7 @@ public:
 
 private:
 	CppEventHandler hStepEvent;
-	sf::Sprite s; float alpha, fScale, mScale; bool gd;
+	sf::Sprite s; float alpha, fScale, mScale; bool gd, isForever;
 };
 
 

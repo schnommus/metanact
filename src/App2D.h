@@ -92,7 +92,7 @@ public:
 
 	void PlayDialogue(std::string filename);
 	
-	sf::Texture &FindTexture( std::string dir );
+	sf::Texture &FindTexture( std::string dir, bool overridePath = false );
 	sf::Font &FindFont( std::string dir, int size=30 );
 	sf::Shader &FindShader( std::string dir );
 
